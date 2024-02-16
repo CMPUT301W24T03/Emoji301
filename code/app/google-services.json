@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "590721251466",
+    "project_id": "emojibrite",
+    "storage_bucket": "emojibrite.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:590721251466:android:e57aff592ac03853959573",
+        "android_client_info": {
+          "package_name": "com.example.emojibrite"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvnOwbJ38rlkcL7kERMxnpBJRFPuPjigg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
