@@ -13,6 +13,9 @@
         android:theme="@style/Theme.EmojiBrite"
         tools:targetApi="31">
         <activity
+            android:name=".EventAdapter"
+            android:exported="false" />
+        <activity
             android:name=".EventHome"
             android:exported="false" />
         <activity

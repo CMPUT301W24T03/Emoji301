@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/image_event"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/ic_launcher_background" /> <!-- Replace with your image path variable -->
+
+    <TextView
+        android:id="@+id/event_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/image_event"
+        app:layout_constraintStart_toStartOf="@id/image_event"
+        app:layout_constraintEnd_toEndOf="@id/image_event"
+        android:text="Event Name" /> <!-- Bind with your eventTitle variable -->
+
+    <TextView
+        android:id="@+id/event_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@id/event_title"
+        app:layout_constraintStart_toStartOf="@id/event_title"
+        app:layout_constraintEnd_toEndOf="@id/event_title"
+        android:text="Description" /> <!-- Bind with your description variable -->
+
+    <TextView
+        android:id="@+id/event_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@id/event_description"
+        app:layout_constraintStart_toStartOf="@id/event_description"
+        android:text="Date" /> <!-- Bind with your date variable -->
+
+    <TextView
+        android:id="@+id/event_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/event_date"
+        app:layout_constraintBottom_toBottomOf="@id/event_date"
+        app:layout_constraintEnd_toEndOf="@id/event_description"
+        android:text="Time" /> <!-- Bind with your time variable -->
+
+</androidx.constraintlayout.widget.ConstraintLayout>
