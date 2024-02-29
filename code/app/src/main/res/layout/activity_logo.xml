@@ -22,7 +22,7 @@
                 android:id="@+id/EmojiBriteLogo"
                 android:layout_width="284dp"
                 android:layout_height="307dp"
-                android:src="@drawable/EmojiBriteLogo2" />
+                android:src="@drawable/emoji_brite_logo2" />
         </LinearLayout>
 
         <LinearLayout
