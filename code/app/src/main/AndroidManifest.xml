@@ -26,14 +26,15 @@
         </activity>
 
         <activity
-            android:name=".EventAdapter"
+            android:name=".EventHome"
             android:exported="false" />
         <activity
-            android:name=".EventHome"
+            android:name=".EventAdapter"
             android:exported="false" />
         <activity
             android:name=".EventHomePage"
             android:exported="false" />
+
 
         <meta-data
             android:name="preloaded_fonts"
