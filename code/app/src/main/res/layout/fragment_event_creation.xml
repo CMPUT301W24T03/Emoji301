@@ -7,23 +7,31 @@
     <ImageView
         android:id="@+id/image_event_poster"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="163dp"
         android:src="@drawable/ic_launcher_background" />
+
+    <Button
+        android:id="@+id/button_select_picture"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:text="Select picture"
+        android:textColor="#000000" />
 
     <EditText
         android:id="@+id/edittext_event_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/event_title"
+        android:hint="Event Title"
         android:inputType="text"/>
 
     <EditText
         android:id="@+id/edittext_event_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/event_description"
-        android:inputType="textMultiLine"
         android:gravity="top"
+        android:hint="Description"
+        android:inputType="textMultiLine"
         android:minHeight="100dp" />
 
     <EditText
@@ -33,12 +41,41 @@
         android:hint="@string/milestone_number"
         android:inputType="number" />
 
+    <!-- New EditText for Capacity -->
+    <EditText
+        android:id="@+id/edittext_event_capacity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/event_capacity"
+        android:inputType="number" />
+
     <EditText
         android:id="@+id/edittext_event_location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/event_location"
         android:inputType="text"/>
+
+    <EditText
+        android:id="@+id/edittext_event_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Event Date (e.g., MM/dd/yyyy)"
+        android:focusable="false"
+        android:cursorVisible="false"
+        android:clickable="true"
+        android:focusableInTouchMode="false"/>
+
+    <!-- New EditText for Time -->
+    <EditText
+        android:id="@+id/edittext_event_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Event Time (e.g., HH:mm)"
+        android:focusable="false"
+        android:cursorVisible="false"
+        android:clickable="true"
+        android:focusableInTouchMode="false"/>
 
     <Switch
         android:id="@+id/switch_checkin_qr"

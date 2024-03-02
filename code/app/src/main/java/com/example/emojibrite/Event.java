@@ -1,6 +1,7 @@
 package com.example.emojibrite;
 
 import java.util.Date;
+import java.util.Random;
 
 public class Event {
 
@@ -14,9 +15,13 @@ public class Event {
     private Boolean checkInQRCode;
     private Boolean eventQRCode;
 
+    private Integer capacity;
+
+    private String id;
 
 
-    public Event(String imagePath, String eventTitle, Date date, String time, String description, Integer milestone, String location, Boolean checkInQRCode, Boolean eventQRCode){
+
+    public Event(String imagePath, String eventTitle, Date date, String time, String description, Integer milestone, String location, Boolean checkInQRCode, Boolean eventQRCode, Integer capacity){
 
         this.imagePath=imagePath;
         this.eventTitle=eventTitle;
@@ -27,10 +32,12 @@ public class Event {
         this.location=location;
         this.eventQRCode=eventQRCode;
         this.checkInQRCode=checkInQRCode;
+        this.id = generateRandomId();
+        this.capacity = capacity;
 
     }
 
-    public Event(String imagePath, String eventTitle, Date date, String time, String description, String location, Boolean checkInQRCode, Boolean eventQRCode){
+    public Event(String imagePath, String eventTitle, Date date, String time, String description, String location, Boolean checkInQRCode, Boolean eventQRCode, Integer capacity){
 
         this.imagePath=imagePath;
         this.eventTitle=eventTitle;
@@ -40,8 +47,30 @@ public class Event {
         this.location=location;
         this.eventQRCode=eventQRCode;
         this.checkInQRCode=checkInQRCode;
+        this.capacity = capacity;
 
     } //without milestones. Feel free to suggest more stuff
+
+    private String generateRandomId(){
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i<6;i++){
+            int inddex = random.nextInt(chars.length());
+            sb.append(chars.charAt(inddex));
+        }
+        return sb.toString();
+    }
+
+    public String getId(){
+        return id;
+    }
+
+    public void setId(){
+        this.id=id;
+    }
+
+    public void setCapacity(){this.capacity=capacity;}
 
 
 
@@ -126,4 +155,6 @@ public class Event {
     public Boolean getEventQRCode() {
         return eventQRCode;
     }
+
+    public Integer getCapacity(){return capacity;}
 }
