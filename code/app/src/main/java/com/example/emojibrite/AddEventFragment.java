@@ -22,6 +22,9 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -39,7 +42,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class AddEventFragment extends DialogFragment implements EasyPermissions.PermissionCallbacks {
+public class AddEventFragment extends DialogFragment{
     interface AddEventListener {
         void onEventAdded(Event event);
     }
@@ -51,8 +54,13 @@ public class AddEventFragment extends DialogFragment implements EasyPermissions.
     private ImageView imageEventPoster;
     private Button buttonSelectPic;
 
+    private Uri selectedImageUri;
+
+
+
     private static final int PICK_FROM_GALLERY = 1;
-    private static final int STORAGE_PERMISSION_CODE = 2;
+
+
 
     public static AddEventFragment newInstance(Event eventToEdit) {
         return new AddEventFragment();
@@ -67,6 +75,22 @@ public class AddEventFragment extends DialogFragment implements EasyPermissions.
             throw new RuntimeException(context.toString() + " must implement AddEventListener");
         }
     }
+
+    private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    selectedImageUri = uri; // Save the selected image Uri.
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+                        imageEventPoster.setImageBitmap(bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getActivity(), "Failed to load image", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+    );
 
     @NonNull
     @Override
@@ -117,61 +141,18 @@ public class AddEventFragment extends DialogFragment implements EasyPermissions.
 
             }
 
-            Event newEvent = new Event("", title, eventDate, timeString, description, milestone, location, checkInQR, eventPageQR, capacity);
+            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, checkInQR, eventPageQR, capacity);
             listener.onEventAdded(newEvent);
 
             dismiss();
         });
 
-        // Set the OnClickListener for buttonSelectPic
-//        buttonSelectPic.setOnClickListener(v -> {
-//            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-//                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
-//            } else {
-//                openGallery();
-//            }
-//        });
         buttonSelectPic.setOnClickListener(v -> openGallery());
 
 
         return createDialog(view);
     }
 
-
-    private void showPermissionExplanationDialog() {
-        new AlertDialog.Builder(getActivity())
-                .setTitle("Permission Needed")
-                .setMessage("This app needs the read storage permission to select an image from your gallery.")
-                .setPositiveButton("OK", (dialog, which) ->
-                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE))
-                .create()
-                .show();
-    }
-
-    private void showSettingsDialog() {
-        new AlertDialog.Builder(getActivity())
-                .setTitle("Permission Denied")
-                .setMessage("Permission to access storage was denied. Please go to settings to allow permission for this app.")
-                .setPositiveButton("Settings", (dialog, which) -> {
-                    // Take the user to the app's settings page
-                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
-                    intent.setData(uri);
-                    startActivity(intent);
-                })
-                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-                .create()
-                .show();
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        // Forward results to EasyPermissions
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
 
     private Dialog createDialog(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -185,50 +166,13 @@ public class AddEventFragment extends DialogFragment implements EasyPermissions.
 
 
 
-    @AfterPermissionGranted(PICK_FROM_GALLERY)
-    private void openGallery() {
-        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
-        if (EasyPermissions.hasPermissions(requireContext(), perms)) {
-            Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(galleryIntent, PICK_FROM_GALLERY);
-        } else {
-            EasyPermissions.requestPermissions(this, getString(R.string.gallery_permission_rationale),
-                    PICK_FROM_GALLERY, perms);
-        }
-    }
+//    @AfterPermissionGranted(PICK_FROM_GALLERY)
+private void openGallery() {
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_FROM_GALLERY && resultCode == Activity.RESULT_OK && data != null) {
-            Uri selectedImage = data.getData();
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImage);
-                imageEventPoster.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(getActivity(), R.string.image_pick_error, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+    mGetContent.launch("image/*");
+}
 
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        if (requestCode == PICK_FROM_GALLERY) {
-            openGallery();
-        }
-    }
 
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        if (requestCode == PICK_FROM_GALLERY) {
-            if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-                new AppSettingsDialog.Builder(this).build().show();
-            } else {
-                Toast.makeText(getActivity(), R.string.gallery_permission_denied, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 
     private void showDatePicker() {
         final Calendar calendar = Calendar.getInstance();
