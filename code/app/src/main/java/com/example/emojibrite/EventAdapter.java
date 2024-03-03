@@ -11,6 +11,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -37,14 +39,14 @@ public class EventAdapter extends ArrayAdapter<Event> {
         TextView eventDescription = convertView.findViewById(R.id.event_description);
         TextView eventDate = convertView.findViewById(R.id.event_date);
         TextView eventTime = convertView.findViewById(R.id.event_time);
-        // TextView eventCapacity = convertView.findViewById(R.id.event_capacity); // Uncomment and correct ID if needed
+        // TextView eventCapacity = convertView.findViewById(R.id.event_capacity);
 
         eventTitle.setText(event.getEventTitle());
         eventDescription.setText(event.getDescription());
 
 
         if (event.getDate() != null) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd", Locale.getDefault());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM | dd", Locale.getDefault());
             String formattedDate = simpleDateFormat.format(event.getDate());
             eventDate.setText(formattedDate);
         } else {
@@ -52,6 +54,12 @@ public class EventAdapter extends ArrayAdapter<Event> {
         }
 
         eventTime.setText(event.getTime());
+
+        if (event.getImagePath() != null) {
+            Glide.with(getContext()).load(event.getImagePath()).into(eventImage);
+        } else {
+            eventImage.setImageResource(R.drawable.placeholder); 
+        }
 
 
 

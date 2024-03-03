@@ -1,11 +1,13 @@
 package com.example.emojibrite;
 
+import android.net.Uri;
+
 import java.util.Date;
 import java.util.Random;
 
 public class Event {
 
-    private String imagePath;
+    private Uri imageUri;
     private String eventTitle;
     private Date date;
     private String time;
@@ -21,9 +23,11 @@ public class Event {
 
 
 
-    public Event(String imagePath, String eventTitle, Date date, String time, String description, Integer milestone, String location, Boolean checkInQRCode, Boolean eventQRCode, Integer capacity){
 
-        this.imagePath=imagePath;
+
+    public Event(Uri imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Boolean checkInQRCode, Boolean eventQRCode, Integer capacity){
+
+        this.imageUri=imageUri;
         this.eventTitle=eventTitle;
         this.date=date;
         this.time=time;
@@ -37,9 +41,9 @@ public class Event {
 
     }
 
-    public Event(String imagePath, String eventTitle, Date date, String time, String description, String location, Boolean checkInQRCode, Boolean eventQRCode, Integer capacity){
+    public Event(Uri imageUri, String eventTitle, Date date, String time, String description, String location, Boolean checkInQRCode, Boolean eventQRCode, Integer capacity){
 
-        this.imagePath=imagePath;
+        this.imageUri=imageUri;
         this.eventTitle=eventTitle;
         this.date=date;
         this.time=time;
@@ -74,8 +78,8 @@ public class Event {
 
 
 
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+    public void setImagePath(Uri imageUri) {
+        this.imageUri = imageUri;
     }
     public void setEventTitle(String eventTitle)
     {
@@ -116,9 +120,9 @@ public class Event {
         this.eventQRCode=eventQRCode;
     }
 
-    public String getImagePath()
+    public Uri getImagePath()
     {
-        return imagePath;
+        return imageUri;
     }
 
     public String getEventTitle()
