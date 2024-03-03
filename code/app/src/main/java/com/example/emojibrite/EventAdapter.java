@@ -44,7 +44,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
 
         if (event.getDate() != null) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd", Locale.getDefault());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM | dd", Locale.getDefault());
             String formattedDate = simpleDateFormat.format(event.getDate());
             eventDate.setText(formattedDate);
         } else {

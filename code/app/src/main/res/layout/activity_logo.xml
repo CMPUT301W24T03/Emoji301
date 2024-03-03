@@ -15,8 +15,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="@color/dark_green"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/EmojiBriteLogo"
