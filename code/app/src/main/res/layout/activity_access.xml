@@ -18,6 +18,7 @@
         android:textColor="@color/black"
         android:textSize="34sp" />
 
+    <!--Should this be a button or a text field to type the access key? -Aivan-->
     <Button
         android:id="@+id/guestButton"
         android:layout_centerHorizontal="true"
