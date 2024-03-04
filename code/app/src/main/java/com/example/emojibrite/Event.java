@@ -1,10 +1,13 @@
 package com.example.emojibrite;
 
+import android.net.Uri;
+
 import java.util.Date;
+import java.util.Random;
 
 public class Event {
 
-    private String imagePath;
+    private Uri imageUri;
     private String eventTitle;
     private Date date;
     private String time;
@@ -14,11 +17,17 @@ public class Event {
     private Boolean checkInQRCode;
     private Boolean eventQRCode;
 
+    private Integer capacity;
+
+    private String id;
 
 
-    public Event(String imagePath, String eventTitle, Date date, String time, String description, Integer milestone, String location, Boolean checkInQRCode, Boolean eventQRCode){
 
-        this.imagePath=imagePath;
+
+
+    public Event(Uri imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Boolean checkInQRCode, Boolean eventQRCode, Integer capacity){
+
+        this.imageUri=imageUri;
         this.eventTitle=eventTitle;
         this.date=date;
         this.time=time;
@@ -27,12 +36,14 @@ public class Event {
         this.location=location;
         this.eventQRCode=eventQRCode;
         this.checkInQRCode=checkInQRCode;
+        this.id = generateRandomId();
+        this.capacity = capacity;
 
     }
 
-    public Event(String imagePath, String eventTitle, Date date, String time, String description, String location, Boolean checkInQRCode, Boolean eventQRCode){
+    public Event(Uri imageUri, String eventTitle, Date date, String time, String description, String location, Boolean checkInQRCode, Boolean eventQRCode, Integer capacity){
 
-        this.imagePath=imagePath;
+        this.imageUri=imageUri;
         this.eventTitle=eventTitle;
         this.date=date;
         this.time=time;
@@ -40,13 +51,35 @@ public class Event {
         this.location=location;
         this.eventQRCode=eventQRCode;
         this.checkInQRCode=checkInQRCode;
+        this.capacity = capacity;
 
     } //without milestones. Feel free to suggest more stuff
 
+    private String generateRandomId(){
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i<6;i++){
+            int inddex = random.nextInt(chars.length());
+            sb.append(chars.charAt(inddex));
+        }
+        return sb.toString();
+    }
+
+    public String getId(){
+        return id;
+    }
+
+    public void setId(){
+        this.id=id;
+    }
+
+    public void setCapacity(){this.capacity=capacity;}
 
 
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+
+    public void setImagePath(Uri imageUri) {
+        this.imageUri = imageUri;
     }
     public void setEventTitle(String eventTitle)
     {
@@ -87,9 +120,9 @@ public class Event {
         this.eventQRCode=eventQRCode;
     }
 
-    public String getImagePath()
+    public Uri getImagePath()
     {
-        return imagePath;
+        return imageUri;
     }
 
     public String getEventTitle()
@@ -126,4 +159,6 @@ public class Event {
     public Boolean getEventQRCode() {
         return eventQRCode;
     }
+
+    public Integer getCapacity(){return capacity;}
 }

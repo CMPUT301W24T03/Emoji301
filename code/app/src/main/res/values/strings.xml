@@ -11,4 +11,8 @@
     <string name="check_in_qr_code">Check in QR Code</string>
     <string name="event_page_qr_code">Event Page QR Code</string>
     <string name="next">Next</string>
+    <string name="gallery_permission_denied">gallery permission denied</string>
+    <string name="image_pick_error">image pick error</string>
+    <string name="gallery_permission_rationale">gallery permission rationale</string>
+    <string name="event_capacity">Event Capacity</string>
 </resources>
