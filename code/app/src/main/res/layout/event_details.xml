@@ -14,20 +14,21 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="150pt"
+        android:layout_height="200dp"
         android:orientation="vertical">
 
         <ImageView
             android:id="@+id/image_event_poster"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="200dp"
             android:src="@drawable/ic_launcher_background" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="90dp"
-        android:orientation="vertical"
-        android:background="@drawable/event_card_shape">
+        android:layout_height="wrap_content"
+        android:background="@drawable/event_card_shape"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/Event_DateandTime"
@@ -36,7 +37,7 @@
             android:layout_marginStart="30dp"
             android:fontFamily="@font/frank_ruhl_libre"
             android:text="Event date and time"
-            android:textSize="30sp" />
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/Event_Title"
@@ -46,7 +47,7 @@
             android:fontFamily="@font/frank_ruhl_libre"
             android:text="Event Title"
             android:textColor="@color/black"
-            android:textSize="40sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
     </LinearLayout>
@@ -58,146 +59,157 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="wrap_content"
             android:background="@color/ivory"
             android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/EmojiBriteLogo"
-                android:layout_width="64dp"
-                android:layout_height="100dp"
+                android:layout_width="39dp"
+                android:layout_height="55dp"
                 android:layout_marginStart="30dp"
                 android:src="@drawable/profile_pic_two" />
 
             <TextView
                 android:id="@+id/organizer_name"
-                android:layout_width="280dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
                 android:fontFamily="@font/frank_ruhl_libre"
                 android:text="Organizer's Name"
                 android:textColor="@color/black"
-                android:textSize="30sp" />
+                android:textSize="13.78sp" />
+
+            <Switch
+                android:id="@+id/switch_checkin_qr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="110dp"
+                android:layout_marginTop="20dp"
+                android:checked="true"
+                android:fontFamily="@font/source_sans_pro_semibold"
+                android:text="Signup" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
             android:background="@color/ivory"
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/map_icon1"
-                android:layout_width="42dp"
-                android:layout_height="64dp"
+
+                android:id="@+id/map_icon"
+                android:layout_width="20dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="2dp"
                 android:src="@drawable/map_pin" />
 
             <TextView
                 android:id="@+id/location"
-                android:layout_width="280dp"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/arimo"
                 android:text="Location"
                 android:textColor="@color/black"
-                android:textSize="24sp" />
+                android:textSize="11sp" />
 
             <Button
                 android:id="@+id/attendees_button"
-                android:layout_width="360dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
+                android:layout_width="102dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="30dp"
                 android:layout_weight="1"
                 android:background="@drawable/eventdetails_button"
                 android:text="Attendees"
                 android:textAllCaps="false"
                 android:textColor="@color/black"
-                android:textSize="20sp" />
+                android:textSize="12sp" />
 
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
             android:background="@color/ivory"
             android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/milestone_icon"
-                android:layout_width="42dp"
-                android:layout_height="64dp"
+                android:layout_width="20dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="20dp"
                 android:src="@drawable/milestone_icon" />
 
             <TextView
                 android:id="@+id/milestone"
-                android:layout_width="280dp"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/arimo"
                 android:text="Milestone"
                 android:textColor="@color/black"
-                android:textSize="24sp" />
+                android:textSize="11sp" />
 
             <Button
                 android:id="@+id/Notification_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
+                android:layout_width="102dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="30dp"
                 android:layout_weight="1"
                 android:background="@drawable/eventdetails_button"
                 android:text="Notification"
                 android:textAllCaps="false"
                 android:textColor="@color/black"
-                android:textSize="20sp" />
+                android:textSize="12sp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
             android:background="@color/ivory"
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/capacity_icon"
-                android:layout_width="42dp"
-                android:layout_height="64dp"
+                android:id="@+id/capactiy_icon"
+                android:layout_width="20dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="15dp"
                 android:src="@drawable/capacity_icon" />
 
             <TextView
                 android:id="@+id/capacity"
-                android:layout_width="280dp"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="33dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="12dp"
                 android:fontFamily="@font/arimo"
                 android:text="Capacity"
                 android:textColor="@color/black"
-                android:textSize="24sp" />
+                android:textSize="11sp" />
 
     </LinearLayout>
         <View
             android:layout_width="match_parent"
-            android:layout_height="3dp"
+            android:layout_height="1dp"
             android:background="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/about_event"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:text="About this event"
             android:textColor="@color/black"
             android:layout_marginStart="30dp"
             android:fontFamily="@font/arimo"
-            android:textSize="40sp"
+            android:textSize="15sp"
             android:textStyle="bold"/>
 
         <TextView
@@ -214,33 +226,35 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/darker_gray" />
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
             android:background="@color/ivory"
             android:orientation="horizontal">
+
             <TextView
                 android:id="@+id/location_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Location"
-                android:textColor="@color/black"
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/arimo"
-                android:textSize="40sp"
-                android:textStyle="bold"/>
+                android:text="Location"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/show_map"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="475dp"
-                android:fontFamily="@font/arimo"
+                android:layout_marginStart="260dp"
                 android:layout_marginTop="10dp"
+                android:fontFamily="@font/arimo"
                 android:text="Show map"
                 android:textColor="#3E76B8"
-                android:textSize="22sp"
+                android:textSize="11sp"
                 android:textStyle="bold" />
         </LinearLayout>
         <LinearLayout
@@ -250,10 +264,9 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/map_icon"
-                android:layout_width="64dp"
-                android:layout_height="80dp"
-                android:layout_marginStart="40dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:src="@drawable/map_pin" />
 
@@ -266,15 +279,15 @@
                 android:fontFamily="@font/arimo"
                 android:text="Location"
                 android:textColor="@color/black"
-                android:textSize="24sp" />
+                android:textSize="11sp" />
         </LinearLayout>
 
         <ImageView
             android:id="@+id/qr_code"
-            android:layout_width="84dp"
-            android:layout_height="77dp"
-            android:layout_marginStart="675dp"
-            android:layout_marginTop="70dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="375dp"
+            android:layout_marginTop="40dp"
             android:src="@drawable/qr_pic" />
     </LinearLayout>
 </LinearLayout>
