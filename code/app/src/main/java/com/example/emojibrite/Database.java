@@ -55,6 +55,10 @@ public class Database {
         return Fid;
     }
 
+    public boolean checkUserExist(){
+        return false;
+    }
+
 
     /**
      * A method to get the user collection
