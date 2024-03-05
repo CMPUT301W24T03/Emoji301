@@ -5,13 +5,14 @@ public class Profile {
     private String ImagePath;
     private String email;
     private String number;
-//    private String role;
+    private String role;
+    // unique id? add getter and setter
 
     // set to false by default in constructors
     private boolean enableNotification;
+
     private boolean enableGeolocationTracking;
 //    private boolean isAdmin;
-
     /**
      * Profile constructor with name, email, link to ImagePath  which can be
      * generated picture or the picture from the gallery,
@@ -29,7 +30,6 @@ public class Profile {
         this.enableGeolocationTracking = false;
 
     }
-
     /**
      * Profile constructor with name and the link to ImagePath which cam be
      * generated picture or the picture from the gallery
@@ -130,11 +130,28 @@ public class Profile {
     public boolean isEnableGeolocationTracking() {
         return enableGeolocationTracking;
     }
+
     /**
      * Sets the enableGeolocationTracking of the user
      * @param enableGeolocationTracking of the user
      */
     public void setEnableGeolocationTracking(boolean enableGeolocationTracking) {
         this.enableGeolocationTracking = enableGeolocationTracking;
+    }
+
+    /**
+     * Gets the role of the user
+     * @param role of the user
+     */
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    /**
+     * Sets the role of the user
+     * @return role of the user
+     */
+    public String getRole() {
+        return role;
     }
 }
