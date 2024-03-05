@@ -27,7 +27,7 @@
         </activity>
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".MainActivity"
             android:exported="true">
         </activity>
 
