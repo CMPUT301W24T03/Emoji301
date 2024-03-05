@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_nav"
+    app:startDestination="@id/newUserNameCreation2">
+    <fragment
+        android:id="@+id/newUserNameCreation2"
+        android:name="com.example.emojibrite.NewUserNameCreation"
+        android:label="fragment_new_user_name"
+        tools:layout="@layout/fragment_new_user_name" >
+        <action
+            android:id="@+id/action_newUserNameCreation2_to_newUserImageCreation2"
+            app:destination="@id/newUserImageCreation2" />
+    </fragment>
+    <fragment
+        android:id="@+id/newUserImageCreation2"
+        android:name="com.example.emojibrite.NewUserImageCreation"
+        android:label="fragment_new_user_image_creation"
+        tools:layout="@layout/fragment_new_user_image_creation" >
+        <action
+            android:id="@+id/action_newUserImageCreation2_to_newUserFinal2"
+            app:destination="@id/newUserFinal2" />
+        <action
+            android:id="@+id/action_newUserImageCreation2_to_newUserNameCreation2"
+            app:destination="@id/newUserNameCreation2" />
+    </fragment>
+    <fragment
+        android:id="@+id/newUserFinal2"
+        android:name="com.example.emojibrite.NewUserFinal"
+        android:label="fragment_new_user_final"
+        tools:layout="@layout/fragment_new_user_final" >
+        <action
+            android:id="@+id/action_newUserFinal2_to_newUserImageCreation22"
+            app:destination="@id/newUserImageCreation2" />
+    </fragment>
+</navigation>
