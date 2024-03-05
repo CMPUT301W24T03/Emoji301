@@ -38,11 +38,11 @@
             android:gravity="center">
 
             <Button
-                android:id="@+id/guestButton"
+                android:id="@+id/enterButton"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/guest_bttn"
-                android:text="@string/guest" />
+                android:text="@string/enter" />
 
             <TextView
                 android:id="@+id/qrCodeText"
