@@ -15,4 +15,6 @@
     <string name="image_pick_error">image pick error</string>
     <string name="gallery_permission_rationale">gallery permission rationale</string>
     <string name="event_capacity">Event Capacity</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
