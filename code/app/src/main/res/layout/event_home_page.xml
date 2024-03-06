@@ -11,46 +11,58 @@
         android:id="@+id/toolbar"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-
-    <Button
-        android:id="@+id/other_events_button"
-        android:layout_width="145dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="208dp"
-        android:background="@drawable/event_button_outlined"
-        android:fontFamily="@font/alegreya_sc"
-        android:text="Other Events"
-        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        />
 
-    <Button
-        android:id="@+id/my_event_button"
-        android:layout_width="145dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="44dp"
-        android:background="@drawable/event_button_solid"
-        android:fontFamily="@font/alegreya_sc"
-        android:text="My Events"
-        android:textAllCaps="false"
-        android:textColor="#FFFFFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <LinearLayout
+        android:id="@+id/buttons_event"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <Button
+            android:id="@+id/other_events_button"
+            android:layout_width="145dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="40dp"
+            android:background="@drawable/event_button_outlined"
+            android:fontFamily="@font/alegreya_sc"
+            android:text="Other Events"
+            android:textAllCaps="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+        <Button
+            android:id="@+id/my_event_button"
+            android:layout_width="145dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="40dp"
+            android:background="@drawable/event_button_solid"
+            android:fontFamily="@font/alegreya_sc"
+            android:text="My Events"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+    </LinearLayout>
 
     <ListView
         android:id="@+id/event_organizer_list"
         android:layout_width="match_parent"
-        android:layout_height="660dp"
+        android:layout_height="0dp"
         android:divider="@android:color/transparent"
         android:dividerHeight="20dp"
         android:paddingStart="15dp"
         android:paddingEnd="15dp"
-        app:layout_constraintBottom_toBottomOf="@id/event_add_btn"
+        app:layout_constraintTop_toBottomOf="@id/buttons_event"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.5"
         tools:listitem="@layout/activity_event_adapter" />
 
 
