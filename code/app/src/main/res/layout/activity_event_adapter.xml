@@ -64,7 +64,7 @@
                     android:paddingStart="30dp"
                     android:text="Date"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/event_time"
@@ -74,7 +74,7 @@
                     android:text="Time"
                     android:paddingStart="35dp"
                     android:textColor="@color/red"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
             </LinearLayout>
         </LinearLayout>
 
