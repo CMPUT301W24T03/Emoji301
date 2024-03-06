@@ -52,7 +52,11 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     //needed for getting the FID*firebase installation id
     implementation("com.google.firebase:firebase-installations:17.2.0")
-    //
+
+    implementation("com.google.firebase:firebase-auth")
+
+
+
     implementation("pub.devrel:easypermissions:3.0.0")
     implementation("com.github.bumptech.glide:glide:4.12.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")

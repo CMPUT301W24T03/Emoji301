@@ -11,14 +11,20 @@ import android.widget.TextView;
 // for logcat debugging
 import android.util.Log;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class MainActivity extends AppCompatActivity {
     Button enterButton;
     TextView scanQRCode;
     TextView adminAccess;
     private static final String TAG = "MainActivityTAG";
+    private Database database = new Database();
+
+    //u can include String Fid to pass the firebase installation id
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         // Initialize the button and text view
@@ -33,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         enterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
 //                // if the user exists in database, go to the event page
 //                Log.d(TAG, "Enter button clicked"); // for debugging
 //                Intent intent = new Intent(MainActivity.this, EventHome.class);
