@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_nav_graph"
+    app:startDestination="@id/nameScreen">
+
+    <fragment
+        android:id="@+id/nameScreen"
+        android:name="com.example.emojibrite.NameScreenFragment"
+        android:label="NameScreenFragment"
+        tools:layout="@layout/fragment_name_screen">
+        <action
+            android:id="@+id/action_nameScreen_to_upload_image_screen"
+            app:destination="@+id/uploadImageScreen" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/uploadImageScreen"
+        android:name="com.example.emojibrite.UploadImageScreenFragment"
+        android:label="UploadImageScrenFragment"
+        tools:layout="@layout/fragment_uplaod_image_screen">
+        <action
+            android:id="@+id/action_UploadImageScreen_to_PreviewScreen"
+            app:destination="@+id/previewScreen"/>
+        <argument
+            android:name="name"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/previewScreen"
+        android:name="com.example.emojibrite.PreviewScreenFragment"
+        android:label="PreviewScreenFragment"
+        tools:layout="@layout/fragment_preview_screen">
+    </fragment>
+</navigation>
