@@ -13,7 +13,7 @@ public class Profile {
     //this id is used to identify the user in the database
     //what this means is for a new user, the FID is retrived. For old users, the FID is retrieved and compared to see if it is in the database
     //IF  the user is in the database, their profile is brought up
-    private String FID;
+    private String uid;
 
 
     // unique id? add getter and setter
@@ -41,7 +41,8 @@ public class Profile {
 
 
     }
-    public Profile(String name){
+    public Profile(String uid){
+        this.uid = uid;
 
     }
     /**
@@ -56,6 +57,10 @@ public class Profile {
         this.enableNotification = false;
         this.enableGeolocationTracking = false;
     }
+    public String getProfileUid() {
+        return uid;
+    }
+    //no setter yet
 
     /**
      * Gets the name of the user
