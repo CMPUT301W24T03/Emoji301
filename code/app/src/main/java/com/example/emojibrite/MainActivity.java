@@ -39,14 +39,13 @@ public class MainActivity extends AppCompatActivity {
         enterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Go to the next activity
-                Log.d(TAG, "Enter button clicked"); // for debugging
-                //Intent intent = new Intent(MainActivity.this, EventHome.class);
-                //startActivity(intent);
-//                finish();
-                database.anonymousSignIn();
 
-// this will close current activity, therefore we wont be able to go back to it
+//                // if the user exists in database, go to the event page
+//                Log.d(TAG, "Enter button clicked"); // for debugging
+//                Intent intent = new Intent(MainActivity.this, EventHome.class);
+//                startActivity(intent);
+                // else go to nameScreenFragment
+
             }
         });
 
