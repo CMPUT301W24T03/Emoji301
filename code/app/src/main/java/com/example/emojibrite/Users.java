@@ -1,6 +1,6 @@
 package com.example.emojibrite;
 
-public class Profile {
+public class Users {
     private String name;
     private String ImagePath;
     private String email;
@@ -24,14 +24,15 @@ public class Profile {
     private boolean enableGeolocationTracking;
 //    private boolean isAdmin;
     /**
-     * Profile constructor with name, email, link to ImagePath  which can be
+     * Users constructor with name, email, link to ImagePath  which can be
      * generated picture or the picture from the gallery,
      * and number
      * @param name of the user
      * @param email of the user
      * @param ImagePath of the picture
      */
-    public Profile(String name, String email, String ImagePath, String number) {
+    public Users(String uid, String name, String email, String ImagePath, String number) {
+        this.uid = uid;
         this.name = name;
         this.email = email;
         this.ImagePath = ImagePath;
@@ -41,17 +42,23 @@ public class Profile {
 
 
     }
-    public Profile(String uid){
+    public Users(String uid){
         this.uid = uid;
+        this.name = null;
+        this.email = null;
+        this.ImagePath = null;
+        this.number = null;
+        this.enableNotification = false;
+        this.enableGeolocationTracking = false;
 
     }
     /**
-     * Profile constructor with name and the link to ImagePath which cam be
+     * Users constructor with name and the link to ImagePath which cam be
      * generated picture or the picture from the gallery
      * @param name of the user
      * @param ImagePath of the picture
      */
-    public Profile(String name, String ImagePath) {
+    public Users(String name, String ImagePath) {
         this.name = name;
         this.ImagePath = ImagePath;
         this.enableNotification = false;

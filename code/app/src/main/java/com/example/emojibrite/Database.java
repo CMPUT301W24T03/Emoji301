@@ -2,6 +2,9 @@ package com.example.emojibrite;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -17,14 +20,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.auth.User;
-import com.google.firebase.installations.FirebaseInstallations;
-
-import java.util.HashMap;
-
-import javax.security.auth.callback.Callback;
 
 /**
  * A class to represent the database
@@ -33,9 +28,21 @@ public class Database {
     // attributes
     private final FirebaseFirestore db= FirebaseFirestore.getInstance();
     private final CollectionReference profileRef = db.collection("Users");
+    private final CollectionReference profileImageRef = db.collection("ProfileImages");
     private String firestoreDebugTag = "Firestore";
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private String userUid = null;
+
+    public interface UserNameDBCallBack{
+        void onUserRetrieveNameComplete(String name);
+    }
+    public interface SignInCallBack{
+        void onSignInComplete();
+    }
+    public interface ProfileImageCallBack{
+        void onProfileImageComplete(Bitmap profileImage);
+    }
     /*
     public interface userExistCallBack{
         void onUserExistComplete(boolean userExist);
@@ -54,7 +61,12 @@ public class Database {
     }
 
     public boolean isUserSignedIn() {
-        return mAuth.getCurrentUser() != null;
+        Boolean signedIn = mAuth.getCurrentUser() != null;
+
+        return signedIn;
+    }
+    public void signOutUser(){
+        mAuth.signOut();
     }
 /*
 check if user signed in:
@@ -67,9 +79,28 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * @return the user id
  */
     public String getUserUid() {
-        return mAuth.getCurrentUser().getUid();
+        return userUid;
     }
-    public void anonymousSignIn() {
+
+    public void getUserName(UserNameDBCallBack callBack){
+        DocumentReference docRef = profileRef.document(userUid);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        callBack.onUserRetrieveNameComplete(document.getString("name"));
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+    public void anonymousSignIn(SignInCallBack callBack) {
         mAuth.signInAnonymously()
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>(){
                     @Override
@@ -81,9 +112,14 @@ once created, u can call getuseruid to get the user id and use it to get user da
                             Log.d(TAG, "next step");
                             Log.d(TAG, "User ID: " + user.getUid());
 
-                            addUser(new Profile(user.getUid()));
+                            userUid = user.getUid();
+                            /*
+                            when you call mAuth.signInAnonymously(), it returns a Task object. When the sign-in operation is complete, the Task is marked as successful or failed. If it's successful, you can get the FirebaseUser instance by calling mAuth.getCurrentUser(). This FirebaseUser instance represents the user that just signed in.
+                             */
+                            addUser(new Users(userUid));
                             Log.d(TAG, "User ID: " + user.getUid());
                             Log.d(TAG, "User created");
+                            callBack.onSignInComplete();
 
                         } else {
                             // If sign in fails, display a message to the user.
@@ -95,7 +131,8 @@ once created, u can call getuseruid to get the user id and use it to get user da
     public CollectionReference getUserRef() {
         return profileRef;
     }
-    private void addUser(Profile user){
+
+    private void addUser(Users user){
         if (user == null) {
             Log.d(TAG, "User is null");
         }
@@ -125,10 +162,71 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     }
                 } else {
                     Log.d(TAG, "get failed with ", task.getException());
+                    Log.d(TAG, "User id test test test: " + getUserUid());
                 }
             }
         });
     }
+
+    /**
+     * A method to get the profile image
+     * @param callBack
+     */
+    /*
+    database.getProfileImage(new Database.ProfileImageCallBack() {
+    @Override
+    public void onProfileImageComplete(Bitmap profileImage) {
+        // Use the profileImage bitmap here
+        ImageView imageView = findViewById(R.id.profile_image);
+        imageView.setImageBitmap(profileImage);
+    }
+    });
+
+     */
+
+
+    public void getProfileImageFromDatabase(ProfileImageCallBack callBack){
+        DocumentReference docRef = profileImageRef.document(userUid);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+
+                        String encodedImage = document.getString("image");
+                        byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        callBack.onProfileImageComplete(decodedByte);
+
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+    /*
+    ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator("aivan Edi", imageView, database.getUserUid());
+                        profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(Void aVoid) {
+                                // After getProfileImage() is complete, call getProfileImageFromDatabase()
+                                database.getProfileImageFromDatabase(new Database.ProfileImageCallBack() {
+                                    @Override
+                                    public void onProfileImageComplete(Bitmap profileImageFromDatabase) {
+                                        // Use the profileImageFromDatabase bitmap here
+                                        ImageView imageView = findViewById(R.id.profile_image);
+                                        imageView.setImageBitmap(profileImageFromDatabase);
+                                    }
+                                });
+                            }
+                        });
+     */
+
+
 
     /**
      * A method to get the profile collection
@@ -225,7 +323,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
 //     * A method to add a user to the database
 //     * @param user the user to add
 //     */
-//    public void addUser(Profile user) {
+//    public void addUser(Users user) {
 //        // refer to lab 5 for examples something like
 //        HashMap<String, String> fieldValuePair = new HashMap<>();
 //        fieldValuePair.put("name", user.getName());
