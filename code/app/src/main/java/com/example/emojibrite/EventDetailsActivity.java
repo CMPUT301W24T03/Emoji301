@@ -1,5 +1,6 @@
 package com.example.emojibrite;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -43,6 +44,15 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
+        ImageView backArrow = findViewById(R.id.back_arrow_eventdetails); //back button
+        backArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                finish();
+            }
+        });
+
         // Retrieving the event ID passed from the previous activity.
         String eventId = getIntent().getStringExtra("eventId");
         // Getting the event details from the EventRepository using the event ID.
@@ -52,7 +62,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             setupViews(event);
         }
     }
-
 
     /**
      * Sets up the views in the layout with the details of the event.
