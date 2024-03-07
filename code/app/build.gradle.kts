@@ -50,10 +50,13 @@ dependencies {
     // firebase stuff
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
     implementation("com.google.firebase:firebase-firestore")
+    implementation ("com.google.firebase:firebase-storage:19.2.2")
+
     //needed for getting the FID*firebase installation id
     implementation("com.google.firebase:firebase-installations:17.2.0")
 
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
 
 
