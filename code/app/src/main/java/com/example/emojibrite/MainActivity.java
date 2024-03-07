@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
         enterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
 //                // if the user exists in database, go to the eventHomeActivity page
 //                Log.d(TAG, "Enter button clicked"); // for debugging
 //                Intent intent = new Intent(MainActivity.this, EventHome.class);
@@ -47,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 // else go to nameScreenFragment through the AccountCreationActivity
                 Intent intent = new Intent(MainActivity.this, AccountCreationActivity.class);
                 startActivity(intent);
+    
             }
         });
 
