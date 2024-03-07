@@ -55,7 +55,12 @@ public class NameScreenFragment extends Fragment {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavHostFragment.findNavController(NameScreenFragment.this).navigateUp();
+                // go back to the main activity from
+                // AccountCreation activity which
+                // has the name screen fragment
+                if(getActivity() != null) {
+                    getActivity().finish();
+                }
             }
         });
     }
