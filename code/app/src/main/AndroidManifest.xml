@@ -47,6 +47,9 @@
             android:name=".EventAdapter"
             android:exported="false" />
 
+        <activity android:name=".EventDetailsActivity"
+            android:exported="false"/>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
