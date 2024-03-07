@@ -2,10 +2,11 @@ package com.example.emojibrite;
 
 import android.net.Uri;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Random;
 
-public class Event {
+public class Event implements Serializable {
 
     private Uri imageUri;
     private String eventTitle;
@@ -161,4 +162,6 @@ public class Event {
     }
 
     public Integer getCapacity(){return capacity;}
+
+
 }
