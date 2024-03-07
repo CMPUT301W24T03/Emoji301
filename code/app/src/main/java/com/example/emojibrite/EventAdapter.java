@@ -19,16 +19,38 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Adapter class for displaying Event objects in a ListView.
+ * This class extends ArrayAdapter and is customized to handle Event objects.
+ */
 
 public class EventAdapter extends ArrayAdapter<Event> {
+
+    /**
+     * Constructor for the EventAdapter.
+     * @param context The current context.
+     * @param events An ArrayList of Event objects to be displayed.
+     */
 
     public EventAdapter(Context context, ArrayList<Event> events){
         super(context, 0, events);
     }
 
+
+    /**
+     * Provides a view for an AdapterView (ListView, GridView, etc.)
+     *
+     * @param position The position in the list of data that should be displayed in the list item view.
+     * @param convertView The recycled view to populate.
+     * @param parent The parent ViewGroup that is used for inflation.
+     * @return The View for the position in the AdapterView.
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        // Get the data item for this position
         Event event = getItem(position);
+
+        // Check if an existing view is being reused, otherwise inflate the view
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.activity_event_adapter, parent, false);
@@ -40,6 +62,10 @@ public class EventAdapter extends ArrayAdapter<Event> {
         TextView eventDate = convertView.findViewById(R.id.event_date);
         TextView eventTime = convertView.findViewById(R.id.event_time);
         // TextView eventCapacity = convertView.findViewById(R.id.event_capacity);
+
+
+
+        //setting the retrieved data
 
         eventTitle.setText(event.getEventTitle());
         eventDescription.setText(event.getDescription());
