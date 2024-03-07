@@ -2,7 +2,11 @@ package com.example.emojibrite;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -15,6 +19,11 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     ListView eventList;
     EventAdapter eventAdapter;
     ArrayList<Event> dataList;
+
+    Button profileButton;
+
+
+    private static final String TAG = "ProfileActivityTAG";
 
     @Override
     public void onEventAdded(Event event) {
@@ -67,10 +76,23 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         FloatingActionButton fab = findViewById(R.id.event_add_btn);
         fab.setOnClickListener(view -> showAddEventDialog());
 
+        FloatingActionButton profileButton = findViewById(R.id.profileButton);
+        // When profile is clicked, go to profile activity
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Go to the ProfileActivity page
+                Log.d(TAG, "Enter button clicked"); // for debugging
+                Intent intent = new Intent(EventHome.this, ProfileActivity.class);
+                startActivity(intent);
+
+
+            }
+        });
 
 
     }
-
 
 
 

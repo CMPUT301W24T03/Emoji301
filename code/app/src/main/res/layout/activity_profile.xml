@@ -2,15 +2,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/ivory"
+    android:backgroundTint="@color/ivory"
+    tools:context=".ProfileActivity">
 
-    <!--TODO:Change the button picture to back button-->
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/backButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:src="@android:drawable/ic_input_add" />
+        android:src="@drawable/back_button"
+        app:backgroundTint="@color/dark_green"
+        app:rippleColor="#3F51B5" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,10 +33,10 @@
 
             <ImageView
                 android:id="@+id/profilePicture"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="386dp"
+                android:layout_height="267dp"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/ic_launcher_background" />
+                android:src="@drawable/profile_pic" />
 
         </LinearLayout>
 
@@ -48,25 +53,25 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/noto_sans_bold"
-                android:textSize="30sp"
-                android:text="John Doe" />
+                android:text="John Doe"
+                android:textSize="30sp" />
 
             <TextView
-                android:id="@+id/userEmail"
+                android:id="@+id/editEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
                 android:layout_below="@+id/userName"
+                android:layout_centerHorizontal="true"
                 android:layout_marginTop="5dp"
                 android:fontFamily="@font/alice"
                 android:text="johndoe@gmail.com" />
 
             <TextView
-                android:id="@+id/userPhone"
+                android:id="@+id/editPhoneNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/editEmail"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@+id/userEmail"
                 android:fontFamily="@font/alice"
                 android:text="(306) 123 4567" />
 
@@ -76,17 +81,18 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/switchLayout"
                 android:layout_marginStart="20dp"
+                android:layout_marginBottom="-5dp"
                 android:fontFamily="@font/noto_sans_bold"
-                android:textSize="20sp"
                 android:padding="10dp"
-                android:text="Settings" />
+                android:text="Settings"
+                android:textSize="20sp" />
 
             <LinearLayout
                 android:id="@+id/switchLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
                 android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
                 android:layout_marginStart="50dp"
                 android:layout_marginBottom="50dp"
                 android:orientation="vertical">
@@ -100,19 +106,18 @@
                         android:id="@+id/notificationSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:scaleX="1.5"
-                        android:scaleY="1.5"
                         android:padding="10dp"
-                        />
+                        android:scaleX="1.5"
+                        android:scaleY="1.5" />
 
                     <TextView
                         android:id="@+id/notificationLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:textSize="20sp"
                         android:fontFamily="@font/alice"
-                        android:text="Allow Notifications" />
+                        android:text="Allow Notifications"
+                        android:textSize="20sp" />
 
                 </LinearLayout>
 
@@ -125,19 +130,18 @@
                         android:id="@+id/geolocationSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:scaleX="1.5"
-                        android:scaleY="1.5"
                         android:padding="10dp"
-                        />
+                        android:scaleX="1.5"
+                        android:scaleY="1.5" />
 
                     <TextView
                         android:id="@+id/geolocationLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:textSize="20sp"
                         android:fontFamily="@font/alice"
-                        android:text="Geolocation tracking" />
+                        android:text="Geolocation tracking"
+                        android:textSize="20sp" />
 
                 </LinearLayout>
 
@@ -150,22 +154,36 @@
                         android:id="@+id/adminModeSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:padding="10dp"
                         android:scaleX="1.5"
-                        android:scaleY="1.5"
-                        android:padding="10dp"/>
+                        android:scaleY="1.5" />
 
                     <TextView
                         android:id="@+id/adminModeLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:textSize="20sp"
                         android:fontFamily="@font/alice"
-                        android:text="Admin mode" />
+                        android:text="Admin mode"
+                        android:textSize="20sp" />
 
                 </LinearLayout>
 
             </LinearLayout>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/editButton"
+                android:layout_width="46dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="16dp"
+                android:layout_toEndOf="@+id/userName"
+                android:clickable="true"
+                android:elevation="0dp"
+                app:backgroundTint="@color/ivory"
+                app:elevation="0dp"
+                app:srcCompat="@android:drawable/ic_menu_edit" />
 
         </RelativeLayout>
 
