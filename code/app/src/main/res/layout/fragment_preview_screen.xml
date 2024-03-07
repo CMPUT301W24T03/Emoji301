@@ -19,11 +19,12 @@
             android:layout_height="wrap_content"
             android:src="@drawable/profile_pic" />
         <TextView
+            android:id="@+id/usernameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Username"
-            android:textSize="25dp"/>
+            android:textSize="25sp"/>
 
     </LinearLayout>
 
@@ -48,7 +49,7 @@
         android:layout_alignParentEnd="true"
         android:padding="15dp"
         android:text="Next"
-        android:textSize="18dp"/>
+        android:textSize="18sp"/>
 
 
 </RelativeLayout>
