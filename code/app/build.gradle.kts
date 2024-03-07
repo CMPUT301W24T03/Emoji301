@@ -52,6 +52,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     //needed for getting the FID*firebase installation id
     implementation("com.google.firebase:firebase-installations:17.2.0")
+    androidTestImplementation ("androidx.test.espresso:espresso-contrib:3.4.0")
 
     implementation("com.google.firebase:firebase-auth")
 
