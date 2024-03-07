@@ -1,33 +1,27 @@
 package com.example.emojibrite;
-import android.Manifest;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import java.io.IOException;
@@ -35,12 +29,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
-
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.AppSettingsDialog;
-import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * AddEventFragment is a DialogFragment used to create a new event or edit an existing one.
@@ -56,12 +45,15 @@ public class AddEventFragment extends DialogFragment{
     }
 
     private AddEventListener listener;
+
+    EventHome qrcodeEvent, qrcodeCheckIn;
+
     private EditText editTitle, editDescription, editMilestone, editLocation, editCapacity;
-    private Switch switchCheckInQR, switchEventPageQR;
+//    private Switch switchCheckInQR, switchEventPageQR;
 
 
     private ImageView imageEventPoster;
-    private Button buttonSelectPic;
+    private Button buttonSelectPic, switchCheckInQR, switchEventPageQR;
 
     private Uri selectedImageUri; // Image Uri for the event poster
 
@@ -92,6 +84,7 @@ public class AddEventFragment extends DialogFragment{
         } else {
             throw new RuntimeException(context.toString() + " must implement AddEventListener");
         }
+
     }
 
     // ActivityResultLauncher for handling image selection result
@@ -132,8 +125,8 @@ public class AddEventFragment extends DialogFragment{
         editMilestone = view.findViewById(R.id.edittext_event_milestone);
         editLocation = view.findViewById(R.id.edittext_event_location);
         editCapacity = view.findViewById(R.id.edittext_event_capacity); // Correctly initialize editCapacity
-        switchCheckInQR = view.findViewById(R.id.switch_checkin_qr);
-        switchEventPageQR = view.findViewById(R.id.switch_eventpage_qr);
+        switchCheckInQR = view.findViewById(R.id.button_generate_checkin_qr);
+        switchEventPageQR = view.findViewById(R.id.button_generate_eventpage_qr);
 
         imageEventPoster = view.findViewById(R.id.image_event_poster);
         buttonSelectPic = view.findViewById(R.id.button_select_picture);
@@ -148,6 +141,29 @@ public class AddEventFragment extends DialogFragment{
         EditText editEventTime = view.findViewById(R.id.edittext_event_time);
         editEventTime.setOnClickListener(v -> showTimePicker());
 
+
+        qrcodeEvent = (EventHome)getActivity();
+        switchEventPageQR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), QRCodeEventActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        qrcodeCheckIn = (EventHome)getActivity();
+        switchCheckInQR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), QRCodeCheckActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+
+
+
         Button buttonNext = view.findViewById(R.id.button_next);
         buttonNext.setOnClickListener(v -> {
             String title = editTitle.getText().toString();
@@ -155,8 +171,8 @@ public class AddEventFragment extends DialogFragment{
             Integer milestone = editMilestone.getText().toString().isEmpty() ? null : Integer.parseInt(editMilestone.getText().toString());
             String location = editLocation.getText().toString();
             Integer capacity = editCapacity.getText().toString().isEmpty() ? null : Integer.parseInt(editCapacity.getText().toString());
-            Boolean checkInQR = switchCheckInQR.isChecked();
-            Boolean eventPageQR = switchEventPageQR.isChecked();
+//            Boolean checkInQR = switchCheckInQR.isChecked();
+//            Boolean eventPageQR = switchEventPageQR.isChecked();
 
             String dateString = editEventDate.getText().toString();
             String timeString = editEventTime.getText().toString();
@@ -168,7 +184,7 @@ public class AddEventFragment extends DialogFragment{
 
             }
 
-            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, checkInQR, eventPageQR, capacity);
+            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, capacity);
             listener.onEventAdded(newEvent);
 
             dismiss();
