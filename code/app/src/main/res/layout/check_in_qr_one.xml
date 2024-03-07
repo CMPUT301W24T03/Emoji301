@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ivory"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:clickable="true"
+            app:background="@color/dark_green"
+            app:backgroundTint="@color/dark_green"
+            app:srcCompat="?attr/actionModeCloseDrawable"
+            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="80dp"
+            android:fontFamily="@font/belleza"
+            android:text="Check In QR Code"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/buttons_event"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/gothic_a1_semibold"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="50dp"
+            android:text="Event Check In"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/event_qr_pic"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:src="@drawable/qr_scan_pic" />
+        <Button
+            android:id="@+id/share_button_check_in1"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/qr_button_solid"
+            android:layout_gravity="center_horizontal"
+            android:text="Share"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:id="@+id/circle_view3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="150dp"
+            android:orientation="horizontal">
+            <View
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginEnd="2dp"
+                android:background="@drawable/circle_view_grey" />
+            <View
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/circle_view_dark" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
