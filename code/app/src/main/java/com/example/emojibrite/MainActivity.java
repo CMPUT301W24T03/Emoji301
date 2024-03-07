@@ -34,19 +34,19 @@ public class MainActivity extends AppCompatActivity {
 
         /* When Enter Button is clicked, go to the next activity.
         * But which one??
-        * TODO: implement a way to check whether to go to event page or the create account page?
+        * TODO: implement a way to check whether to go to eventHomeActivity or the CreateAccountActivity
         */
         enterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-//                // if the user exists in database, go to the event page
+//                // if the user exists in database, go to the eventHomeActivity page
 //                Log.d(TAG, "Enter button clicked"); // for debugging
 //                Intent intent = new Intent(MainActivity.this, EventHome.class);
 //                startActivity(intent);
-                // else go to nameScreenFragment through the account creation activity
-//                Intent intent = new Intent(MainActivity.this, AccountCreationActivity.class);
-//                startActivity(intent);
+                // else go to nameScreenFragment through the AccountCreationActivity
+                Intent intent = new Intent(MainActivity.this, AccountCreationActivity.class);
+                startActivity(intent);
             }
         });
 
