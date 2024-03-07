@@ -42,7 +42,15 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
+/**
+ * AddEventFragment is a DialogFragment used to create a new event or edit an existing one.
+ * It provides fields for entering event details like title, description, date, time, and more.
+ */
 public class AddEventFragment extends DialogFragment{
+
+    /**
+     * Interface for listener to handle event addition.
+     */
     interface AddEventListener {
         void onEventAdded(Event event);
     }
@@ -51,21 +59,31 @@ public class AddEventFragment extends DialogFragment{
     private EditText editTitle, editDescription, editMilestone, editLocation, editCapacity;
     private Switch switchCheckInQR, switchEventPageQR;
 
+
     private ImageView imageEventPoster;
     private Button buttonSelectPic;
 
-    private Uri selectedImageUri;
+    private Uri selectedImageUri; // Image Uri for the event poster
 
 
 
-    private static final int PICK_FROM_GALLERY = 1;
+    private static final int PICK_FROM_GALLERY = 1; // Constant for gallery pick request
 
 
 
+    /**
+     * Factory method to create a new instance of this fragment.
+     * @param eventToEdit The event to edit, if applicable.
+     * @return A new instance of fragment AddEventFragment.
+     */
     public static AddEventFragment newInstance(Event eventToEdit) {
         return new AddEventFragment();
     }
 
+    /**
+     * Called when a fragment is first attached to its context.
+     * @param context The context attaching the fragment.
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -76,13 +94,16 @@ public class AddEventFragment extends DialogFragment{
         }
     }
 
+    // ActivityResultLauncher for handling image selection result
     private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
                     selectedImageUri = uri; // Save the selected image Uri.
                     try {
+                        // Use MediaStore to fetch the selected image as a Bitmap
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+                        // Set the bitmap to the ImageView for display
                         imageEventPoster.setImageBitmap(bitmap);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -92,6 +113,12 @@ public class AddEventFragment extends DialogFragment{
             }
     );
 
+
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return Return the View for the fragment's UI.
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -164,16 +191,20 @@ public class AddEventFragment extends DialogFragment{
     }
 
 
-
-
+    /**
+     * Called to launch the gallery instance
+     */
 //    @AfterPermissionGranted(PICK_FROM_GALLERY)
 private void openGallery() {
 
-    mGetContent.launch("image/*");
+    mGetContent.launch("image/*"); // "image/*" indicates that only image types are selectable
 }
 
 
-
+    /**
+     * Called when the date is picked and needs to be formatted in a custom way while also showing a fragment
+     * of the date to pick a date as a selection
+     */
     private void showDatePicker() {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -190,6 +221,9 @@ private void openGallery() {
         datePickerDialog.show();
     }
 
+    /**
+     * Called to pick a time by bringing up a clock fragment to select the users' preferred time
+     */
     private void showTimePicker() {
         final Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
