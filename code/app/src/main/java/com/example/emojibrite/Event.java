@@ -22,6 +22,8 @@ public class Event implements Serializable {
 
     private String id;
 
+    private String organizer;
+
 
 
 
