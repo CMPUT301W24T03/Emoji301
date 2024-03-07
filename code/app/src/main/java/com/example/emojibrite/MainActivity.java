@@ -40,10 +40,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-//                // if the user exists in database, go to the event page
-//                Log.d(TAG, "Enter button clicked"); // for debugging
-//                Intent intent = new Intent(MainActivity.this, EventHome.class);
-//                startActivity(intent);
+                // if the user exists in database, go to the event page
+                Log.d(TAG, "Enter button clicked"); // for debugging
+                Intent intent = new Intent(MainActivity.this, EventHome.class);
+                startActivity(intent);
                 // else go to nameScreenFragment
 
             }
