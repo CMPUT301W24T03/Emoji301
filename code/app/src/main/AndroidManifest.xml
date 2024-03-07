@@ -21,24 +21,21 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
 
-
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- AddEventFragment -->
         <activity
-            android:name=".AddEventFragment"
-            android:exported="false" />
+            android:name=".MainActivity"
+            android:exported="true">
+        </activity>
+
+        <!--Fragments dont belong here. Also, the Continuous Integration(CI) flagged this, thus "x" beside your branch-->
+<!--        &lt;!&ndash; AddEventFragment &ndash;&gt;-->
+<!--        <activity-->
+<!--            android:name=".AddEventFragment"-->
+<!--            android:exported="false" />-->
 
         <!-- MainActivity -->
         <activity

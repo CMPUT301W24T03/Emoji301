@@ -12,13 +12,15 @@ public class SplashLogoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logo_splash);
 
-        new Handler().postDelayed(new Runnable() {
+        //USING HANDLER CLASS that allows us to create a thread that will run after a few seconds -akila
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 Intent intent = new Intent(SplashLogoActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
             }
-        }, 2000);
+        }, 3000);
     }
 }

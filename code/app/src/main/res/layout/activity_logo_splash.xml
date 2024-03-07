@@ -10,9 +10,9 @@
     <!--TODO:Crop the logo later-->
     <ImageView
         android:id="@+id/EmojiBriteLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/emoji_brite_logo2"
+        android:layout_width="500dp"
+        android:layout_height="500dp"
+        android:src="@drawable/app_logo_start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

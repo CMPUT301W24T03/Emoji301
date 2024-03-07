@@ -4,8 +4,11 @@
         <item>@font/alegreya_bold</item>
         <item>@font/alegreya_sc</item>
         <item>@font/alice</item>
+        <item>@font/arimo</item>
         <item>@font/average_sans</item>
         <item>@font/frank_ruhl_libre</item>
         <item>@font/noto_sans_bold</item>
+        <item>@font/source_sans_pro</item>
+        <item>@font/source_sans_pro_semibold</item>
     </array>
 </resources>
