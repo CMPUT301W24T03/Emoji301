@@ -43,6 +43,7 @@ dependencies {
     //add navigation component
     implementation("androidx.navigation:navigation-fragment:2.7.7")
     implementation("androidx.navigation:navigation-ui:2.7.7")
+    implementation("androidx.activity:activity:1.8.0")
     //Unit testing + espresso
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -63,5 +64,8 @@ dependencies {
     implementation("pub.devrel:easypermissions:3.0.0")
     implementation("com.github.bumptech.glide:glide:4.12.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
+
+    //QR Code dependency
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
 }
