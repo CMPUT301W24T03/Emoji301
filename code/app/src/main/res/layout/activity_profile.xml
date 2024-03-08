@@ -36,7 +36,9 @@
                 android:layout_width="386dp"
                 android:layout_height="267dp"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/ic_launcher_background" />
+
+                android:src="@drawable/ic_launcher_foreground" />
+
 
         </LinearLayout>
 
@@ -57,21 +59,45 @@
                 android:textSize="30sp" />
 
             <TextView
-                android:id="@+id/editEmail"
+                android:id="@+id/userHomePage"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/userName"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="5dp"
+                android:layout_height="47dp"
+                android:layout_above="@+id/userEmail"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="139dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="-3dp"
+                android:layout_marginBottom="-44dp"
                 android:fontFamily="@font/alice"
-                android:text="resource"/>
+                android:text="https:/example.ca"
+                android:textSize="14sp" />
 
             <TextView
-                android:id="@+id/editPhoneNumber"
+                android:id="@+id/userEmail"
+                android:layout_width="185dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/userName"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="165dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="61dp"
+                android:fontFamily="@font/alice"
+
+                android:text="resource" />
+
+
+            <TextView
+                android:id="@+id/userPhoneNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/editEmail"
-                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/userEmail"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="158dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="171dp"
                 android:fontFamily="@font/alice"
                 android:text="(306) 123 4567" />
 
