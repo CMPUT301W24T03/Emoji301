@@ -2,13 +2,11 @@ package com.example.emojibrite;
 
 import static android.app.PendingIntent.getActivity;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -17,7 +15,6 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.BarcodeFormat;
@@ -26,9 +23,6 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -63,7 +57,7 @@ public class QRCodeEventActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.event_qr_code_one);
+        setContentView(R.layout.activity_event_qr_code_one);
         backEventQRCode = findViewById(R.id.floatingActionButton_back_checkin_image);
 
 
@@ -99,6 +93,11 @@ public class QRCodeEventActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Generates an Event QR code from the event ID.
+     * @param eventID
+     * A 12 digit ID passed from the event class.
+     */
     public void generateQR(long eventID){
 
         // generating the qr code now

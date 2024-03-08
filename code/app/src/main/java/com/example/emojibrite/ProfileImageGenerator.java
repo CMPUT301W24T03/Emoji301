@@ -2,23 +2,11 @@ package com.example.emojibrite;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Base64;
 import android.util.Log;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -64,18 +52,19 @@ public class ProfileImageGenerator {
     we put a listener to check if data insertion to the database is successful
     NOT TOO SURE ABOUT THE ONCOMPLETE PART but it is for callback purposes
      */
-    public void getProfileImage( final OnCompleteListener<Void> onCompleteListener) {
+    public void getProfileImage( final OnCompleteListener<Bitmap> onCompleteListener) {
         addingPlusToName();
         String url = "https://ui-avatars.com/api/?name=" + name;
 
         Request request = new Request.Builder()
                 .url(url)
                 .build();
+        Log.d("ProfileImageGenerator", "Request is built");
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.d("ProfileImageGenerator", "Failed to get profile image");
                 e.printStackTrace();
-
             }
 
             @Override
@@ -83,13 +72,14 @@ public class ProfileImageGenerator {
                 if (!response.isSuccessful()) {
                     throw new IOException("Unexpected code " + response);
                 } else {
-                    InputStream inputStream = response.body().byteStream();
-                    //Uri uri = Uri.parse(url);
-                    //onCompleteListener.onComplete(uri);
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    Log.d("ProfileImageGenerator", "Response is successful");
+
                     Database database = new Database();
-                    database.setUserUid();
-                    database.sendAutoGenProfileImageToDatabase(bitmap);
+                    byte[] bytes = response.body().bytes();
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    onCompleteListener.onComplete(bitmap);
+
+                    Log.d("ProfileImageGenerator", "Bitmap is sent to database");
 
                     /*
                     Map<String, Object> data = new HashMap<>();
