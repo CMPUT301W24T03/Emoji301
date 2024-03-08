@@ -67,15 +67,6 @@
         <activity
             android:name=".EventDetailsActivity"
             android:exported="false"/>
-
-        <!-- QR CODE Activities -->
-        <!--delete this checkInQRGENERATEActivity. It isnt even a defined class rn-->
-<!--        <activity-->
-<!--            android:name=".CheckInQRGenerate_Activity"-->
-<!--            android:exported="false" />-->
-        <activity
-            android:name=".EventQRGenerate_Activity"
-            android:exported="false"/>
         <activity
             android:name=".QRCodeEventActivity"
             android:exported="false"/>
