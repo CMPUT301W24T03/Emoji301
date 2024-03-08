@@ -27,7 +27,9 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
 
 
+
     Button profileButton;
+
 
 
     private static final String TAG = "ProfileActivityTAG";
@@ -103,7 +105,9 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         eventList.setOnItemClickListener(((parent, view, position, id) -> {
             Event selectedEvent = dataList.get(position);
+
             showEventDetails(selectedEvent);
+
         }));
 
         FloatingActionButton fab = findViewById(R.id.event_add_btn);
