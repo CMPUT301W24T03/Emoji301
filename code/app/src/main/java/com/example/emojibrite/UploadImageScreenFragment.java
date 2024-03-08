@@ -83,7 +83,7 @@ public class UploadImageScreenFragment extends Fragment {
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
                     database.sendUploadedProfileImageToDatabase(bitmap);
-                    user.setUploadedImage(bitmap);
+                    //user.setUploadedImage(bitmap);
                     Log.d("PhotoPicker", "Selected Bitmap: " + bitmap);
                 } catch (IOException e) {
                     Log.d("PhotoPicker", "Error getting bitmap from URI: " + e.getMessage());

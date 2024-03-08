@@ -248,6 +248,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
             }
         });
     }
+
     public void getUploadedProfileImageFromDatabase(ProfileImageCallBack callBack){
         DocumentReference docRef = profileRef.document(userUid);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -286,6 +287,34 @@ public void sendAutoGenProfileImageToDatabase(Bitmap bitmap){
         Log.d(TAG, "encoded image: " + encodedImage);
         profileRef.document(userUid).update("autoGenImage", encodedImage);
         Log.d(TAG, "image sent to database");
+    }
+
+    public void getUserDocument(String uid, OnUserDocumentRetrievedListener listener) {
+        // Get the document with the specified UID
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("users").document(uid);
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        // Convert the document into a Users object
+                        Users retrievedUser = document.toObject(Users.class);
+                        listener.onUserDocumentRetrieved(retrievedUser);
+                    } else {
+                        Log.d("Firestore", "No such document");
+                    }
+                } else {
+                    Log.d("Firestore", "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+
+    public interface OnUserDocumentRetrievedListener {
+        void onUserDocumentRetrieved(Users retrievedUser);
     }
 
     /*

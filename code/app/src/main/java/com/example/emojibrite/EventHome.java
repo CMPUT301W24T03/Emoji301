@@ -87,7 +87,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     }
 
 
-    if
+
 
     /**
      * onCreate is called when the activity is starting.

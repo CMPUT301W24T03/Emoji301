@@ -83,7 +83,7 @@ public class Users implements Parcelable{
             this.uploadedImage = null;
         } else {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            uploadedImage.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            uploadedImage.compress(Bitmap.CompressFormat.PNG, 0, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream.toByteArray();
             String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
             this.uploadedImage = encodedImage;

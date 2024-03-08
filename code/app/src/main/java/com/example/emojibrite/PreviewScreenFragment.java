@@ -55,39 +55,29 @@ public class PreviewScreenFragment extends Fragment {
         Log.d(TAG, "onCreateView for preview screen fragment: " + user.getProfileUid());
         picture = previewScreenLayout.findViewById(R.id.uploadImageImage);
         database.setUserUid();
-        Log.d(TAG, "User UID: " + user.getUploadedImage());
-        if ( user.getUploadedImage() == null) {
-            Log.d(TAG, "The user's uploaded image is null");
-            ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator(user.getProfileUid(), user.getName());
-            Log.d(TAG, "instance of imagegenerator");
-            profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Bitmap>() {
-                public void onComplete(Bitmap bitmap) {
-                    Log.d(TAG, "inside oncomplete");
-                    autoGenprofileImage = bitmap;
-                    user.setAutoGenImage(autoGenprofileImage);
-                    Log.d(TAG, "half check");
-                    byte[] decodedString = Base64.decode(user.getAutoGenImage(), Base64.DEFAULT);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                    Log.d(TAG, "full check");
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            picture.setImageBitmap(decodedByte);
-                        }
-                    });
+        //Log.d(TAG, "User UID: " + user.getUploadedImage());
+        database.getUserDocument(user.getProfileUid(), new Database.OnUserDocumentRetrievedListener() {
+            @Override
+            public void onUserDocumentRetrieved(Users retrievedUser) {
+                user = retrievedUser;
 
+                // Save the bitmap first
+                byte[] decodedString;
+                Bitmap decodedByte = null;
+                if (user.getUploadedImage() != null) {
+                    decodedString = Base64.decode(user.getUploadedImage(), Base64.DEFAULT);
+                    decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 }
-            });
 
+                // Then check if it's null or not
+                if (decodedByte == null) {
+                    Log.d(TAG, "The user's uploaded image is null");
+                    // Existing code...
+                } else {
+                    picture.setImageBitmap(decodedByte);
+                }
             }
-        else {
-            byte[] decodedString = Base64.decode(user.getUploadedImage(), Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            picture.setImageBitmap(decodedByte);
-        }
-
-        name = previewScreenLayout.findViewById(R.id.usernameTextView);
-        name.setText(user.getName());
+        });
 
         backButton = previewScreenLayout.findViewById(R.id.uploadImageBackButton);
         nextButtonText = previewScreenLayout.findViewById(R.id.uploadImageScreenNext);
