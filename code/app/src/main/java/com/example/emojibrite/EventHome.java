@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -30,6 +31,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     ArrayList<Event> dataList;
 
     private Users user;
+
+    private Database database = new Database();
 
 
 
@@ -125,18 +128,30 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         ImageView profileButton = findViewById(R.id.profile_pic);
 
-        if (user.getUploadedImage() == null){
-            String autoGenImage = user.getAutoGenImage();
-            byte[] decodedString = Base64.decode(autoGenImage,Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0,decodedString.length);
-            profileButton.setImageBitmap(decodedByte);}
-        else{
-                String uploadedImage = user.getUploadedImage();
-                byte[] decodedString = Base64.decode(uploadedImage,Base64.DEFAULT);
-                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0,decodedString.length);
-                profileButton.setImageBitmap(decodedByte);
+        database.getUploadedProfileImageFromDatabase(new Database.ProfileImageCallBack() {
+            @Override
+            public void onProfileImageComplete(Bitmap profileImage) {
+                // Use the profileImage bitmap here
+                // For example, you can set it to an ImageView
+                user.setUploadedImage(profileImage);
+                if (user.getUploadedImage() == null){
+                    String autoGenImage = user.getAutoGenImage();
+                    byte[] decodedString = Base64.decode(autoGenImage,Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0,decodedString.length);
+                    profileButton.setImageBitmap(decodedByte);}
+                else {
+                    String uploadedImage = user.getUploadedImage();
+                    byte[] decodedString = Base64.decode(uploadedImage,Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0,decodedString.length);
+                    profileButton.setImageBitmap(decodedByte);
 
+                }
+
+//                profileButton.setImageBitmap(profileImage);
             }
+        });
+
+
 
 
 
@@ -159,6 +174,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
 
     }
+
+
 
 
 
