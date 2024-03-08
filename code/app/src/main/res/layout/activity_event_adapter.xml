@@ -72,7 +72,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/frank_ruhl_libre"
                     android:text="Time"
-                    android:paddingStart="35dp"
+                    android:paddingStart="30dp"
                     android:textColor="@color/red"
                     android:textSize="18sp" />
             </LinearLayout>

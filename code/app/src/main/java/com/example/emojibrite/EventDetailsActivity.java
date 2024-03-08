@@ -36,11 +36,20 @@ public class EventDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.event_details);
 
         ImageView backButton = findViewById(R.id.imageView); //back button
+        Button attendeesButton = findViewById(R.id.attendees_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 finish();
+            }
+        });
+
+        attendeesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EventDetailsActivity.this, AttendeesActivity.class);
+                startActivity(intent);
             }
         });
 

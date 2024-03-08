@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.emojibrite">
+
+
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -15,18 +19,20 @@
         android:theme="@style/Theme.EmojiBrite"
         tools:targetApi="31">
 
-        <!-- QR CODE STUFF PLEASE MOVE IT -->
-        <activity
-            android:name=".CheckInQRGenerate_Activity"
-            android:exported="false" />
-        <activity
-            android:name=".EventQRGenerate_Activity"
-            android:exported="false"/>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.emojibrite"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/paths" />
+        </provider>
 
-        <!-- SplashLogoActivity -->
+        <!-- SplashLogoActivity + Main -->
         <activity
-            android:name=".SplashLogoActivity"
-            android:exported="true">
+        android:name=".SplashLogoActivity"
+        android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,29 +40,53 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:exported="true"></activity>
+        android:name=".MainActivity"
+        android:exported="true">
+        </activity>
+
+        <!-- Account Creation Activity-->
         <activity
             android:name=".AccountCreationActivity"
-            android:exported="false"></activity> <!-- Fragments dont belong here. Also, the Continuous Integration(CI) flagged this, thus "x" beside your branch -->
-        <!-- &lt;!&ndash; AddEventFragment &ndash;&gt; -->
-        <!-- <activity -->
-        <!-- android:name=".AddEventFragment" -->
-        <!-- android:exported="false" /> -->
-        <!-- MainActivity -->
+            android:exported="false"/>
+
+        <!--Fragments dont belong here. Also, the Continuous Integration(CI) flagged this, thus "x" beside your branch-->
+        <!--        &lt;!&ndash; AddEventFragment &ndash;&gt;-->
+        <!--        <activity-->
+        <!--            android:name=".AddEventFragment"-->
+        <!--            android:exported="false" />-->
+
+
+        <activity
+        android:name=".ProfileActivity"
+        android:exported="false" />
+
+        <!-- Event related -->
         <activity
             android:name=".EventHome"
-            android:exported="false" /> <!-- &lt;!&ndash; EventAdapter &ndash;&gt; -->
-        <!-- <activity -->
-        <!-- android:name=".EventAdapter" -->
-        <!-- android:exported="false" /> -->
+            android:exported="false" />
         <activity
             android:name=".EventDetailsActivity"
-            android:exported="false" />
+            android:exported="false"/>
+
+        <!-- QR CODE Activities -->
+        <!--delete this checkInQRGENERATEActivity. It isnt even a defined class rn-->
+<!--        <activity-->
+<!--            android:name=".CheckInQRGenerate_Activity"-->
+<!--            android:exported="false" />-->
+        <activity
+            android:name=".EventQRGenerate_Activity"
+            android:exported="false"/>
+        <activity
+            android:name=".QRCodeEventActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".QRCodeCheckActivity"
+            android:exported="false"/>
 
         <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
+        android:name="preloaded_fonts"
+        android:resource="@array/preloaded_fonts" />
+
     </application>
 
 </manifest>

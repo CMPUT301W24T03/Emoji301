@@ -21,6 +21,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.ByteArrayOutputStream;
+
 /**
  * A class to represent the database
  */
@@ -28,7 +30,7 @@ public class Database {
     // attributes
     private final FirebaseFirestore db= FirebaseFirestore.getInstance();
     private final CollectionReference profileRef = db.collection("Users");
-    private final CollectionReference profileImageRef = db.collection("ProfileImages");
+
     private String firestoreDebugTag = "Firestore";
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -43,20 +45,14 @@ public class Database {
     public interface ProfileImageCallBack{
         void onProfileImageComplete(Bitmap profileImage);
     }
-    /*
-    public interface userExistCallBack{
-        void onUserExistComplete(boolean userExist);
-    }
 
-    public interface userFidCallBack{
-        void onUserRetrieveIdComplete(String Fid);
-    }
-    */
+
     /**
      * A method to get the database
      * @return the database
      */
     public FirebaseFirestore getDb() {
+
         return db;
     }
 
@@ -66,6 +62,7 @@ public class Database {
         return signedIn;
     }
     public void signOutUser(){
+
         mAuth.signOut();
     }
 /*
@@ -79,24 +76,32 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * @return the user id
  */
     public String getUserUid() {
+
+        if (mAuth.getCurrentUser() != null) {
+            userUid = mAuth.getCurrentUser().getUid();
+        }
         return userUid;
+    }
+    public void setUserUid(){
+        userUid = mAuth.getCurrentUser().getUid();
     }
 
     public void getUserName(UserNameDBCallBack callBack){
         DocumentReference docRef = profileRef.document(userUid);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        Log.d(TAG, "inside get username: " );
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        callBack.onUserRetrieveNameComplete(document.getString("name"));
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    callBack.onUserRetrieveNameComplete(documentSnapshot.getString("name"));
                 } else {
-                    Log.d(TAG, "get failed with ", task.getException());
+                    Log.d(TAG, "No such document");
                 }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "get failed with ", e);
             }
         });
     }
@@ -129,9 +134,25 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 });
     }
     public CollectionReference getUserRef() {
+
         return profileRef;
     }
 
+
+
+    /*
+    basically, adduser recieves a user object.
+    there are a few conditions this checks.
+
+    it first does a database search in collections for the Uid meaning it tries to recieve the document
+    NOW, there can be no document that is fine.
+    if there is no document, (we check it using !document.exists((), we are going to add the user object(this object just has the Uid, every other field is null) to the database
+    then there is a bunch of success listener which u don't have to worry about.
+
+    NOW, what if there is a document meaning the user already exists in the database?
+    it goes to the else where it checks, if the name is null meaning it is just a newly added user who hasn't initialized their name and other information yet(aka in the newaccountcreation session),
+    then you can call this function still in which the database will be updated with the new user information
+     */
     private void addUser(Users user){
         if (user == null) {
             Log.d(TAG, "User is null");
@@ -146,6 +167,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (!document.exists()) {
+                        Log.d(TAG, "Document does not exist!");
                         profileRef.document(user.getProfileUid()).set(user)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
@@ -159,6 +181,24 @@ once created, u can call getuseruid to get the user id and use it to get user da
                                         Log.w(firestoreDebugTag, "Error writing document", e);
                                     }
                                 });
+                    }
+                    else{
+                        Log.d(TAG, "Document exists!");
+                        if (document.getString("name") == null) {
+                            profileRef.document(user.getProfileUid()).set(user)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(firestoreDebugTag, "DocumentSnapshot successfully written!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(firestoreDebugTag, "Error writing document", e);
+                                        }
+                                    });
+                        }
                     }
                 } else {
                     Log.d(TAG, "get failed with ", task.getException());
@@ -183,10 +223,8 @@ once created, u can call getuseruid to get the user id and use it to get user da
     });
 
      */
-
-
-    public void getProfileImageFromDatabase(ProfileImageCallBack callBack){
-        DocumentReference docRef = profileImageRef.document(userUid);
+    public void getAutoGenProfileImageFromDatabase(ProfileImageCallBack callBack){
+        DocumentReference docRef = profileRef.document(userUid);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -194,7 +232,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
 
-                        String encodedImage = document.getString("image");
+                        String encodedImage = document.getString("autoGenImage");
                         byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         callBack.onProfileImageComplete(decodedByte);
@@ -208,6 +246,44 @@ once created, u can call getuseruid to get the user id and use it to get user da
             }
         });
     }
+    public void getUploadedProfileImageFromDatabase(ProfileImageCallBack callBack){
+        DocumentReference docRef = profileRef.document(userUid);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+
+                        String encodedImage = document.getString("uploadedImage");
+                        byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        callBack.onProfileImageComplete(decodedByte);
+
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+    public void sendUploadedProfileImageToDatabase(Bitmap bitmap){
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        profileRef.document(userUid).update("uploadedImage", encodedImage);
+    }
+public void sendAutoGenProfileImageToDatabase(Bitmap bitmap){
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        profileRef.document(userUid).update("autoGenImage", encodedImage);
+    }
+
     /*
     ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator("aivan Edi", imageView, database.getUserUid());
                         profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Void>() {
@@ -225,9 +301,6 @@ once created, u can call getuseruid to get the user id and use it to get user da
                             }
                         });
      */
-
-
-
     /**
      * A method to get the profile collection
      * @return the profile collection
