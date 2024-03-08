@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.auth.User;
+
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 
@@ -24,10 +26,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     ListView eventList;
     EventAdapter eventAdapter; // Custom adapter to bind event data to the ListView
     ArrayList<Event> dataList;
-
-
-
-
     Button profileButton;
 
 
@@ -87,6 +85,9 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
             eventAdapter.notifyDataSetChanged();
         }
     }
+
+
+    if
 
     /**
      * onCreate is called when the activity is starting.
