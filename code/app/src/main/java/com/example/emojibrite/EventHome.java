@@ -29,34 +29,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
 
     private static final String TAG = "ProfileActivityTAG";
-    /**
-     * onCreate is called when the activity is starting.
-     * It initializes the activity, the ListView, and the FloatingActionButton.
-     */
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.event_home_page);
-//
-//        // Initialize the ListView and ArrayList
-//
-//        eventList = findViewById(R.id.event_organizer_list);
-//        dataList = new ArrayList<>();
-//        eventAdapter = new EventAdapter(this, dataList);
-//        eventList.setAdapter(eventAdapter);
-//
-//        // Set an item click listener on the ListView to handle event selection
-//
-//        eventList.setOnItemClickListener(((parent, view, position, id) -> {
-//            Event selectedEvent = dataList.get(position);
-//            showEventDetails(selectedEvent);
-//        }));
-//
-//        // Initialize the FloatingActionButton and set its click listener
-//
-//        FloatingActionButton fab = findViewById(R.id.event_add_btn);
-//        fab.setOnClickListener(view -> showAddEventDialog());
-//    }
 
     /**
      * Opens the EventDetailsActivity when an event is selected.
@@ -112,7 +84,10 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         }
     }
 
-
+    /**
+     * onCreate is called when the activity is starting.
+     * It initializes the activity, the ListView, and the FloatingActionButton.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

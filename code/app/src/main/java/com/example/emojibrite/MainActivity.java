@@ -54,11 +54,6 @@ public class MainActivity extends AppCompatActivity {
 //                Log.d(TAG, "Enter button clicked"); // for debugging
 //                Intent intent = new Intent(MainActivity.this, EventHome.class);
 //                startActivity(intent);
-                // else go to nameScreenFragment through the AccountCreationActivity
-                //Intent intent = new Intent(MainActivity.this, AccountCreationActivity.class);
-                //startActivity(intent);
-
-                // else go to nameScreenFragment
 
                 //Log.d(TAG, "is the user signed in or not???" + database.isUserSignedIn()); // for debugging
 
