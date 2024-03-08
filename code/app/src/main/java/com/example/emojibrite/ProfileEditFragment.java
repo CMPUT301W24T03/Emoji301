@@ -32,10 +32,10 @@ import javax.annotation.Nonnull;
  */
 public class ProfileEditFragment extends DialogFragment {
 
-    EditText EditEmail;
-    EditText EditPhoneNumber;
-    EditText EditName;
-    EditText EditHomePage;
+    private EditText EditEmail;
+    private EditText EditPhoneNumber;
+    private EditText EditName;
+    private EditText EditHomePage;
     ImageView profilePicture;
     Button removeImageButton;
 
