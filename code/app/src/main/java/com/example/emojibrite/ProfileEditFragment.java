@@ -1,11 +1,8 @@
 package com.example.emojibrite;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 public class ProfileEditFragment extends DialogFragment {
 
@@ -33,7 +28,7 @@ public class ProfileEditFragment extends DialogFragment {
     public void setProfileUpdateListener(OnProfileUpdateListener listener) {
         this.profileUpdateListener = listener;
     }
-    public ProfileEditFragment(Profile profile){
+    public ProfileEditFragment(Users profile){
         this.edit = profile;
     }
 

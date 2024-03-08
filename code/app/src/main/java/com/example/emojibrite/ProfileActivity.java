@@ -16,7 +16,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnProfileUpdateListener{
 
-    Profile currentProfile = new Profile("John Doe", "john@example.com", "https://example.com", "path_to_image", "123456789");
+    Users currentProfile = new Users("John Doe", "john@example.com", "https://example.com", "path_to_image", "123456789");
     private Button backButton;
     private Button editButton;
 
@@ -108,7 +108,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         }
     }
 
-    private void openEditProfileDialog(Profile profile) {
+    private void openEditProfileDialog(Users profile) {
         ProfileEditFragment editProfileDialogFragment = new ProfileEditFragment(profile);
         editProfileDialogFragment.show(getSupportFragmentManager(), "edit_profile_dialog");
     }

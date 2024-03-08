@@ -2,10 +2,11 @@ package com.example.emojibrite;
 
 import android.net.Uri;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Random;
 
-public class Event {
+public class Event implements Serializable {
 
     private Uri imageUri;
     private String eventTitle;
@@ -20,6 +21,8 @@ public class Event {
     private Integer capacity;
 
     private String id;
+
+    private String organizer;
 
 
 
@@ -54,6 +57,21 @@ public class Event {
         this.capacity = capacity;
 
     } //without milestones. Feel free to suggest more stuff
+
+    public Event(Uri imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Integer capacity){
+
+        this.imageUri=imageUri;
+        this.eventTitle=eventTitle;
+        this.date=date;
+        this.time=time;
+        this.description=description;
+        this.milestone=milestone;
+        this.location=location;
+
+        this.id = generateRandomId();
+        this.capacity = capacity;
+
+    }
 
     private String generateRandomId(){
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -161,4 +179,6 @@ public class Event {
     }
 
     public Integer getCapacity(){return capacity;}
+
+
 }
