@@ -1,6 +1,11 @@
 package com.example.emojibrite;
 
+
+
+
 public class Users {
+
+    private String HomePage;
     private String name;
     private String ImagePath;
     private String email;
@@ -31,10 +36,13 @@ public class Users {
      * @param email of the user
      * @param ImagePath of the picture
      */
+
+
     public Users(String uid, String name, String email, String ImagePath, String number) {
         this.uid = uid;
         this.name = name;
         this.email = email;
+        this.HomePage = HomePage;
         this.ImagePath = ImagePath;
         this.number = number;
         this.enableNotification = false;
@@ -64,6 +72,8 @@ public class Users {
         this.enableNotification = false;
         this.enableGeolocationTracking = false;
     }
+
+
     public String getProfileUid() {
         return uid;
     }
@@ -100,6 +110,24 @@ public class Users {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    /**
+     * Gets the HomePage of the user
+     * @return HomePage of the user
+     */
+    public String getHomePage(){
+        return HomePage;
+    }
+
+
+    /**
+     * Gets the HomePage of the user
+     * @param HomePage of the user
+     */
+    public void setHomePage(String HomePage){
+        this.HomePage = HomePage;
+    }
+
 
     /**
      * Gets the ImagePath of the user

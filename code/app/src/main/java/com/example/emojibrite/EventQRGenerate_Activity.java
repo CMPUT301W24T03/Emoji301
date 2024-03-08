@@ -1,3 +1,4 @@
+
 package com.example.emojibrite;
 
 import android.graphics.Bitmap;
@@ -22,6 +23,7 @@ public class EventQRGenerate_Activity extends AppCompatActivity {
 
     private Button generateQRButton;
     private ImageView QRcode_iv;
+
 //
 //    @Override
 //    protected void onCreate(Bundle savedInstanceState) {
@@ -60,4 +62,6 @@ public class EventQRGenerate_Activity extends AppCompatActivity {
 //        //Log.d("QRID", Long.toString(QRid));
 //
 //    }
+
 }
+//}
