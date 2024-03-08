@@ -88,6 +88,9 @@ public class AddEventFragment extends DialogFragment{
     }
 
     // ActivityResultLauncher for handling image selection result
+    /**
+     * This is responsible for dealing with launching and retreiving a picture
+     */
     private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
@@ -197,6 +200,11 @@ public class AddEventFragment extends DialogFragment{
     }
 
 
+    /**
+     * This is in charge of creating the dialog fragment to add our stuff
+     * @param view
+     * @return it creates the build produced
+     */
     private Dialog createDialog(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(view)
