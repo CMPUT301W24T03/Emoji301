@@ -55,28 +55,31 @@ public class PreviewScreenFragment extends Fragment {
         Log.d(TAG, "onCreateView for preview screen fragment: " + user.getProfileUid());
         picture = previewScreenLayout.findViewById(R.id.uploadImageImage);
         database.setUserUid();
-
+        Log.d(TAG, "User UID: " + user.getUploadedImage());
         if ( user.getUploadedImage() == null) {
             Log.d(TAG, "The user's uploaded image is null");
             ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator(user.getProfileUid(), user.getName());
-            profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Void>() {
-                public void onComplete(Void aVoid) {
-                    // After getProfileImage() is complete, call getProfileImageFromDatabase()
-                    database.getAutoGenProfileImageFromDatabase(new Database.ProfileImageCallBack(){
+            Log.d(TAG, "instance of imagegenerator");
+            profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Bitmap>() {
+                public void onComplete(Bitmap bitmap) {
+                    Log.d(TAG, "inside oncomplete");
+                    autoGenprofileImage = bitmap;
+                    user.setAutoGenImage(autoGenprofileImage);
+                    Log.d(TAG, "half check");
+                    byte[] decodedString = Base64.decode(user.getAutoGenImage(), Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    Log.d(TAG, "full check");
+                    getActivity().runOnUiThread(new Runnable() {
                         @Override
-                        public void onProfileImageComplete(Bitmap profileImageFromDatabase) {
-                            // Use the profileImageFromDatabase bitmap here
-                            autoGenprofileImage = profileImageFromDatabase;
-                            user.setAutoGenImage(autoGenprofileImage);
-
-                            byte[] decodedString = Base64.decode(user.getAutoGenImage(), Base64.DEFAULT);
-                            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        public void run() {
                             picture.setImageBitmap(decodedByte);
                         }
                     });
+
                 }
             });
-        }
+
+            }
         else {
             byte[] decodedString = Base64.decode(user.getUploadedImage(), Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
@@ -139,3 +142,28 @@ public class PreviewScreenFragment extends Fragment {
     }
 
 }
+
+
+/*
+profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Void>() {
+                public void onComplete(Void aVoid) {
+                    // After getProfileImage() is complete, call getProfileImageFromDatabase()
+                    Log.d(TAG, "inside oncomplete");
+                    database.getAutoGenProfileImageFromDatabase(new Database.ProfileImageCallBack(){
+                        @Override
+                        public void onProfileImageComplete(Bitmap profileImageFromDatabase) {
+                            Log.d(TAG, "inside onProfileImageComplete");
+                            Log.d(TAG, "ProfileImageFromDatabase: " + profileImageFromDatabase);
+                            // Use the profileImageFromDatabase bitmap here
+                            autoGenprofileImage = profileImageFromDatabase;
+                            user.setAutoGenImage(autoGenprofileImage);
+                            Log.d(TAG, "half check");
+                            byte[] decodedString = Base64.decode(user.getAutoGenImage(), Base64.DEFAULT);
+                            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                            Log.d(TAG, "full check");
+                            picture.setImageBitmap(autoGenprofileImage);
+                        }
+                    });
+                }
+            });
+ */
