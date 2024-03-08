@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         // Initialize the button and text view
@@ -35,9 +36,9 @@ public class MainActivity extends AppCompatActivity {
         adminAccess = findViewById(R.id.adminAccessText);
 
         /* When Enter Button is clicked, go to the next activity.
-         * But which one??
-         * TODO: implement a way to check whether to go to event page or the create account page?
-         */
+        * But which one??
+        * TODO: implement a way to check whether to go to event page or the create account page?
+        */
         enterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
 
                 // else go to nameScreenFragment
 
-
                 //Log.d(TAG, "is the user signed in or not???" + database.isUserSignedIn()); // for debugging
 
                 database.anonymousSignIn(new Database.SignInCallBack() {
@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
                         Log.d(TAG, " user id: " + database.getUserUid());
                         //ImageView imageView = findViewById(R.id.profile_image);
+
 
 
                     }

@@ -64,4 +64,4 @@ public class EventQRGenerate_Activity extends AppCompatActivity {
 //    }
 
 }
-//}
+

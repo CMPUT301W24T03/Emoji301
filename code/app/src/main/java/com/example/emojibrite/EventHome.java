@@ -25,7 +25,11 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     EventAdapter eventAdapter; // Custom adapter to bind event data to the ListView
     ArrayList<Event> dataList;
 
+
+
+
     Button profileButton;
+
 
 
     private static final String TAG = "ProfileActivityTAG";
@@ -101,7 +105,9 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         eventList.setOnItemClickListener(((parent, view, position, id) -> {
             Event selectedEvent = dataList.get(position);
-            showEditEventDialog(selectedEvent);
+
+            showEventDetails(selectedEvent);
+
         }));
 
         FloatingActionButton fab = findViewById(R.id.event_add_btn);
