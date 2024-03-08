@@ -113,18 +113,6 @@ public class ProfileEditFragment extends DialogFragment {
             profilePicture.setImageResource(R.drawable.profile_pic);
         }
 
-        // Initialize profilePicture
-        profilePicture = view.findViewById(R.id.profilePicture);
-        // Set the image resource if available or load it from a URL
-        if (edit.getImagePath() != null && !edit.getImagePath().isEmpty()) {
-            // Load image from a file or URL
-            // You can use a library like Picasso or Glide for efficient image loading
-            // Here, assuming you are using a resource id, you can use setImageResource
-            profilePicture.setImageResource(R.drawable.ic_launcher_foreground);
-        } else {
-            // If no image path is available, you can set a default image
-            profilePicture.setImageResource(R.drawable.profile_pic);
-        }
 
         // Set a click listener for the Save button
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -135,6 +123,7 @@ public class ProfileEditFragment extends DialogFragment {
                 if (edit != null) {
                     // Update the email and phone number in the Profile object
                     // Save the edited data back to the City object
+                    edit.setHomePage(EditHomePage.getText().toString());
                     edit.setEmail(EditEmail.getText().toString());
                     edit.setNumber(EditPhoneNumber.getText().toString());
                     edit.setName(EditName.getText().toString());
@@ -158,8 +147,13 @@ public class ProfileEditFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 // Clear the image from the ImageView
-                profilePicture.setImageResource(0);
+                //profilePicture.setImageResource(0);
+                profilePicture.setImageResource(R.drawable.profile_pic);
 
+                // Assuming you want to update the image path in SharedPreferences
+                if (profileUpdateListener != null) {
+                    profileUpdateListener.onProfileUpdate(EditEmail.getText().toString(), EditPhoneNumber.getText().toString(), "", EditName.getText().toString(), EditHomePage.getText().toString());
+                }
             }
         });
 
