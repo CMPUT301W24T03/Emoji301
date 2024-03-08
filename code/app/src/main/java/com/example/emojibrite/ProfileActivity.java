@@ -16,6 +16,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.w3c.dom.Text;
 
 
+
 /**
  * The main activity for displaying and editing user profiles.
  * This activity allows users to view their profile information and initiate the editing process
@@ -23,6 +24,7 @@ import org.w3c.dom.Text;
  * to reflect changes in the user's profile.
  */
 public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnProfileUpdateListener {
+
 
 
     Users currentProfile = new Users("123456", "John Doe", "john@example.com", "https://example.com", "path_to_image", "123456789");
@@ -70,6 +72,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         String storedEmail = preferences.getString("email", "");
         String storedPhoneNumber = preferences.getString("phoneNumber", "");
         String storedImagePath = preferences.getString("imagePath", "");
+
         String storedName = preferences.getString("name", "");
         String storedHomePage = preferences.getString("homePage", "");
 
@@ -90,9 +93,11 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         // Update the userEmail, userPhone, name, and profile image in the activity
         updateProfileData(newEmail, newPhoneNumber, newImagePath, newName, newHomePage);
 
+
         // Update the currentProfile with the new information
         currentProfile.setEmail(newEmail);
         currentProfile.setNumber(newPhoneNumber);
+
         currentProfile.setName(newName);
         currentProfile.setHomePage(newHomePage);
         currentProfile.setImagePath(newImagePath);
@@ -118,6 +123,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
      * @param newHomePage    The new home page.
      */
     private void updateProfileData(String newEmail, String newPhoneNumber, String newImagePath, String newName, String newHomePage) {
+
         // Update the UI elements with the new data
         TextView emailTextView = findViewById(R.id.userEmail);
         TextView phoneNumberTextView = findViewById(R.id.userPhoneNumber);
@@ -128,6 +134,9 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         // Save the updated information in SharedPreferences
         saveProfileData(newEmail, newPhoneNumber, newImagePath, newName, newHomePage);
 
+
+        // Save the updated information in SharedPreferences
+        saveProfileData(newEmail, newPhoneNumber, newImagePath);
 
         emailTextView.setText(newEmail);
         phoneNumberTextView.setText(newPhoneNumber);
@@ -165,17 +174,21 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         editor.apply();
     }
 
+
     /**
      * Updates the profile image in the UI.
      *
      * @param newImagePath The new image path for the profile picture.
      */
 
+
     private void updateProfileImage(String newImagePath) {
         // Assuming you have an ImageView in your activity_profile.xml with id profileImage
         ImageView profileImage = findViewById(R.id.profilePicture);
 
         // For demonstration, assuming you're using a resource id
+
     }
 
 }
+

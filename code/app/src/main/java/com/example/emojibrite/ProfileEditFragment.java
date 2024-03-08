@@ -41,11 +41,14 @@ public class ProfileEditFragment extends DialogFragment {
     Button removeImageButton;
 
 
+
     private Users edit;
     private Button saveButton;
 
+
     private String currentImagePath;
     private OnProfileUpdateListener profileUpdateListener;
+
 
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
 
@@ -53,6 +56,7 @@ public class ProfileEditFragment extends DialogFragment {
      * Sets the listener to be notified of profile updates.
      * @param listener The listener implementing {@link OnProfileUpdateListener}.
      */
+
 
     public void setProfileUpdateListener(OnProfileUpdateListener listener) {
         this.profileUpdateListener = listener;
@@ -92,8 +96,10 @@ public class ProfileEditFragment extends DialogFragment {
         // Set initial values for the EditText fields
         EditEmail.setHint("Current Email: " + edit.getEmail());
         EditPhoneNumber.setHint("Current Phone Number: " + edit.getNumber());
+
         EditName.setHint("Current Name: " + edit.getName());
         EditHomePage.setHint("Current Home Page: " + edit.getHomePage());
+
 
 
         // Set the current email and phone number as initial text
@@ -114,6 +120,19 @@ public class ProfileEditFragment extends DialogFragment {
         }
 
 
+        // Initialize profilePicture
+        profilePicture = view.findViewById(R.id.profilePicture);
+        // Set the image resource if available or load it from a URL
+        if (edit.getImagePath() != null && !edit.getImagePath().isEmpty()) {
+            // Load image from a file or URL
+            // You can use a library like Picasso or Glide for efficient image loading
+            // Here, assuming you are using a resource id, you can use setImageResource
+            profilePicture.setImageResource(R.drawable.ic_launcher_foreground);
+        } else {
+            // If no image path is available, you can set a default image
+            profilePicture.setImageResource(R.drawable.profile_pic);
+        }
+
         // Set a click listener for the Save button
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,7 +149,9 @@ public class ProfileEditFragment extends DialogFragment {
 
                     // Notify the ProfileActivity about the changes
                     if (profileUpdateListener != null) {
+
                         profileUpdateListener.onProfileUpdate(edit.getEmail(), edit.getNumber(), edit.getImagePath(), edit.getName(), edit.getHomePage());
+
                     }
 
                     // Close the dialog or fragment
@@ -144,6 +165,7 @@ public class ProfileEditFragment extends DialogFragment {
 
         // Set a click listener for the updateImageButton
         removeImageButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 // Clear the image from the ImageView
@@ -164,6 +186,7 @@ public class ProfileEditFragment extends DialogFragment {
 
                 pickMedia.launch(new PickVisualMediaRequest.Builder()
                         .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE).build());
+
                 profilePicture.setImageResource(R.drawable.profile_pic);
 
             }
@@ -211,6 +234,7 @@ public class ProfileEditFragment extends DialogFragment {
      * Interface definition for a callback to be invoked when a user's profile is updated.
      */
     public interface OnProfileUpdateListener {
+
         /**
          * Called when a user's profile information is updated.
          * @param newEmail      The new email address.
@@ -220,6 +244,7 @@ public class ProfileEditFragment extends DialogFragment {
          * @param newHomePage   The new home page.
          */
         void onProfileUpdate(String newEmail, String newPhoneNumber, String newImagePath, String newName, String newHomePage);
+
 
     }
 
