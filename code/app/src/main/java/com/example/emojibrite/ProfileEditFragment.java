@@ -20,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.auth.User;
 
 import java.io.IOException;
 
@@ -39,7 +40,9 @@ public class ProfileEditFragment extends DialogFragment {
     ImageView profilePicture;
     Button removeImageButton;
 
+
     private Users edit;
+    private Button saveButton;
 
     private String currentImagePath;
     private OnProfileUpdateListener profileUpdateListener;
@@ -50,6 +53,7 @@ public class ProfileEditFragment extends DialogFragment {
      * Sets the listener to be notified of profile updates.
      * @param listener The listener implementing {@link OnProfileUpdateListener}.
      */
+
     public void setProfileUpdateListener(OnProfileUpdateListener listener) {
         this.profileUpdateListener = listener;
     }
@@ -80,6 +84,9 @@ public class ProfileEditFragment extends DialogFragment {
         removeImageButton = view.findViewById(R.id.removeImageButton);
         Button saveButton = view.findViewById(R.id.saveButton);
         EditHomePage = view.findViewById(R.id.editHomePage);
+        saveButton = view.findViewById(R.id.saveButton);
+        profilePicture = view.findViewById(R.id.profilePicture);
+        removeImageButton = view.findViewById(R.id.removeImageButton);
 
 
         // Set initial values for the EditText fields
@@ -106,6 +113,7 @@ public class ProfileEditFragment extends DialogFragment {
             profilePicture.setImageResource(R.drawable.profile_pic);
         }
 
+
         // Set a click listener for the Save button
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,11 +123,10 @@ public class ProfileEditFragment extends DialogFragment {
                 if (edit != null) {
                     // Update the email and phone number in the Profile object
                     // Save the edited data back to the City object
+                    edit.setHomePage(EditHomePage.getText().toString());
                     edit.setEmail(EditEmail.getText().toString());
                     edit.setNumber(EditPhoneNumber.getText().toString());
                     edit.setName(EditName.getText().toString());
-                    edit.setHomePage(EditHomePage.getText().toString());
-                    edit.setImagePath(currentImagePath);
 
                     // Notify the ProfileActivity about the changes
                     if (profileUpdateListener != null) {
@@ -139,10 +146,14 @@ public class ProfileEditFragment extends DialogFragment {
         removeImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Clear the image from the ImageView and reset to default
+                // Clear the image from the ImageView
+                //profilePicture.setImageResource(0);
                 profilePicture.setImageResource(R.drawable.profile_pic);
-                currentImagePath = ""; // Reset currentImagePath
-                edit.setImagePath(currentImagePath); // Update edit object
+
+                // Assuming you want to update the image path in SharedPreferences
+                if (profileUpdateListener != null) {
+                    profileUpdateListener.onProfileUpdate(EditEmail.getText().toString(), EditPhoneNumber.getText().toString(), "", EditName.getText().toString(), EditHomePage.getText().toString());
+                }
             }
         });
 
@@ -153,6 +164,8 @@ public class ProfileEditFragment extends DialogFragment {
 
                 pickMedia.launch(new PickVisualMediaRequest.Builder()
                         .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE).build());
+                profilePicture.setImageResource(R.drawable.profile_pic);
+
             }
         });
 
@@ -207,6 +220,7 @@ public class ProfileEditFragment extends DialogFragment {
          * @param newHomePage   The new home page.
          */
         void onProfileUpdate(String newEmail, String newPhoneNumber, String newImagePath, String newName, String newHomePage);
+
     }
 
 }
