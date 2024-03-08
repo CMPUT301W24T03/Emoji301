@@ -136,7 +136,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
 
 
         // Save the updated information in SharedPreferences
-        saveProfileData(newEmail, newPhoneNumber, newImagePath);
+//        saveProfileData(newEmail, newPhoneNumber, newImagePath);
 
         emailTextView.setText(newEmail);
         phoneNumberTextView.setText(newPhoneNumber);
