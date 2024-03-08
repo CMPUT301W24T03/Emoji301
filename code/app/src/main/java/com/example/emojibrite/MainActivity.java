@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         enterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 database.anonymousSignIn(new Database.SignInCallBack() {
                     @Override
                     public void onSignInComplete() {
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+
 //                // if the user exists in database, go to the event page
 //                Log.d(TAG, "Enter button clicked"); // for debugging
 //                Intent intent = new Intent(MainActivity.this, EventHome.class);
@@ -82,5 +84,6 @@ public class MainActivity extends AppCompatActivity {
                 //Log.d(TAG, "is the user signed in or not???" + database.isUserSignedIn()); // for debugging
             }
         });
+
     }
 }

@@ -1,5 +1,6 @@
 package com.example.emojibrite;
 
+
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -10,6 +11,14 @@ import androidx.annotation.NonNull;
 import java.io.ByteArrayOutputStream;
 
 public class Users implements Parcelable {
+
+
+
+
+public class Users {
+
+    private String HomePage;
+
     private String name;
     private String autoGenImage;
 
@@ -29,6 +38,27 @@ public class Users implements Parcelable {
 
     private boolean enableGeolocationTracking;
 //    private boolean isAdmin;
+
+    /**
+     * Users constructor with name, email, link to ImagePath  which can be
+     * generated picture or the picture from the gallery,
+     * and number
+     * @param name of the user
+     * @param email of the user
+     * @param ImagePath of the picture
+     */
+
+
+    public Users(String uid, String name, String email, String ImagePath, String number) {
+        this.uid = uid;
+        this.name = name;
+        this.email = email;
+        this.HomePage = HomePage;
+        this.ImagePath = ImagePath;
+        this.number = number;
+        this.enableNotification = false;
+        this.enableGeolocationTracking = false;
+
 
 
     public Users(String uid){
@@ -77,6 +107,7 @@ public class Users implements Parcelable {
         return autoGenImage;
     }
 
+
     public String getProfileUid() {
         return uid;
     }
@@ -115,6 +146,24 @@ public class Users implements Parcelable {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    /**
+     * Gets the HomePage of the user
+     * @return HomePage of the user
+     */
+    public String getHomePage(){
+        return HomePage;
+    }
+
+
+    /**
+     * Gets the HomePage of the user
+     * @param HomePage of the user
+     */
+    public void setHomePage(String HomePage){
+        this.HomePage = HomePage;
+    }
+
 
     /**
      * Gets the ImagePath of the user

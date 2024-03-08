@@ -9,6 +9,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 public class AccountCreationActivity extends AppCompatActivity {
+
     private static final String TAG = "AccountCreationActivity";
     Users user;
     NavController navController;

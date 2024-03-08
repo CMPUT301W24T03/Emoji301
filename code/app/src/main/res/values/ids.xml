@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="map_icon_two" type="id" />
+    <item name="button_generate_checkin_qr" type="id" />
+    <item name="button_generate_eventpage_qr1" type="id" />
 </resources>
