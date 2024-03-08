@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".NameScreenFragment">
+
+    <LinearLayout
+        android:id="@+id/nameLinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Name:"
+            android:textSize="25dp"/>
+
+        <EditText
+            android:id="@+id/inputNameEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="                   " />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/generateNameLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/nameLinearLayout"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        >
+
+        <TextView
+            android:id="@+id/generateNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Generate name" />
+    </LinearLayout>
+
+
+    <!--TODO: add the arrow back to fab-->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/nameScreenBackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@android:color/transparent"
+        android:clickable="true"
+        android:layout_margin="10dp"
+        android:focusable="true"
+        app:maxImageSize="38dp"
+        android:layout_alignParentBottom="true"
+        app:fabSize="mini"
+        android:src="@drawable/back_button" />
+
+    <TextView
+        android:id="@+id/nameScreenBackNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:padding="15dp"
+        android:text="Next"
+        android:textSize="18dp"/>
+
+</RelativeLayout>

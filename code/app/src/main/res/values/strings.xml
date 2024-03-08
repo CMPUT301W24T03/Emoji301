@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">EmojiBrite</string>
+    <string name="enter">Enter</string>
+    <string name="access_key">Access key</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="event_title">Event Title</string>
+    <string name="event_description">Description:</string>
+    <string name="milestone_number">Milestone #</string>
+    <string name="event_location">Location:</string>
+    <string name="check_in_qr_code">Check in QR Code</string>
+    <string name="event_page_qr_code">Event Page QR Code</string>
+    <string name="next">Next</string>
+    <string name="gallery_permission_denied">gallery permission denied</string>
+    <string name="image_pick_error">image pick error</string>
+    <string name="gallery_permission_rationale">gallery permission rationale</string>
+    <string name="event_capacity">Event Capacity</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
