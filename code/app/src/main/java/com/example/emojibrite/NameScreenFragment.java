@@ -66,24 +66,29 @@ public class NameScreenFragment extends Fragment {
                     inputName.setText("GENERATED NAME");    // Todo: auto generate a name
                     name = inputName.getText().toString();
                     // navigate to the next fragment
-                    NavDirections action = NameScreenFragmentDirections.actionNameScreenToUploadImageScreen(name);
-                    NavHostFragment.findNavController(NameScreenFragment.this).navigate(action);
+                    //NavDirections action = NameScreenFragmentDirections.actionNameScreenToUploadImageScreen(name);
+                    //NavHostFragment.findNavController(NameScreenFragment.this).navigate(action);
                 } else {
                     // there is a name so pass it and navigate to the next fragment
-                    NavDirections action = NameScreenFragmentDirections.actionNameScreenToUploadImageScreen(name);
-                    NavHostFragment.findNavController(NameScreenFragment.this).navigate(action);
+                    //NavDirections action = NameScreenFragmentDirections.actionNameScreenToUploadImageScreen(name);
+                    //NavHostFragment.findNavController(NameScreenFragment.this).navigate(action);
                 }
             }
         });
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "back button clicked");          // for debugging
-                // go back to the main activity from
-                // AccountCreation activity which
-                // has the name screen fragment
-                if(getActivity() != null) {
-                    getActivity().finish();
+
+                if (getActivity() != null) {
+
+                    Log.d(TAG, "back button clicked");          // for debugging
+                    // go back to the main activity from
+                    // AccountCreation activity which
+                    // has the name screen fragment
+                    if (getActivity() != null) {
+                        getActivity().finish();
+
+                    }
                 }
             }
         });
