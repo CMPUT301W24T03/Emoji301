@@ -36,25 +36,12 @@ public class MainActivity extends AppCompatActivity {
         adminAccess = findViewById(R.id.adminAccessText);
 
         /* When Enter Button is clicked, go to the next activity.
-        * But which one??
-        * TODO: implement a way to check whether to go to event page or the create account page?
-        */
+         * But which one??
+         * TODO: implement a way to check whether to go to event page or the create account page?
+         */
         enterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // if the user exists in database, go to the event page
-                Log.d(TAG, "Enter button clicked"); // for debugging
-                Intent intent = new Intent(MainActivity.this, EventHome.class);
-                startActivity(intent);
-
-                // else go to nameScreenFragment through the AccountCreationActivity
-                Intent intent = new Intent(MainActivity.this, AccountCreationActivity.class);
-                startActivity(intent);
-
-                // else go to nameScreenFragment
-
-                //Log.d(TAG, "is the user signed in or not???" + database.isUserSignedIn()); // for debugging
 
                 database.anonymousSignIn(new Database.SignInCallBack() {
                     @Override
@@ -62,39 +49,41 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, "is the user signed in or not???????????????????" + database.isUserSignedIn());
 
                         Log.d(TAG, " user id: " + database.getUserUid());
+                        database.getUserName(new Database.UserNameDBCallBack() {
+                            
+                            @Override
+                            public void onUserRetrieveNameComplete(String name) {
+                                if (name != null) {
+                                    Log.d(TAG, "Enter button clicked"); // for debugging
+                                    Intent intent = new Intent(MainActivity.this, EventHome.class);
+                                    //TODO send in information to event page
+                                    startActivity(intent);
+                                } else {
+                                    Intent intent = new Intent(MainActivity.this, AccountCreationActivity.class);
+                                    Log.d(TAG, " user id: before intent is send " + database.getUserUid());
+                                    intent.putExtra("Uid", database.getUserUid());
+                                    startActivity(intent);
+                                    Log.d(TAG, "IT worked!!!!"); // for debugging
+                                }
+                            }
+                        });
                         //ImageView imageView = findViewById(R.id.profile_image);
-
-
-
                     }
                 });
+
+
+//                // if the user exists in database, go to the event page
+//                Log.d(TAG, "Enter button clicked"); // for debugging
+//                Intent intent = new Intent(MainActivity.this, EventHome.class);
+//                startActivity(intent);
+                // else go to nameScreenFragment through the AccountCreationActivity
+
+
+                // else go to nameScreenFragment
+
+                //Log.d(TAG, "is the user signed in or not???" + database.isUserSignedIn()); // for debugging
             }
         });
 
-
-//    private void retrieveUserNameCheck() {
-//        database.getUserName(new Database.UserNameDBCallBack() {
-//            @Override
-//            public void onUserRetrieveNameComplete(String name) {
-//                if (name != null) {
-//                    Log.d(TAG, "Enter button clicked"); // for debugging
-//                    Intent intent = new Intent(MainActivity.this, EventHome.class);
-//                    startActivity(intent);
-//                } else {
-//                    NameScreenFragment nameScreenFragment = new NameScreenFragment();
-//                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//                    transaction.replace(R.id.fragment_container, nameScreenFragment);
-//                    transaction.addToBackStack(null);
-//                    transaction.commit();
-//                    findViewById(R.id.fragment_container).setVisibility(View.VISIBLE);
-//
-//
-//                    Log.d(TAG, "IT worked!!!!"); // for debugging
-//
-//                }
-//            }
-//        });
-//    }
-    }
     }
 }

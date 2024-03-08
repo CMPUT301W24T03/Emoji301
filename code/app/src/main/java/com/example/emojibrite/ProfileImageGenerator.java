@@ -29,16 +29,19 @@ import okhttp3.Response;
 public class ProfileImageGenerator {
     OkHttpClient client = new OkHttpClient();
     String name;
-    ImageView imageView;
+
     String Uid;
     public interface OnCompleteListener <T> {
         void onComplete(T result);
     }
 
-    public ProfileImageGenerator(String name, ImageView imageView, String Uid) {
+    public ProfileImageGenerator(String Uid, String name) {
         this.name = name;
-        this.imageView = imageView;
+
         this.Uid = Uid;
+    }
+    public void  setProfileImageName(String name) {
+        this.name = name;
     }
 
     private void addingPlusToName() {
@@ -50,6 +53,17 @@ public class ProfileImageGenerator {
         name = newName.substring(0, newName.length() - 1);
     }
 
+
+    /*
+    i call addPLustoName because the url needs the username to be in the format of "name+restOfNameAfterSpace "
+    i use a request and build it using the url.
+    aftewards, i use the Okhttp client to call the request and enqueue it. ofc, since it is a callback it takes time hence why there is onresponse
+    after u get a response, if it works, we use an inputstream to recieve the information, then decode it into bitmap,
+    since we have to sent it to the database, we have to turn it into a byte array, then encode it into a string using base64
+    then we just add it into the collection ProfileImages with the document ID being the Uid.
+    we put a listener to check if data insertion to the database is successful
+    NOT TOO SURE ABOUT THE ONCOMPLETE PART but it is for callback purposes
+     */
     public void getProfileImage( final OnCompleteListener<Void> onCompleteListener) {
         addingPlusToName();
         String url = "https://ui-avatars.com/api/?name=" + name;
@@ -70,17 +84,17 @@ public class ProfileImageGenerator {
                     throw new IOException("Unexpected code " + response);
                 } else {
                     InputStream inputStream = response.body().byteStream();
+                    //Uri uri = Uri.parse(url);
+                    //onCompleteListener.onComplete(uri);
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    Database database = new Database();
+                    database.setUserUid();
+                    database.sendAutoGenProfileImageToDatabase(bitmap);
 
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                    byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    /*
                     Map<String, Object> data = new HashMap<>();
-                    data.put("image", encodedImage);
-                    db.collection("ProfileImages").document(Uid).set(data)
+                    data.put("autoGenImage", encodedImage);
+                    db.collection("Users").document(Uid).set(data)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
@@ -95,10 +109,14 @@ public class ProfileImageGenerator {
                                     onCompleteListener.onComplete(null);
                                 }
                             });
+
+                     */
                 }
             }
         });
     }
 }
+
+
 
 
