@@ -1,5 +1,6 @@
 package com.example.emojibrite;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +23,10 @@ public class UploadImageScreenFragment extends Fragment {
     Button uploadImageButton;
     FloatingActionButton BackButton;
     TextView nextButtonText;
+
+    Bitmap selectedImageBitmap;
+
+    Users user;
     private static final String TAG = "UploadImageScreenFragment";
 
     /**
@@ -42,6 +47,8 @@ public class UploadImageScreenFragment extends Fragment {
         uploadImageButton = uploadImageScreenLayout.findViewById(R.id.uploadImageScreenButton);
         BackButton = uploadImageScreenLayout.findViewById(R.id.uploadImageScreenBackButton);
         nextButtonText = uploadImageScreenLayout.findViewById(R.id.uploadImageScreenNext);
+
+        user = UploadImageScreenFragmentArgs.fromBundle(getArguments()).getUserObject();
         return uploadImageScreenLayout;
     }
 
@@ -54,6 +61,7 @@ public class UploadImageScreenFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstancesState) {
         super.onViewCreated(view, savedInstancesState);
 
+        //String name = UploadImageScreenFragmentArgs.fromBundle(getArguments()).getUserObject();
         // when the next button is clicked, go to the next fragment - PreviewScreenFragment
         nextButtonText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,7 +70,7 @@ public class UploadImageScreenFragment extends Fragment {
                 // if image is empty, auto generate?
                 // when the next button is clicked, go to the next fragment.
                 // put stuff you want to pass into the brackets. Make sure to add name and image
-                NavDirections action = UploadImageScreenFragmentDirections.actionUploadImageScreenToPreviewScreen();    // put name and image here
+                NavDirections action = UploadImageScreenFragmentDirections.actionUploadImageScreenToPreviewScreen(user);    // put name and image here
                 NavHostFragment.findNavController(UploadImageScreenFragment.this).navigate(action);
             }
         });
@@ -73,7 +81,25 @@ public class UploadImageScreenFragment extends Fragment {
             public void onClick(View v) {
                 Log.d(TAG, "Back button clicked");
                 NavController navController = Navigation.findNavController(view);
-                navController.navigateUp();
+                user.setAutoGenImage(null);
+                user.setUploadedImage(null);
+                user.setName(null);
+
+
+            }
+        });
+
+        uploadImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Upload image button clicked");
+                // open gallery
+                ImageUpload imageUpload = new ImageUpload(getContext(), requireActivity());
+                imageUpload.openGallery();
+                selectedImageBitmap = imageUpload.getSelectedImageBitmap();
+
+                user.setUploadedImage(selectedImageBitmap);
+
             }
         });
     }

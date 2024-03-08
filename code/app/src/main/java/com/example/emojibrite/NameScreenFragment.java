@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 import android.util.Log;
+import android.widget.Toast;
 
 
 public class NameScreenFragment extends Fragment {
@@ -23,6 +24,8 @@ public class NameScreenFragment extends Fragment {
     TextView generateNameText;
     FloatingActionButton backButton;
     TextView nextButtonText;
+
+    Users user;
     private static final String TAG = "NameScreenFragment";
 
     /**
@@ -44,6 +47,7 @@ public class NameScreenFragment extends Fragment {
         generateNameText = nameScreenLayout.findViewById(R.id.generateNameTextView);
         backButton = nameScreenLayout.findViewById(R.id.nameScreenBackButton);
         nextButtonText = nameScreenLayout.findViewById(R.id.nameScreenBackNext);
+        user =NameScreenFragmentArgs.fromBundle(getArguments()).getUserObject();
         return nameScreenLayout;
     }
 
@@ -63,14 +67,19 @@ public class NameScreenFragment extends Fragment {
                 // if name is empty, auto generate a name automatically and randomly
                 String name = inputName.getText().toString();
                 if(name.isEmpty()) {
-                    inputName.setText("GENERATED NAME");    // Todo: auto generate a name
+                    Toast.makeText(getActivity(), " Type in a name", Toast.LENGTH_SHORT).show();
+                    /*
+                    inputName.setText("GENERATED NAME");
                     name = inputName.getText().toString();
-                    // navigate to the next fragment
-                    NavDirections action = NameScreenFragmentDirections.actionNameScreenToUploadImageScreen(name);
-                    NavHostFragment.findNavController(NameScreenFragment.this).navigate(action);
+                   NavDirections action = NameScreenFragmentDirections.actionNameScreenToUploadImageScreen(name);
+                   NavHostFragment.findNavController(NameScreenFragment.this).navigate(action);
+                     */
                 } else {
-                    // there is a name so pass it and navigate to the next fragment
-                    NavDirections action = NameScreenFragmentDirections.actionNameScreenToUploadImageScreen(name);
+                    // recieving a bundle from the previous fragment/activity and setting the object name to be that.
+
+                    user.setName(name);
+
+                    NavDirections action = NameScreenFragmentDirections.actionNameScreenToUploadImageScreen(user);
                     NavHostFragment.findNavController(NameScreenFragment.this).navigate(action);
                 }
             }

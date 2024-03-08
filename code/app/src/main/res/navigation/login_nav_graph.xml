@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_nameScreen_to_upload_image_screen"
             app:destination="@+id/uploadImageScreen" />
+        <argument
+            android:name="userObject"
+            app:argType="com.example.emojibrite.Users" />
     </fragment>
 
     <fragment
@@ -24,8 +27,11 @@
             android:id="@+id/action_UploadImageScreen_to_PreviewScreen"
             app:destination="@+id/previewScreen"/>
         <argument
-            android:name="name"
-            app:argType="string" />
+            android:name="userObject"
+            app:argType="com.example.emojibrite.Users" />
+        <action
+            android:id="@+id/action_uploadImageScreen_to_nameScreen"
+            app:destination="@id/nameScreen" />
     </fragment>
 
     <fragment
@@ -33,5 +39,11 @@
         android:name="com.example.emojibrite.PreviewScreenFragment"
         android:label="PreviewScreenFragment"
         tools:layout="@layout/fragment_preview_screen">
+        <argument
+            android:name="userObject"
+            app:argType="com.example.emojibrite.Users" />
+        <action
+            android:id="@+id/action_previewScreen_to_uploadImageScreen"
+            app:destination="@id/uploadImageScreen" />
     </fragment>
 </navigation>
