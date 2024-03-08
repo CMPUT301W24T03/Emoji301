@@ -1,7 +1,14 @@
 package com.example.emojibrite;
 
+
+import androidx.appcompat.app.AppCompatActivity;
+
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,34 +25,14 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     EventAdapter eventAdapter; // Custom adapter to bind event data to the ListView
     ArrayList<Event> dataList;
 
-    /**
-     * onCreate is called when the activity is starting.
-     * It initializes the activity, the ListView, and the FloatingActionButton.
-     */
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.event_home_page);
 
-        // Initialize the ListView and ArrayList
 
-        eventList = findViewById(R.id.event_organizer_list);
-        dataList = new ArrayList<>();
-        eventAdapter = new EventAdapter(this, dataList);
-        eventList.setAdapter(eventAdapter);
 
-        // Set an item click listener on the ListView to handle event selection
+    Button profileButton;
 
-        eventList.setOnItemClickListener(((parent, view, position, id) -> {
-            Event selectedEvent = dataList.get(position);
-            showEventDetails(selectedEvent);
-        }));
 
-        // Initialize the FloatingActionButton and set its click listener
 
-        FloatingActionButton fab = findViewById(R.id.event_add_btn);
-        fab.setOnClickListener(view -> showAddEventDialog());
-    }
+    private static final String TAG = "ProfileActivityTAG";
 
     /**
      * Opens the EventDetailsActivity when an event is selected.
@@ -101,5 +88,55 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         }
     }
 
+    /**
+     * onCreate is called when the activity is starting.
+     * It initializes the activity, the ListView, and the FloatingActionButton.
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.event_home_page);
+
+        eventList = findViewById(R.id.event_organizer_list);
+        dataList = new ArrayList<>();
+
+        eventAdapter = new EventAdapter(this, dataList);
+        eventList.setAdapter(eventAdapter);
+
+        eventList.setOnItemClickListener(((parent, view, position, id) -> {
+            Event selectedEvent = dataList.get(position);
+
+            showEventDetails(selectedEvent);
+
+        }));
+
+        FloatingActionButton fab = findViewById(R.id.event_add_btn);
+        fab.setOnClickListener(view -> showAddEventDialog());
+
+        FloatingActionButton profileButton = findViewById(R.id.profileButton);
+        // When profile is clicked, go to profile activity
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Go to the ProfileActivity page
+                Log.d(TAG, "Enter button clicked"); // for debugging
+                Intent intent = new Intent(EventHome.this, ProfileActivity.class);
+                startActivity(intent);
+
+
+            }
+        });
+
+
+    }
+
+
+
+
+    public void showEditEventDialog(Event eventToEdit) {
+        AddEventFragment dialog = AddEventFragment.newInstance(eventToEdit);
+        dialog.show(getSupportFragmentManager(), "AddEventFragment");
+    }
 
 }
