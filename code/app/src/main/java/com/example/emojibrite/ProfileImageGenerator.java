@@ -84,14 +84,14 @@ public class ProfileImageGenerator {
                     throw new IOException("Unexpected code " + response);
                 } else {
                     InputStream inputStream = response.body().byteStream();
+                    //Uri uri = Uri.parse(url);
+                    //onCompleteListener.onComplete(uri);
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    Database database = new Database();
+                    database.setUserUid();
+                    database.sendAutoGenProfileImageToDatabase(bitmap);
 
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                    byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    /*
                     Map<String, Object> data = new HashMap<>();
                     data.put("autoGenImage", encodedImage);
                     db.collection("Users").document(Uid).set(data)
@@ -109,10 +109,14 @@ public class ProfileImageGenerator {
                                     onCompleteListener.onComplete(null);
                                 }
                             });
+
+                     */
                 }
             }
         });
     }
 }
+
+
 
 

@@ -2,7 +2,9 @@ package com.example.emojibrite;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,8 @@ import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.ByteArrayOutputStream;
+
 public class PreviewScreenFragment extends Fragment {
     //attributes
     ImageView picture;
@@ -28,6 +32,7 @@ public class PreviewScreenFragment extends Fragment {
     Bitmap autoGenprofileImage;
 
     Users user;
+    ImageUpload imageUpload = new ImageUpload();
     private static final String TAG = "PreviewScreenFragment";
 
     /**
@@ -45,8 +50,11 @@ public class PreviewScreenFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View previewScreenLayout = inflater.inflate(R.layout.fragment_preview_screen, container, false);
-        user = PreviewScreenFragmentArgs.fromBundle(getArguments()).getUserObject();
+        Bundle userBundle = getArguments();
+        user = userBundle.getParcelable("userObject");
+        Log.d(TAG, "onCreateView for preview screen fragment: " + user.getProfileUid());
         picture = previewScreenLayout.findViewById(R.id.uploadImageImage);
+        database.setUserUid();
 
         if ( user.getUploadedImage() == null) {
             Log.d(TAG, "The user's uploaded image is null");
@@ -54,20 +62,25 @@ public class PreviewScreenFragment extends Fragment {
             profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Void>() {
                 public void onComplete(Void aVoid) {
                     // After getProfileImage() is complete, call getProfileImageFromDatabase()
-                    database.getAutoGenProfileImageFromDatabase(new Database.ProfileImageCallBack() {
+                    database.getAutoGenProfileImageFromDatabase(new Database.ProfileImageCallBack(){
                         @Override
                         public void onProfileImageComplete(Bitmap profileImageFromDatabase) {
                             // Use the profileImageFromDatabase bitmap here
                             autoGenprofileImage = profileImageFromDatabase;
                             user.setAutoGenImage(autoGenprofileImage);
-                            picture.setImageBitmap(user.getAutoGenImage());
+
+                            byte[] decodedString = Base64.decode(user.getAutoGenImage(), Base64.DEFAULT);
+                            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                            picture.setImageBitmap(decodedByte);
                         }
                     });
                 }
             });
         }
         else {
-            picture.setImageBitmap(user.getUploadedImage());
+            byte[] decodedString = Base64.decode(user.getUploadedImage(), Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            picture.setImageBitmap(decodedByte);
         }
 
         name = previewScreenLayout.findViewById(R.id.usernameTextView);
@@ -124,4 +137,5 @@ public class PreviewScreenFragment extends Fragment {
             }
         });
     }
+
 }

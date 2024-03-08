@@ -3,14 +3,17 @@ package com.example.emojibrite;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Base64;
 
 import androidx.annotation.NonNull;
 
+import java.io.ByteArrayOutputStream;
+
 public class Users implements Parcelable {
     private String name;
-    private Bitmap autoGenImage;
+    private String autoGenImage;
 
-    private Bitmap uploadedImage;
+    private String uploadedImage;
     private String email;
     private String number;
     private String role;
@@ -41,18 +44,44 @@ public class Users implements Parcelable {
     }
 
 
-    public Bitmap getUploadedImage() {
+    public String getUploadedImage() {
         return uploadedImage;
     }
 
     public void setUploadedImage(Bitmap uploadedImage) {
-        this.uploadedImage = uploadedImage;
+        if (uploadedImage == null){
+            this.uploadedImage = null;
+        }
+        else {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            uploadedImage.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            this.uploadedImage = encodedImage;
+        }
 
+    }
+    public void setAutoGenImage(Bitmap autoGenImage) {
+        if (autoGenImage == null) {
+            this.autoGenImage = null;
+        }
+        else {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            autoGenImage.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            this.autoGenImage = encodedImage;
+        }
+    }
+    public String getAutoGenImage() {
+        return autoGenImage;
     }
 
     public String getProfileUid() {
         return uid;
     }
+
+
     //no setter yet
 
     /**
@@ -91,17 +120,13 @@ public class Users implements Parcelable {
      * Gets the ImagePath of the user
      * @return ImagePath of the user
      */
-    public Bitmap getAutoGenImage() {
-        return autoGenImage;
-    }
+
 
     /**
      * Sets the ImagePath of the user
      * @param autoGenImage of the user
      */
-    public void setAutoGenImage(Bitmap autoGenImage) {
-        this.autoGenImage = autoGenImage;
-    }
+
 
     /**
      * Gets the number of the user
@@ -177,8 +202,8 @@ public class Users implements Parcelable {
     protected Users(Parcel in) {
         //deserialization of the object
         name = in.readString();
-        autoGenImage = in.readParcelable(Bitmap.class.getClassLoader());
-        uploadedImage = in.readParcelable(Bitmap.class.getClassLoader());
+        autoGenImage = in.readString();
+        uploadedImage = in.readString();
         email = in.readString();
         number = in.readString();
         role = in.readString();
@@ -194,8 +219,8 @@ public class Users implements Parcelable {
     public void writeToParcel(@NonNull Parcel dest, int flags) {
 
         dest.writeString(name);
-        dest.writeParcelable(autoGenImage, flags);
-        dest.writeParcelable(uploadedImage, flags);
+        dest.writeString(autoGenImage);
+        dest.writeString(uploadedImage);
         dest.writeString(email);
         dest.writeString(number);
         dest.writeString(role);

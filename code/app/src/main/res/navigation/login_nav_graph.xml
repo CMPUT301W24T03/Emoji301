@@ -16,6 +16,9 @@
         <argument
             android:name="userObject"
             app:argType="com.example.emojibrite.Users" />
+        <!--        <argument-->
+        <!--            android:name="userClass"-->
+        <!--            app:argType="com.example.emojibrite.Users" />-->
     </fragment>
 
     <fragment

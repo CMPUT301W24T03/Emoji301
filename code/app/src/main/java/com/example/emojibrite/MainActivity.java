@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
                         Log.d(TAG, " user id: " + database.getUserUid());
                         database.getUserName(new Database.UserNameDBCallBack() {
+                            
                             @Override
                             public void onUserRetrieveNameComplete(String name) {
                                 if (name != null) {

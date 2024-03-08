@@ -47,7 +47,13 @@ public class NameScreenFragment extends Fragment {
         generateNameText = nameScreenLayout.findViewById(R.id.generateNameTextView);
         backButton = nameScreenLayout.findViewById(R.id.nameScreenBackButton);
         nextButtonText = nameScreenLayout.findViewById(R.id.nameScreenBackNext);
-        user =NameScreenFragmentArgs.fromBundle(getArguments()).getUserObject();
+
+        Bundle bundle = getArguments();
+
+        user = bundle.getParcelable("userObject");
+        //user =NameScreenFragmentArgs.fromBundle(getArguments()).getUserObject();
+        Log.d(TAG, "onCreateView for name screen fragment: " + user.getProfileUid());
+
         return nameScreenLayout;
     }
 
@@ -59,6 +65,7 @@ public class NameScreenFragment extends Fragment {
      */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         // when the next button is clicked, go to the next fragment
         nextButtonText.setOnClickListener(new View.OnClickListener() {
             @Override

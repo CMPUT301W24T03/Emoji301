@@ -21,6 +21,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.ByteArrayOutputStream;
+
 /**
  * A class to represent the database
  */
@@ -75,24 +77,31 @@ once created, u can call getuseruid to get the user id and use it to get user da
  */
     public String getUserUid() {
 
+        if (mAuth.getCurrentUser() != null) {
+            userUid = mAuth.getCurrentUser().getUid();
+        }
         return userUid;
+    }
+    public void setUserUid(){
+        userUid = mAuth.getCurrentUser().getUid();
     }
 
     public void getUserName(UserNameDBCallBack callBack){
         DocumentReference docRef = profileRef.document(userUid);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        Log.d(TAG, "inside get username: " );
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        callBack.onUserRetrieveNameComplete(document.getString("name"));
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    callBack.onUserRetrieveNameComplete(documentSnapshot.getString("name"));
                 } else {
-                    Log.d(TAG, "get failed with ", task.getException());
+                    Log.d(TAG, "No such document");
                 }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "get failed with ", e);
             }
         });
     }
@@ -158,6 +167,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (!document.exists()) {
+                        Log.d(TAG, "Document does not exist!");
                         profileRef.document(user.getProfileUid()).set(user)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
@@ -173,6 +183,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
                                 });
                     }
                     else{
+                        Log.d(TAG, "Document exists!");
                         if (document.getString("name") == null) {
                             profileRef.document(user.getProfileUid()).set(user)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -258,6 +269,21 @@ once created, u can call getuseruid to get the user id and use it to get user da
             }
         });
     }
+    public void sendUploadedProfileImageToDatabase(Bitmap bitmap){
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        profileRef.document(userUid).update("uploadedImage", encodedImage);
+    }
+public void sendAutoGenProfileImageToDatabase(Bitmap bitmap){
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        profileRef.document(userUid).update("autoGenImage", encodedImage);
+    }
+
     /*
     ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator("aivan Edi", imageView, database.getUserUid());
                         profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Void>() {
