@@ -51,19 +51,31 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
-        <activity
-            android:name=".AccountCreationActivity"
-            android:exported="false"></activity> <!-- Fragments dont belong here. Also, the Continuous Integration(CI) flagged this, thus "x" beside your branch -->
-        <!-- &lt;!&ndash; AddEventFragment &ndash;&gt; -->
-        <!-- <activity -->
-        <!-- android:name=".AddEventFragment" -->
-        <!-- android:exported="false" /> -->
+            android:exported="true">
+        </activity>
+        <activity android:name=".AccountCreationActivity"
+            android:exported="false"></activity>
+
+        <!--Fragments dont belong here. Also, the Continuous Integration(CI) flagged this, thus "x" beside your branch-->
+<!--        &lt;!&ndash; AddEventFragment &ndash;&gt;-->
+<!--        <activity-->
+<!--            android:name=".AddEventFragment"-->
+<!--            android:exported="false" />-->
+
+
         <!-- MainActivity -->
         <activity
             android:name=".EventHome"
             android:exported="false" />
 
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+
+        <!-- EventAdapter -->
+        <activity
+            android:name=".EventAdapter"
+            android:exported="false" />
 <!--        &lt;!&ndash; EventAdapter &ndash;&gt;-->
 <!--        <activity-->
 <!--            android:name=".EventAdapter"-->

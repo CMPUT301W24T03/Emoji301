@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AccountCreationActivity extends AppCompatActivity {
+
     private static final String TAG = "AccountCreationActivity";
     /**
      * Called when the activity is first created.
