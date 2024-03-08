@@ -8,8 +8,8 @@
 
     <EditText
         android:id="@+id/editEmail"
-        android:layout_width="247dp"
-        android:layout_height="53dp"
+        android:layout_width="243dp"
+        android:layout_height="46dp"
         android:layout_marginTop="316dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -17,15 +17,33 @@
 
 
     <EditText
-        android:id="@+id/editPhoneNumber"
-        android:layout_width="210dp"
-        android:layout_height="60dp"
-        android:layout_below="@id/editEmail"
-        android:layout_marginTop="4dp"
+        android:id="@+id/editName"
+        android:layout_width="309dp"
+        android:layout_height="41dp"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/editEmail"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.482"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/editHomePage"
+        android:layout_width="208dp"
+        android:layout_height="49dp"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editEmail" />
+
+    <EditText
+        android:id="@+id/editPhoneNumber"
+        android:layout_width="170dp"
+        android:layout_height="40dp"
+        android:layout_below="@id/editEmail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editHomePage" />
 
     <ImageView
         android:id="@+id/profilePicture"
@@ -55,5 +73,19 @@
         android:text="Remove Image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editPhoneNumber" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/uploadImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="44dp"
+        android:clickable="true"
+        android:elevation="0dp"
+        android:src="@android:drawable/ic_menu_edit"
+        app:backgroundTint="@color/white"
+        app:elevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

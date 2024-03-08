@@ -49,7 +49,7 @@ public class Users {
      */
 
 
-    public Users(String uid, String name, String email, String ImagePath, String number) {
+    public Users(String uid, String name, String email, String HomePage, String ImagePath, String number) {
         this.uid = uid;
         this.name = name;
         this.email = email;
