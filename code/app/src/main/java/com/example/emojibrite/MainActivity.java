@@ -36,17 +36,17 @@ public class MainActivity extends AppCompatActivity {
         adminAccess = findViewById(R.id.adminAccessText);
 
         /* When Enter Button is clicked, go to the next activity.
-        * But which one??
-        * TODO: implement a way to check whether to go to event page or the create account page?
-        */
+         * But which one??
+         * TODO: implement a way to check whether to go to event page or the create account page?
+         */
         enterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-//                // if the user exists in database, go to the event page
-//                Log.d(TAG, "Enter button clicked"); // for debugging
-//                Intent intent = new Intent(MainActivity.this, EventHome.class);
-//                startActivity(intent);
+                // if the user exists in database, go to the event page
+                Log.d(TAG, "Enter button clicked"); // for debugging
+                Intent intent = new Intent(MainActivity.this, EventHome.class);
+                startActivity(intent);
                 // else go to nameScreenFragment through the AccountCreationActivity
                 Intent intent = new Intent(MainActivity.this, AccountCreationActivity.class);
                 startActivity(intent);
@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
 
                         Log.d(TAG, " user id: " + database.getUserUid());
                         //ImageView imageView = findViewById(R.id.profile_image);
-
 
 
                     }
@@ -93,5 +92,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
     }
 }
