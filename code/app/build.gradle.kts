@@ -46,8 +46,14 @@ dependencies {
     implementation("androidx.activity:activity:1.8.0")
     //Unit testing + espresso
     testImplementation("junit:junit:4.13.2")
+    androidTestImplementation ("androidx.test.espresso:espresso-contrib:3.4.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    //Fragment testing
+    androidTestImplementation("androidx.fragment:fragment-testing:1.6.2")
+    // NavigationTesting for navgraph
+    androidTestImplementation("androidx.navigation:navigation-testing:2.7.7")
+
     // firebase stuff
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
     implementation("com.google.firebase:firebase-firestore")
@@ -55,7 +61,7 @@ dependencies {
 
     //needed for getting the FID*firebase installation id
     implementation("com.google.firebase:firebase-installations:17.2.0")
-    androidTestImplementation ("androidx.test.espresso:espresso-contrib:3.4.0")
+
 
     implementation("com.google.firebase:firebase-auth")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
