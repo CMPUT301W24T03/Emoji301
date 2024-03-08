@@ -22,10 +22,14 @@ public class ProfileEditFragment extends DialogFragment {
     EditText EditEmail;
     EditText EditPhoneNumber;
     ImageView profilePicture;
-    Button updateImageButton;
+    Button removeImageButton;
     private Button saveButton;
     private Profile edit;
+
+    private String currentImagePath;
     private OnProfileUpdateListener profileUpdateListener;
+
+
     public void setProfileUpdateListener(OnProfileUpdateListener listener) {
         this.profileUpdateListener = listener;
     }
@@ -42,18 +46,31 @@ public class ProfileEditFragment extends DialogFragment {
         EditEmail = view.findViewById(R.id.editEmail);
         EditPhoneNumber = view.findViewById(R.id.editPhoneNumber);
         saveButton = view.findViewById(R.id.saveButton);
-        profilePicture = view.findViewById(R.id.profilePicture); // Initialize profilePicture
-        updateImageButton = view.findViewById(R.id.updateImageButton); // Initialize updateImageButton
+        profilePicture = view.findViewById(R.id.profilePicture);
+        removeImageButton = view.findViewById(R.id.removeImageButton);
 
 
         // Set initial values for the EditText fields
         EditEmail.setHint("Current Email: " + edit.getEmail());
         EditPhoneNumber.setHint("Current Phone Number: " + edit.getNumber());
-        profilePicture.setImageResource(R.drawable.ic_launcher_foreground);
+
 
         // Set the current email and phone number as initial text
         EditEmail.setText(edit.getEmail());
         EditPhoneNumber.setText(edit.getNumber());
+
+        // Initialize profilePicture
+        profilePicture = view.findViewById(R.id.profilePicture);
+        // Set the image resource if available or load it from a URL
+        if (edit.getImagePath() != null && !edit.getImagePath().isEmpty()) {
+            // Load image from a file or URL
+            // You can use a library like Picasso or Glide for efficient image loading
+            // Here, assuming you are using a resource id, you can use setImageResource
+            profilePicture.setImageResource(R.drawable.ic_launcher_foreground);
+        } else {
+            // If no image path is available, you can set a default image
+            profilePicture.setImageResource(R.drawable.profile_pic);
+        }
 
         // Set a click listener for the Save button
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -69,11 +86,11 @@ public class ProfileEditFragment extends DialogFragment {
 
                     // Notify the ProfileActivity about the changes
                     if (profileUpdateListener != null) {
-                        profileUpdateListener.onProfileUpdate(edit.getEmail(), edit.getNumber());
+                        profileUpdateListener.onProfileUpdate(edit.getEmail(), edit.getNumber(), edit.getImagePath());
                     }
+
                     // Close the dialog or fragment
-                    // Close the dialog or fragment
-                    dismiss();  // If it's a DialogFragment
+                    dismiss();
                 } else {
                     // Handle the case where edit is null
                     Log.e("ProfileEditFragment", "edit object is null");
@@ -82,11 +99,13 @@ public class ProfileEditFragment extends DialogFragment {
         });
 
         // Set a click listener for the updateImageButton
-        updateImageButton.setOnClickListener(new View.OnClickListener() {
+        removeImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Handle updating or removing the profile picture here
-                // You may open a new dialog or perform any other actions
+                // Clear the image from the ImageView
+                profilePicture.setImageResource(0);
+                profilePicture.setImageResource(R.drawable.profile_pic);
+
             }
         });
 
@@ -98,7 +117,7 @@ public class ProfileEditFragment extends DialogFragment {
     }
 
     public interface OnProfileUpdateListener {
-        void onProfileUpdate(String newEmail, String newPhoneNumber);
+        void onProfileUpdate(String newEmail, String newPhoneNumber, String newImagePath);
     }
 
 }
