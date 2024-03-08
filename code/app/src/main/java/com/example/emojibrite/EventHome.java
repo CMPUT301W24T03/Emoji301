@@ -125,18 +125,20 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         ImageView profileButton = findViewById(R.id.profile_pic);
 
-        if (user.getUploadedImage() == null){
-            String autoGenImage = user.getAutoGenImage();
-            byte[] decodedString = Base64.decode(autoGenImage,Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0,decodedString.length);
-            profileButton.setImageBitmap(decodedByte);}
-        else{
-                String uploadedImage = user.getUploadedImage();
-                byte[] decodedString = Base64.decode(uploadedImage,Base64.DEFAULT);
-                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0,decodedString.length);
-                profileButton.setImageBitmap(decodedByte);
 
-            }
+
+//        if (user.getUploadedImage() == null){
+//            String autoGenImage = user.getAutoGenImage();
+//            byte[] decodedString = Base64.decode(autoGenImage,Base64.DEFAULT);
+//            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0,decodedString.length);
+//            profileButton.setImageBitmap(decodedByte);}
+//        else{
+//                String uploadedImage = user.getUploadedImage();
+//                byte[] decodedString = Base64.decode(uploadedImage,Base64.DEFAULT);
+//                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0,decodedString.length);
+//                profileButton.setImageBitmap(decodedByte);
+//
+//            }
 
 
 
