@@ -24,7 +24,11 @@ import org.w3c.dom.Text;
  */
 public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnProfileUpdateListener{
 
+
     Users currentProfile = new Users("123456", "John Doe", "john@example.com", "https://example.com", "path_to_image", "123456789");
+
+    private Button  backButton;
+    private Button editButton;
 
     /**
      * Called when the activity is first created.
@@ -71,7 +75,6 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         String storedHomePage = preferences.getString("HomePage", "");
 
         updateProfileData(storedEmail, storedPhoneNumber, storedImagePath, storedName, storedHomePage );
-
     }
 
 
@@ -114,6 +117,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         // Save the updated information in SharedPreferences
         saveProfileData(newEmail, newPhoneNumber, newImagePath, newName, newHomePage);
 
+
         emailTextView.setText(newEmail);
         phoneNumberTextView.setText(newPhoneNumber);
         nameTextView.setText(newName);
@@ -126,6 +130,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         }
     }
 
+
     /**
      * Saves the updated profile data to SharedPreferences.
      * @param newEmail      The new email address.
@@ -135,6 +140,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
      * @param newHomePage   The new home page.
      */
     private void saveProfileData(String newEmail, String newPhoneNumber, String newImagePath, String newName, String newHomePage) {
+
         SharedPreferences preferences = getSharedPreferences("ProfilePrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
 
@@ -151,6 +157,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
      * Updates the profile image in the UI.
      * @param newImagePath The new image path for the profile picture.
      */
+
     private void updateProfileImage(String newImagePath) {
         // Assuming you have an ImageView in your activity_profile.xml with id profileImage
         ImageView profileImage = findViewById(R.id.profilePicture);
@@ -162,8 +169,16 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
      * Opens the edit profile dialog for the provided user profile.
      * @param profile The user profile to be edited.
      */
-    private void openEditProfileDialog(Users profile) {
-        ProfileEditFragment editProfileDialogFragment = new ProfileEditFragment(profile);
-        editProfileDialogFragment.show(getSupportFragmentManager(), "edit_profile_dialog");
-    }
+//    private void openEditProfileDialog(Users profile) {
+//        if (newImagePath != null && !newImagePath.isEmpty()) {
+//            profileImage.setImageResource(R.drawable.profile_pic); // Load image from new path
+//        } else {
+//            profileImage.setImageResource(R.drawable.profile_pic); // Set default image
+//        }
+//    }
+
+//    private void openEditProfileDialog(Profile profile) {
+//        ProfileEditFragment editProfileDialogFragment = new ProfileEditFragment(profile);
+//        editProfileDialogFragment.show(getSupportFragmentManager(), "edit_profile_dialog");
+//    }
 }

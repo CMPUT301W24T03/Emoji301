@@ -20,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.auth.User;
 
 import java.io.IOException;
 
@@ -39,7 +40,9 @@ public class ProfileEditFragment extends DialogFragment {
     ImageView profilePicture;
     Button removeImageButton;
 
+
     private Users edit;
+    private Button saveButton;
 
     private String currentImagePath;
     private OnProfileUpdateListener profileUpdateListener;
@@ -50,6 +53,7 @@ public class ProfileEditFragment extends DialogFragment {
      * Sets the listener to be notified of profile updates.
      * @param listener The listener implementing {@link OnProfileUpdateListener}.
      */
+
     public void setProfileUpdateListener(OnProfileUpdateListener listener) {
         this.profileUpdateListener = listener;
     }
@@ -80,6 +84,9 @@ public class ProfileEditFragment extends DialogFragment {
         removeImageButton = view.findViewById(R.id.removeImageButton);
         Button saveButton = view.findViewById(R.id.saveButton);
         EditHomePage = view.findViewById(R.id.editHomePage);
+        saveButton = view.findViewById(R.id.saveButton);
+        profilePicture = view.findViewById(R.id.profilePicture);
+        removeImageButton = view.findViewById(R.id.removeImageButton);
 
 
         // Set initial values for the EditText fields
@@ -100,6 +107,19 @@ public class ProfileEditFragment extends DialogFragment {
         // Set the image resource if available or load it from a URL
         if (edit.getImagePath() != null && !edit.getImagePath().isEmpty()) {
             // Load image from a file or URL
+            profilePicture.setImageResource(R.drawable.ic_launcher_foreground);
+        } else {
+            // If no image path is available, you can set a default image
+            profilePicture.setImageResource(R.drawable.profile_pic);
+        }
+
+        // Initialize profilePicture
+        profilePicture = view.findViewById(R.id.profilePicture);
+        // Set the image resource if available or load it from a URL
+        if (edit.getImagePath() != null && !edit.getImagePath().isEmpty()) {
+            // Load image from a file or URL
+            // You can use a library like Picasso or Glide for efficient image loading
+            // Here, assuming you are using a resource id, you can use setImageResource
             profilePicture.setImageResource(R.drawable.ic_launcher_foreground);
         } else {
             // If no image path is available, you can set a default image
@@ -150,6 +170,8 @@ public class ProfileEditFragment extends DialogFragment {
 
                 pickMedia.launch(new PickVisualMediaRequest.Builder()
                         .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE).build());
+                profilePicture.setImageResource(R.drawable.profile_pic);
+
             }
         });
 
@@ -204,6 +226,7 @@ public class ProfileEditFragment extends DialogFragment {
          * @param newHomePage   The new home page.
          */
         void onProfileUpdate(String newEmail, String newPhoneNumber, String newImagePath, String newName, String newHomePage);
+
     }
 
 }
