@@ -225,12 +225,14 @@ once created, u can call getuseruid to get the user id and use it to get user da
      */
     public void getAutoGenProfileImageFromDatabase(ProfileImageCallBack callBack){
         DocumentReference docRef = profileRef.document(userUid);
+        Log.d(TAG, "inside getAutoGenProfileImageFromDatabase: " );
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.exists());
 
                         String encodedImage = document.getString("autoGenImage");
                         byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
@@ -281,7 +283,9 @@ public void sendAutoGenProfileImageToDatabase(Bitmap bitmap){
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        Log.d(TAG, "encoded image: " + encodedImage);
         profileRef.document(userUid).update("autoGenImage", encodedImage);
+        Log.d(TAG, "image sent to database");
     }
 
     /*
