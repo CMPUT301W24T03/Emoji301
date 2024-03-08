@@ -102,6 +102,7 @@ public class PreviewScreenFragment extends Fragment {
                 Log.d(TAG, "Next button clicked");
                 // go to the EventHome Activity and finish the current activity which is the AccountCreationActivity
                 // on which the fragments are hosted
+                user.setUploadedImage(null);
                 Intent intent = new Intent(getActivity(), EventHome.class);
                 intent.putExtra("userObject", user); // pass the user object to the EventHomeActivity
 

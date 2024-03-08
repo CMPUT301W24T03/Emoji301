@@ -5,10 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.auth.User;
@@ -26,6 +31,14 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     ListView eventList;
     EventAdapter eventAdapter; // Custom adapter to bind event data to the ListView
     ArrayList<Event> dataList;
+
+    private Users user;
+
+    private Database database = new Database();
+
+
+
+
     Button profileButton;
 
 
@@ -111,10 +124,42 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         }));
 
+        Intent intent = getIntent();
+        user = intent.getParcelableExtra("userObject");
+
+
         FloatingActionButton fab = findViewById(R.id.event_add_btn);
         fab.setOnClickListener(view -> showAddEventDialog());
 
-        FloatingActionButton profileButton = findViewById(R.id.profileButton);
+        ImageView profileButton = findViewById(R.id.profile_pic);
+
+        database.getUploadedProfileImageFromDatabase(new Database.ProfileImageCallBack() {
+            @Override
+            public void onProfileImageComplete(Bitmap profileImage) {
+                // Use the profileImage bitmap here
+                // For example, you can set it to an ImageView
+                user.setUploadedImage(profileImage);
+                if (user.getUploadedImage() == null){
+                    String autoGenImage = user.getAutoGenImage();
+                    byte[] decodedString = Base64.decode(autoGenImage,Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0,decodedString.length);
+                    profileButton.setImageBitmap(decodedByte);}
+                else {
+                    String uploadedImage = user.getUploadedImage();
+                    byte[] decodedString = Base64.decode(uploadedImage,Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0,decodedString.length);
+                    profileButton.setImageBitmap(decodedByte);
+
+                }
+
+//                profileButton.setImageBitmap(profileImage);
+            }
+        });
+
+
+
+
+
         // When profile is clicked, go to profile activity
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +167,10 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
                 // Go to the ProfileActivity page
                 Log.d(TAG, "Enter button clicked"); // for debugging
+
                 Intent intent = new Intent(EventHome.this, ProfileActivity.class);
+
+                intent.putExtra("userObject",user);
                 startActivity(intent);
 
 
@@ -135,9 +183,11 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
 
 
-    public void showEditEventDialog(Event eventToEdit) {
-        AddEventFragment dialog = AddEventFragment.newInstance(eventToEdit);
-        dialog.show(getSupportFragmentManager(), "AddEventFragment");
-    }
+
+
+//    public void showEditEventDialog(Event eventToEdit) {
+//        AddEventFragment dialog = AddEventFragment.newInstance(eventToEdit);
+//        dialog.show(getSupportFragmentManager(), "AddEventFragment");
+//    }
 
 }
