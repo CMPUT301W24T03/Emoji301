@@ -118,6 +118,8 @@ public class ProfileEditFragment extends DialogFragment {
                     edit.setEmail(EditEmail.getText().toString());
                     edit.setNumber(EditPhoneNumber.getText().toString());
                     edit.setName(EditName.getText().toString());
+                    edit.setHomePage(EditHomePage.getText().toString());
+                    edit.setImagePath(currentImagePath);
 
                     // Notify the ProfileActivity about the changes
                     if (profileUpdateListener != null) {
@@ -137,9 +139,10 @@ public class ProfileEditFragment extends DialogFragment {
         removeImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Clear the image from the ImageView
-                profilePicture.setImageResource(0);
-
+                // Clear the image from the ImageView and reset to default
+                profilePicture.setImageResource(R.drawable.profile_pic);
+                currentImagePath = ""; // Reset currentImagePath
+                edit.setImagePath(currentImagePath); // Update edit object
             }
         });
 
