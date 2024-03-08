@@ -19,7 +19,7 @@ public class ProfileEditFragment extends DialogFragment {
     ImageView profilePicture;
     Button removeImageButton;
     private Button saveButton;
-    private Profile edit;
+    private Users edit;
 
     private String currentImagePath;
     private OnProfileUpdateListener profileUpdateListener;
