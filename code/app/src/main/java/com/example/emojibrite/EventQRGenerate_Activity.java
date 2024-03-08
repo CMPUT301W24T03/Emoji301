@@ -1,27 +1,29 @@
-//package com.example.emojibrite;
-//
-//import android.graphics.Bitmap;
-//import android.os.Bundle;
-//import android.view.View;
-//import android.widget.Button;
-//import android.widget.ImageView;
-//
-//import androidx.activity.EdgeToEdge;
-//import androidx.appcompat.app.AppCompatActivity;
-//import androidx.core.graphics.Insets;
-//import androidx.core.view.ViewCompat;
-//import androidx.core.view.WindowInsetsCompat;
-//
-//import com.google.zxing.BarcodeFormat;
-//import com.google.zxing.MultiFormatWriter;
-//import com.google.zxing.WriterException;
-//import com.google.zxing.common.BitMatrix;
-//import com.journeyapps.barcodescanner.BarcodeEncoder;
-//
-//public class EventQRGenerate_Activity extends AppCompatActivity {
-//
-//    private Button generateQRButton;
-//    private ImageView QRcode_iv;
+
+package com.example.emojibrite;
+
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
+
+public class EventQRGenerate_Activity extends AppCompatActivity {
+
+    private Button generateQRButton;
+    private ImageView QRcode_iv;
+
 //
 //    @Override
 //    protected void onCreate(Bundle savedInstanceState) {
@@ -60,4 +62,6 @@
 //        //Log.d("QRID", Long.toString(QRid));
 //
 //    }
+
+}
 //}
