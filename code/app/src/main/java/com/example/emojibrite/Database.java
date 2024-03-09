@@ -2,13 +2,19 @@ package com.example.emojibrite;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -20,13 +26,17 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A class to represent the database
  */
 public class Database {
+    private Context context;
     // attributes
     private final FirebaseFirestore db= FirebaseFirestore.getInstance();
     private final CollectionReference profileRef = db.collection("Users");
@@ -45,7 +55,9 @@ public class Database {
     public interface ProfileImageCallBack{
         void onProfileImageComplete(Bitmap profileImage);
     }
-
+    public Database(Context context){
+        this.context = context;
+    }
 
     /**
      * A method to get the database
@@ -279,15 +291,15 @@ once created, u can call getuseruid to get the user id and use it to get user da
         String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
         profileRef.document(userUid).update("uploadedImage", encodedImage);
     }
-public void sendAutoGenProfileImageToDatabase(Bitmap bitmap){
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
-        String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
-        Log.d(TAG, "encoded image: " + encodedImage);
-        profileRef.document(userUid).update("autoGenImage", encodedImage);
-        Log.d(TAG, "image sent to database");
-    }
+    public void sendAutoGenProfileImageToDatabase(Bitmap bitmap){
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            Log.d(TAG, "encoded image: " + encodedImage);
+            profileRef.document(userUid).update("autoGenImage", encodedImage);
+            Log.d(TAG, "image sent to database");
+        }
 
     public void getUserDocument(String uid, OnUserDocumentRetrievedListener listener) {
         // Get the document with the specified UID
@@ -316,6 +328,63 @@ public void sendAutoGenProfileImageToDatabase(Bitmap bitmap){
     public interface OnUserDocumentRetrievedListener {
         void onUserDocumentRetrieved(Users retrievedUser);
     }
+
+
+    //uri here
+    public void storeImageUri(String uid, String imageUri, String imageType) {
+        // Get a reference to the user document
+        DocumentReference docRef = FirebaseFirestore.getInstance().collection("users").document(uid);
+
+        // Create a map to hold the image URI
+        Map<String, Object> imageUriMap = new HashMap<>();
+        if (imageType.equals("uploadedImage")) {
+            imageUriMap.put("uploadedImage", imageUri);
+        } else if (imageType.equals("autoGenImage")) {
+            imageUriMap.put("autoGenImage", imageUri);
+        }
+
+        // Store the image URI in the database
+        docRef.set(imageUriMap, SetOptions.merge());
+    }
+    public void getImageBitmapFromUri(String imageUri, String imageType, ImageBitmapCallBack callBack) {
+        if (imageType.equals("uploadedImage") || imageType.equals("autoGenImage")) {
+            Glide.with(context)
+                    .asBitmap()
+                    .load(imageUri)
+                    .into(new CustomTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            callBack.onImageBitmapComplete(resource);
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                        }
+                    });
+        }
+    }
+
+    public interface ImageBitmapCallBack {
+        void onImageBitmapComplete(Bitmap bitmap);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /*
     ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator("aivan Edi", imageView, database.getUserUid());

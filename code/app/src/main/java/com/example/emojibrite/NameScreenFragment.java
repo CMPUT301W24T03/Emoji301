@@ -51,6 +51,7 @@ public class NameScreenFragment extends Fragment {
         Bundle bundle = getArguments();
 
         user = bundle.getParcelable("userObject");
+
         //user =NameScreenFragmentArgs.fromBundle(getArguments()).getUserObject();
         Log.d(TAG, "onCreateView for name screen fragment: " + user.getProfileUid());
 
@@ -75,19 +76,16 @@ public class NameScreenFragment extends Fragment {
                 String name = inputName.getText().toString();
                 if(name.isEmpty()) {
                     Toast.makeText(getActivity(), " Type in a name", Toast.LENGTH_SHORT).show();
-                    /*
-                    inputName.setText("GENERATED NAME");
-                    name = inputName.getText().toString();
-
-                   NavDirections action = NameScreenFragmentDirections.actionNameScreenToUploadImageScreen(name);
-                   NavHostFragment.findNavController(NameScreenFragment.this).navigate(action);
-                     */
+                    
                 } else {
                     // recieving a bundle from the previous fragment/activity and setting the object name to be that.
 
                     user.setName(name);
+                    Log.d(TAG, "User name: " + user.getName());
+
 
                     NavDirections action = NameScreenFragmentDirections.actionNameScreenToUploadImageScreen(user);
+                    Log.d(TAG, "Next button clicked");             // for debugging
                     NavHostFragment.findNavController(NameScreenFragment.this).navigate(action);
 
                 }

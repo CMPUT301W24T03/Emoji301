@@ -3,7 +3,10 @@ package com.example.emojibrite;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,9 +20,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.io.ByteArrayOutputStream;
 
 public class PreviewScreenFragment extends Fragment {
     //attributes
@@ -27,8 +29,9 @@ public class PreviewScreenFragment extends Fragment {
     TextView name;
     FloatingActionButton backButton;
     TextView nextButtonText;
+    TextView nameText;
 
-    Database database = new Database();
+    Database database = new Database(getActivity());
     Bitmap autoGenprofileImage;
 
     Users user;
@@ -54,33 +57,46 @@ public class PreviewScreenFragment extends Fragment {
         user = userBundle.getParcelable("userObject");
         Log.d(TAG, "onCreateView for preview screen fragment: " + user.getProfileUid());
         picture = previewScreenLayout.findViewById(R.id.uploadImageImage);
-        database.setUserUid();
-        //Log.d(TAG, "User UID: " + user.getUploadedImage());
-        database.getUserDocument(user.getProfileUid(), new Database.OnUserDocumentRetrievedListener() {
-            @Override
-            public void onUserDocumentRetrieved(Users retrievedUser) {
-                user = retrievedUser;
 
-                // Save the bitmap first
-                byte[] decodedString;
-                Bitmap decodedByte = null;
-                if (user.getUploadedImage() != null) {
-                    decodedString = Base64.decode(user.getUploadedImage(), Base64.DEFAULT);
-                    decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                }
+        Log.d(TAG, "User UID: " + user.getProfileUid());
+        Log.d(TAG, "User name: " + user.getName());
+        if (user.getUploadedImageUri() == null) {
+            Log.d(TAG, "User didn't upload a picture");
+            // User didn't upload a picture, generate one based on the username
+            ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator(getContext(), user.getProfileUid(), user.getName());
+            profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(Uri result) {
+                    // Set the generated image as the ImageView
+                    Log.d(TAG, "Generated image URI: " + result);
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Glide.with(getContext()).load(result).into(picture);
+                        }
+                    });
 
-                // Then check if it's null or not
-                if (decodedByte == null) {
-                    Log.d(TAG, "The user's uploaded image is null");
-                    // Existing code...
-                } else {
-                    picture.setImageBitmap(decodedByte);
+                    user.setAutoGenImageUri(result.toString());
                 }
-            }
-        });
+            });
+        } else {
+            // User uploaded a picture, use that as the ImageView
+            Log.d(TAG, "User uploaded a picture");
+            //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(getContext()).load(user.getUploadedImageUri()).into(picture);
+                }
+            });
+
+        }
 
         backButton = previewScreenLayout.findViewById(R.id.uploadImageBackButton);
         nextButtonText = previewScreenLayout.findViewById(R.id.uploadImageScreenNext);
+        nameText = previewScreenLayout.findViewById(R.id.usernameTextView);
+
+        nameText.setText(user.getName());
 
         return previewScreenLayout;
     }
@@ -102,7 +118,7 @@ public class PreviewScreenFragment extends Fragment {
                 Log.d(TAG, "Next button clicked");
                 // go to the EventHome Activity and finish the current activity which is the AccountCreationActivity
                 // on which the fragments are hosted
-                user.setUploadedImage(null);
+
                 Intent intent = new Intent(getActivity(), EventHome.class);
                 intent.putExtra("userObject", user); // pass the user object to the EventHomeActivity
 
@@ -121,8 +137,8 @@ public class PreviewScreenFragment extends Fragment {
             public void onClick(View v) {
                 Log.d(TAG, "Back button clicked");
                 NavController navController = Navigation.findNavController(view);
-                user.setUploadedImage(null);
-                user.setAutoGenImage(null);
+                user.setUploadedImageUri(null);
+                user.setAutoGenImageUri(null);
 
 
                 PreviewScreenFragmentDirections.ActionPreviewScreenToUploadImageScreen action =

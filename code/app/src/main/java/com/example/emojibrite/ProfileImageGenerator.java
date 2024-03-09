@@ -1,7 +1,9 @@
 package com.example.emojibrite;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -19,13 +21,14 @@ public class ProfileImageGenerator {
     String name;
 
     String Uid;
+    private Context context;
     public interface OnCompleteListener <T> {
         void onComplete(T result);
     }
 
-    public ProfileImageGenerator(String Uid, String name) {
+    public ProfileImageGenerator(Context context, String Uid, String name) {
         this.name = name;
-
+        this.context = context;
         this.Uid = Uid;
     }
     public void  setProfileImageName(String name) {
@@ -52,7 +55,7 @@ public class ProfileImageGenerator {
     we put a listener to check if data insertion to the database is successful
     NOT TOO SURE ABOUT THE ONCOMPLETE PART but it is for callback purposes
      */
-    public void getProfileImage( final OnCompleteListener<Bitmap> onCompleteListener) {
+    public void getProfileImage( final OnCompleteListener<Uri> onCompleteListener) {
         addingPlusToName();
         String url = "https://ui-avatars.com/api/?name=" + name;
 
@@ -74,12 +77,17 @@ public class ProfileImageGenerator {
                 } else {
                     Log.d("ProfileImageGenerator", "Response is successful");
 
-                    Database database = new Database();
-                    byte[] bytes = response.body().bytes();
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    onCompleteListener.onComplete(bitmap);
+                    // Convert the response to a URI
+                    Uri imageUri = Uri.parse(response.request().url().toString());
 
-                    Log.d("ProfileImageGenerator", "Bitmap is sent to database");
+                    // Store the URI in the database
+                    Database database = new Database(context);
+                    database.storeImageUri(Uid, imageUri.toString(), "autoGenImage");
+
+                    // Notify the onCompleteListener after the database operation is done
+                    onCompleteListener.onComplete(imageUri);
+
+                    Log.d("ProfileImageGenerator", "URI is sent to database");
 
                     /*
                     Map<String, Object> data = new HashMap<>();

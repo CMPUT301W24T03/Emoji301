@@ -7,18 +7,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.auth.User;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.bumptech.glide.Glide;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 
 /**
@@ -31,17 +33,10 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     ListView eventList;
     EventAdapter eventAdapter; // Custom adapter to bind event data to the ListView
     ArrayList<Event> dataList;
-
     private Users user;
+    private Database database = new Database(this);
 
-    private Database database = new Database();
-
-
-
-
-    Button profileButton;
-
-
+    ImageView profileButton;
 
     private static final String TAG = "ProfileActivityTAG";
 
@@ -98,10 +93,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
             eventAdapter.notifyDataSetChanged();
         }
     }
-
-
-
-
     /**
      * onCreate is called when the activity is starting.
      * It initializes the activity, the ListView, and the FloatingActionButton.
@@ -133,28 +124,23 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         ImageView profileButton = findViewById(R.id.profile_pic);
 
-        database.getUploadedProfileImageFromDatabase(new Database.ProfileImageCallBack() {
-            @Override
-            public void onProfileImageComplete(Bitmap profileImage) {
-                // Use the profileImage bitmap here
-                // For example, you can set it to an ImageView
-                user.setUploadedImage(profileImage);
-                if (user.getUploadedImage() == null){
-                    String autoGenImage = user.getAutoGenImage();
-                    byte[] decodedString = Base64.decode(autoGenImage,Base64.DEFAULT);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0,decodedString.length);
-                    profileButton.setImageBitmap(decodedByte);}
-                else {
-                    String uploadedImage = user.getUploadedImage();
-                    byte[] decodedString = Base64.decode(uploadedImage,Base64.DEFAULT);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0,decodedString.length);
-                    profileButton.setImageBitmap(decodedByte);
-
+        if (user.getUploadedImageUri() != null) {
+            // User uploaded a picture, use that as the ImageView
+            //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(EventHome.this).load(user.getUploadedImageUri()).into(profileButton);
                 }
-
-//                profileButton.setImageBitmap(profileImage);
-            }
-        });
+            });
+        } else if (user.getUploadedImageUri() ==null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(EventHome.this).load(user.getAutoGenImageUri()).into(profileButton);
+                }
+            });
+        }
 
 
 
