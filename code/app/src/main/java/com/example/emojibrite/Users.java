@@ -10,7 +10,9 @@ import androidx.annotation.NonNull;
 
 import java.io.ByteArrayOutputStream;
 
-
+/**
+ * Users class to store the user's information
+ */
 public class Users implements Parcelable{
     // attributes
     private String HomePage;

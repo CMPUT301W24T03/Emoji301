@@ -22,7 +22,10 @@ import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
+/**
+ * PreviewScreenFragment is the fragment that displays the user's profile picture and name
+ * before the user is taken to the EventHome Activity.
+ */
 public class PreviewScreenFragment extends Fragment {
     //attributes
     ImageView picture;
@@ -35,7 +38,7 @@ public class PreviewScreenFragment extends Fragment {
     Bitmap autoGenprofileImage;
 
     Users user;
-    ImageUpload imageUpload = new ImageUpload();
+
     private static final String TAG = "PreviewScreenFragment";
 
     /**
@@ -151,26 +154,3 @@ public class PreviewScreenFragment extends Fragment {
 }
 
 
-/*
-profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Void>() {
-                public void onComplete(Void aVoid) {
-                    // After getProfileImage() is complete, call getProfileImageFromDatabase()
-                    Log.d(TAG, "inside oncomplete");
-                    database.getAutoGenProfileImageFromDatabase(new Database.ProfileImageCallBack(){
-                        @Override
-                        public void onProfileImageComplete(Bitmap profileImageFromDatabase) {
-                            Log.d(TAG, "inside onProfileImageComplete");
-                            Log.d(TAG, "ProfileImageFromDatabase: " + profileImageFromDatabase);
-                            // Use the profileImageFromDatabase bitmap here
-                            autoGenprofileImage = profileImageFromDatabase;
-                            user.setAutoGenImage(autoGenprofileImage);
-                            Log.d(TAG, "half check");
-                            byte[] decodedString = Base64.decode(user.getAutoGenImage(), Base64.DEFAULT);
-                            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                            Log.d(TAG, "full check");
-                            picture.setImageBitmap(autoGenprofileImage);
-                        }
-                    });
-                }
-            });
- */

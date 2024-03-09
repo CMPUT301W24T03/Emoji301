@@ -24,8 +24,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 /**
- * EventHome is an AppCompatActivity that serves as the main page for displaying a list of events.
- * It allows users to view event details and add new events.
+ * EventHome is the main activity for the event organizer.
+ * It displays a list of events and allows the user to add new events.
  */
 
 public class EventHome extends AppCompatActivity implements AddEventFragment.AddEventListener {
@@ -41,10 +41,9 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     private static final String TAG = "ProfileActivityTAG";
 
     /**
-     * Opens the EventDetailsActivity when an event is selected.
+     * Opens the EventDetailsActivity to show the details of the selected event.
      * @param event The event to show details for.
      */
-
     private void showEventDetails(Event event) {
         Intent intent = new Intent(this, EventDetailsActivity.class);
         intent.putExtra("eventId", event.getId());
@@ -52,7 +51,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     }
 
     /**
-     * Opens the AddEventFragment as a dialog to add a new event.
+     * Shows the AddEventFragment to add a new event.
      */
 
     public void showAddEventDialog() {
@@ -61,19 +60,17 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     }
 
     /**
-     * This method is called when a new event is added from the AddEventFragment.
-     * @param event The new or updated event to add to the list.
+     * Called when an event is added or updated.
+     * @param event The event that was added or updated.
      */
-
     @Override
     public void onEventAdded(Event event) {
         addEvent(event);
     }
 
     /**
-     * Adds an event to the dataList and updates the ListView.
-     * If the event already exists, it is updated. Otherwise, it's added to the list.
-     * @param event The event to add or update.
+     * Adds an event to the list of events and updates the ListView.
+     * @param event The event to add.
      */
     public void addEvent(Event event) {
         if (event != null) {
@@ -94,8 +91,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         }
     }
     /**
-     * onCreate is called when the activity is starting.
-     * It initializes the activity, the ListView, and the FloatingActionButton.
+     * Called when the activity is created.
+     * @param savedInstanceState The saved instance state.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,15 +162,5 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
 
     }
-
-
-
-
-
-
-//    public void showEditEventDialog(Event eventToEdit) {
-//        AddEventFragment dialog = AddEventFragment.newInstance(eventToEdit);
-//        dialog.show(getSupportFragmentManager(), "AddEventFragment");
-//    }
 
 }

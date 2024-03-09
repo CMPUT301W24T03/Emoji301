@@ -26,6 +26,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link UploadImageScreenFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
 public class UploadImageScreenFragment extends Fragment {
     // attributes
     Button uploadImageButton;

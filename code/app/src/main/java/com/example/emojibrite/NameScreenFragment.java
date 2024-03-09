@@ -17,7 +17,10 @@ import androidx.navigation.fragment.NavHostFragment;
 import android.util.Log;
 import android.widget.Toast;
 
-
+/**
+ * NameScreenFragment is the fragment for the name screen.
+ * It allows the user to enter their name and go to the next screen.
+ */
 public class NameScreenFragment extends Fragment {
     // attributes
     EditText inputName;
@@ -38,7 +41,7 @@ public class NameScreenFragment extends Fragment {
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
+     * @return The View for the fragment's UI, or null.
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,10 +62,11 @@ public class NameScreenFragment extends Fragment {
     }
 
     /**
-     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
-     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
+     * Called immediately after onCreateView(LayoutInflater, ViewGroup, Bundle) has returned,
+     * but before any saved state has been restored in to the view.
+     * It is safe to perform operations on views in this method.
+     * @param view               The View returned by onCreateView(LayoutInflater, ViewGroup, Bundle).
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
      */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

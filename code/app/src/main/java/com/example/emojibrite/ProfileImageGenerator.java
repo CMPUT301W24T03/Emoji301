@@ -16,25 +16,48 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+/**
+ * This class is used to generate a profile image for a user
+ * using the ui-avatars.com API. The image is then stored in
+ * the Firestore database.
+ */
 public class ProfileImageGenerator {
     OkHttpClient client = new OkHttpClient();
     String name;
 
     String Uid;
     private Context context;
+    /**
+     * This interface is used to provide a callback for when the
+     * profile image is generated and stored in the database.
+     * @param <T> The type of the result
+     */
     public interface OnCompleteListener <T> {
         void onComplete(T result);
     }
-
+    /**
+     * This constructor is used to create a ProfileImageGenerator
+     * object with the user's name and Uid.
+     * @param context The context of the activity
+     * @param Uid The user's unique ID
+     * @param name The user's name
+     */
     public ProfileImageGenerator(Context context, String Uid, String name) {
         this.name = name;
         this.context = context;
         this.Uid = Uid;
     }
+    /**
+     * This method is used to set the user's name.
+     * @param name The user's name
+     */
     public void  setProfileImageName(String name) {
         this.name = name;
     }
-
+    /**
+     * This method is used to get the user's name.
+     * @return The user's name
+     */
     private void addingPlusToName() {
         String[] nameArray = name.split(" ");
         String newName = "";
@@ -54,6 +77,13 @@ public class ProfileImageGenerator {
     then we just add it into the collection ProfileImages with the document ID being the Uid.
     we put a listener to check if data insertion to the database is successful
     NOT TOO SURE ABOUT THE ONCOMPLETE PART but it is for callback purposes
+     */
+    /**
+     * This method is used to get the user's profile image from the
+     * ui-avatars.com API and store it in the Firestore database.
+     * @param onCompleteListener The callback for when the profile
+     *                           image is generated and stored in the
+     *                           database
      */
     public void getProfileImage( final OnCompleteListener<Uri> onCompleteListener) {
         addingPlusToName();

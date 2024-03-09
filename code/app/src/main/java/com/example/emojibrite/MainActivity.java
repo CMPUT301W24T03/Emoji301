@@ -15,7 +15,9 @@ import android.widget.TextView;
 import android.util.Log;
 
 import com.google.firebase.firestore.FirebaseFirestore;
-
+/**
+ * MainActivity class to handle the main activity of the app
+ */
 public class MainActivity extends AppCompatActivity {
     Button enterButton;
     TextView scanQRCode;
@@ -25,6 +27,10 @@ public class MainActivity extends AppCompatActivity {
 
     //u can include String Fid to pass the firebase installation id
     @Override
+    /**
+     * onCreate method to handle the creation of the main activity
+     * @param savedInstanceState
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -72,16 +78,6 @@ public class MainActivity extends AppCompatActivity {
                 });
 
 
-//                // if the user exists in database, go to the event page
-//                Log.d(TAG, "Enter button clicked"); // for debugging
-//                Intent intent = new Intent(MainActivity.this, EventHome.class);
-//                startActivity(intent);
-                // else go to nameScreenFragment through the AccountCreationActivity
-
-
-                // else go to nameScreenFragment
-
-                //Log.d(TAG, "is the user signed in or not???" + database.isUserSignedIn()); // for debugging
             }
         });
 
