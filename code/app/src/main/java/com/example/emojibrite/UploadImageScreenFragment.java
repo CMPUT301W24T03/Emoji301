@@ -28,7 +28,7 @@ import java.io.IOException;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link UploadImageScreenFragment#newInstance} factory method to
+ * Use the new method to
  * create an instance of this fragment.
  */
 public class UploadImageScreenFragment extends Fragment {
