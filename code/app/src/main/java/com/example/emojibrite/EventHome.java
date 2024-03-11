@@ -60,7 +60,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
      */
 
     public void showAddEventDialog() {
-        AddEventFragment dialog = new AddEventFragment();
+        AddEventFragment dialog = AddEventFragment.newInstance(user);
         dialog.show(getSupportFragmentManager(), "AddEventFragment");
     }
 
