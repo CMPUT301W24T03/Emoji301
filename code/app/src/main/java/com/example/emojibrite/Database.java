@@ -2,13 +2,19 @@ package com.example.emojibrite;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -20,13 +26,17 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * A class to represent the database
+ * Database class to handle the database
  */
 public class Database {
+    private Context context;
     // attributes
     private final FirebaseFirestore db= FirebaseFirestore.getInstance();
     private final CollectionReference profileRef = db.collection("Users");
@@ -35,17 +45,34 @@ public class Database {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String userUid = null;
-
+    /**
+     * A method to get the user id
+     * @return the user id
+     */
     public interface UserNameDBCallBack{
         void onUserRetrieveNameComplete(String name);
     }
+    /**
+     * A method to get the user id
+     * @return the user id
+     */
     public interface SignInCallBack{
         void onSignInComplete();
     }
+    /**
+     * A method to get the user id
+     * @return the user id
+     */
     public interface ProfileImageCallBack{
         void onProfileImageComplete(Bitmap profileImage);
     }
-
+    /**
+     * A method to get the user id
+     * @return the user id
+     */
+    public Database(Context context){
+        this.context = context;
+    }
 
     /**
      * A method to get the database
@@ -55,12 +82,20 @@ public class Database {
 
         return db;
     }
+    /**
+     * A method to get the user id
+     * @return the user id
+     */
 
     public boolean isUserSignedIn() {
         Boolean signedIn = mAuth.getCurrentUser() != null;
 
         return signedIn;
     }
+    /**
+     * A method to get the user id
+     * @return the user id
+     */
     public void signOutUser(){
 
         mAuth.signOut();
@@ -74,7 +109,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
     /**
      * A method to get the user id
      * @return the user id
- */
+     */
     public String getUserUid() {
 
         if (mAuth.getCurrentUser() != null) {
@@ -82,10 +117,17 @@ once created, u can call getuseruid to get the user id and use it to get user da
         }
         return userUid;
     }
+    /**
+     * A method to get the user id
+     * @return the user id
+     */
     public void setUserUid(){
         userUid = mAuth.getCurrentUser().getUid();
     }
-
+    /**
+     * A method to get the user id
+     * @return the user id
+     */
     public void getUserName(UserNameDBCallBack callBack){
         DocumentReference docRef = profileRef.document(userUid);
         Log.d(TAG, "inside get username: " );
@@ -105,6 +147,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
             }
         });
     }
+    /**
+     * A method to get the user id
+     * @return the user id
+     */
     public void anonymousSignIn(SignInCallBack callBack) {
         mAuth.signInAnonymously()
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>(){
@@ -133,6 +179,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     }
                 });
     }
+    /**
+     * A method to get the user id
+     * @return the user id
+     */
     public CollectionReference getUserRef() {
 
         return profileRef;
@@ -152,6 +202,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
     NOW, what if there is a document meaning the user already exists in the database?
     it goes to the else where it checks, if the name is null meaning it is just a newly added user who hasn't initialized their name and other information yet(aka in the newaccountcreation session),
     then you can call this function still in which the database will be updated with the new user information
+     */
+    /**
+     * A method to add a user to the database
+     * @param user the user to add
      */
     private void addUser(Users user){
         if (user == null) {
@@ -208,85 +262,111 @@ once created, u can call getuseruid to get the user id and use it to get user da
         });
     }
 
+
+
+
     /**
-     * A method to get the profile image
-     * @param callBack
+     * A method to get the user id
+     * @return the user id
      */
-    /*
-    database.getProfileImage(new Database.ProfileImageCallBack() {
-    @Override
-    public void onProfileImageComplete(Bitmap profileImage) {
-        // Use the profileImage bitmap here
-        ImageView imageView = findViewById(R.id.profile_image);
-        imageView.setImageBitmap(profileImage);
-    }
-    });
 
-     */
-    public void getAutoGenProfileImageFromDatabase(ProfileImageCallBack callBack){
-        DocumentReference docRef = profileRef.document(userUid);
-        Log.d(TAG, "inside getAutoGenProfileImageFromDatabase: " );
+    public void getUserDocument(String uid, OnUserDocumentRetrievedListener listener) {
+        // Get the document with the specified UID
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("users").document(uid);
+
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        Log.d(TAG, "DocumentSnapshot data: " + document.exists());
-
-                        String encodedImage = document.getString("autoGenImage");
-                        byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        callBack.onProfileImageComplete(decodedByte);
-
+                        // Convert the document into a Users object
+                        Users retrievedUser = document.toObject(Users.class);
+                        listener.onUserDocumentRetrieved(retrievedUser);
                     } else {
-                        Log.d(TAG, "No such document");
+                        Log.d("Firestore", "No such document");
                     }
                 } else {
-                    Log.d(TAG, "get failed with ", task.getException());
+                    Log.d("Firestore", "get failed with ", task.getException());
                 }
             }
         });
     }
-    public void getUploadedProfileImageFromDatabase(ProfileImageCallBack callBack){
-        DocumentReference docRef = profileRef.document(userUid);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
+    /**
+     * A method to get the user id
+     * @return the user id
+     */
+    public interface OnUserDocumentRetrievedListener {
+        void onUserDocumentRetrieved(Users retrievedUser);
+    }
 
-                        String encodedImage = document.getString("uploadedImage");
-                        byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        callBack.onProfileImageComplete(decodedByte);
+    /**
+     * A method to get the user id
+     * @return the user id
+     */
+    //uri here
+    public void storeImageUri(String uid, String imageUri, String imageType) {
+        // Get a reference to the user document
+        DocumentReference docRef = FirebaseFirestore.getInstance().collection("users").document(uid);
 
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
+        // Create a map to hold the image URI
+        Map<String, Object> imageUriMap = new HashMap<>();
+        if (imageType.equals("uploadedImage")) {
+            imageUriMap.put("uploadedImage", imageUri);
+        } else if (imageType.equals("autoGenImage")) {
+            imageUriMap.put("autoGenImage", imageUri);
+        }
+
+        // Store the image URI in the database
+        docRef.set(imageUriMap, SetOptions.merge());
     }
-    public void sendUploadedProfileImageToDatabase(Bitmap bitmap){
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
-        String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
-        profileRef.document(userUid).update("uploadedImage", encodedImage);
+    /**
+     * A method to get the user id
+     * @return the user id
+     */
+    public void getImageBitmapFromUri(String imageUri, String imageType, ImageBitmapCallBack callBack) {
+        if (imageType.equals("uploadedImage") || imageType.equals("autoGenImage")) {
+            Glide.with(context)
+                    .asBitmap()
+                    .load(imageUri)
+                    .into(new CustomTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            callBack.onImageBitmapComplete(resource);
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                        }
+                    });
+        }
     }
-public void sendAutoGenProfileImageToDatabase(Bitmap bitmap){
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
-        String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
-        Log.d(TAG, "encoded image: " + encodedImage);
-        profileRef.document(userUid).update("autoGenImage", encodedImage);
-        Log.d(TAG, "image sent to database");
+    /**
+     * A method to get the user id
+     * @return the user id
+     */
+    public interface ImageBitmapCallBack {
+        void onImageBitmapComplete(Bitmap bitmap);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /*
     ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator("aivan Edi", imageView, database.getUserUid());

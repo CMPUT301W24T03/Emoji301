@@ -15,8 +15,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.w3c.dom.Text;
 
-
-
+//Todo: Add intent to recieve info, and display it in the profile page, upload function, remove function, add things to database depending on upload or remove
 /**
  * The main activity for displaying and editing user profiles.
  * This activity allows users to view their profile information and initiate the editing process
@@ -72,7 +71,6 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         String storedEmail = preferences.getString("email", "");
         String storedPhoneNumber = preferences.getString("phoneNumber", "");
         String storedImagePath = preferences.getString("imagePath", "");
-
         String storedName = preferences.getString("name", "");
         String storedHomePage = preferences.getString("homePage", "");
 
@@ -93,11 +91,9 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         // Update the userEmail, userPhone, name, and profile image in the activity
         updateProfileData(newEmail, newPhoneNumber, newImagePath, newName, newHomePage);
 
-
         // Update the currentProfile with the new information
         currentProfile.setEmail(newEmail);
         currentProfile.setNumber(newPhoneNumber);
-
         currentProfile.setName(newName);
         currentProfile.setHomePage(newHomePage);
         currentProfile.setImagePath(newImagePath);
@@ -123,7 +119,6 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
      * @param newHomePage    The new home page.
      */
     private void updateProfileData(String newEmail, String newPhoneNumber, String newImagePath, String newName, String newHomePage) {
-
         // Update the UI elements with the new data
         TextView emailTextView = findViewById(R.id.userEmail);
         TextView phoneNumberTextView = findViewById(R.id.userPhoneNumber);
@@ -174,21 +169,17 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         editor.apply();
     }
 
-
     /**
      * Updates the profile image in the UI.
      *
      * @param newImagePath The new image path for the profile picture.
      */
 
-
     private void updateProfileImage(String newImagePath) {
         // Assuming you have an ImageView in your activity_profile.xml with id profileImage
         ImageView profileImage = findViewById(R.id.profilePicture);
 
         // For demonstration, assuming you're using a resource id
-
     }
 
 }
-
