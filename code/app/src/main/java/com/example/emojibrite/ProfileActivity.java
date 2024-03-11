@@ -15,7 +15,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.w3c.dom.Text;
 
-
+//Todo: Add intent to recieve info, and display it in the profile page, upload function, remove function, add things to database depending on upload or remove
 /**
  * The main activity for displaying and editing user profiles.
  * This activity allows users to view their profile information and initiate the editing process
@@ -23,6 +23,7 @@ import org.w3c.dom.Text;
  * to reflect changes in the user's profile.
  */
 public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnProfileUpdateListener {
+
 
 
     Users currentProfile = new Users("123456", "John Doe", "john@example.com", "https://example.com", "path_to_image", "123456789");
@@ -128,6 +129,9 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         // Save the updated information in SharedPreferences
         saveProfileData(newEmail, newPhoneNumber, newImagePath, newName, newHomePage);
 
+
+        // Save the updated information in SharedPreferences
+//        saveProfileData(newEmail, newPhoneNumber, newImagePath);
 
         emailTextView.setText(newEmail);
         phoneNumberTextView.setText(newPhoneNumber);
