@@ -8,8 +8,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+/**
+ * Activity for the account creation process
+ * Uses fragments to navigate through the account creation process
+ * Passes the user object to the first fragment in the nav graph
+ */
 public class AccountCreationActivity extends AppCompatActivity {
 
+    // attributes
     private static final String TAG = "AccountCreationActivity";
     Users user;
     NavController navController;

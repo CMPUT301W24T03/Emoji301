@@ -20,12 +20,12 @@ import android.widget.ListView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
+import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 
 /**
- * EventHome is the main activity for the event organizer.
- * It displays a list of events and allows the user to add new events.
+ * EventHome is an AppCompatActivity that serves as the main page for displaying a list of events.
+ * It allows users to view event details and add new events.
  */
 
 public class EventHome extends AppCompatActivity implements AddEventFragment.AddEventListener {
@@ -44,6 +44,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
      * Opens the EventDetailsActivity to show the details of the selected event.
      * @param event The event to show details for.
      */
+
     private void showEventDetails(Event event) {
         Intent intent = new Intent(this, EventDetailsActivity.class);
         intent.putExtra("eventId", event.getId());
@@ -63,6 +64,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
      * Called when an event is added or updated.
      * @param event The event that was added or updated.
      */
+
     @Override
     public void onEventAdded(Event event) {
         addEvent(event);

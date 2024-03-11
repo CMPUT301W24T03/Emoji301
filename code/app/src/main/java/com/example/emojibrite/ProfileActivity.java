@@ -25,6 +25,7 @@ import org.w3c.dom.Text;
 public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnProfileUpdateListener {
 
 
+
     Users currentProfile = new Users("123456", "John Doe", "john@example.com", "https://example.com", "path_to_image", "123456789");
 
 
@@ -128,6 +129,9 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         // Save the updated information in SharedPreferences
         saveProfileData(newEmail, newPhoneNumber, newImagePath, newName, newHomePage);
 
+
+        // Save the updated information in SharedPreferences
+//        saveProfileData(newEmail, newPhoneNumber, newImagePath);
 
         emailTextView.setText(newEmail);
         phoneNumberTextView.setText(newPhoneNumber);
