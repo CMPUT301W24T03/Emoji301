@@ -17,7 +17,10 @@ import androidx.navigation.fragment.NavHostFragment;
 import android.util.Log;
 import android.widget.Toast;
 
-
+/**
+ * NameScreenFragment is the fragment for the name screen.
+ * It allows the user to enter their name and go to the next screen.
+ */
 public class NameScreenFragment extends Fragment {
     // attributes
     EditText inputName;
@@ -38,7 +41,7 @@ public class NameScreenFragment extends Fragment {
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
+     * @return The View for the fragment's UI, or null.
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,6 +54,7 @@ public class NameScreenFragment extends Fragment {
         Bundle bundle = getArguments();
 
         user = bundle.getParcelable("userObject");
+
         //user =NameScreenFragmentArgs.fromBundle(getArguments()).getUserObject();
         Log.d(TAG, "onCreateView for name screen fragment: " + user.getProfileUid());
 
@@ -58,10 +62,11 @@ public class NameScreenFragment extends Fragment {
     }
 
     /**
-     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
-     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
+     * Called immediately after onCreateView(LayoutInflater, ViewGroup, Bundle) has returned,
+     * but before any saved state has been restored in to the view.
+     * It is safe to perform operations on views in this method.
+     * @param view               The View returned by onCreateView(LayoutInflater, ViewGroup, Bundle).
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
      */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -75,19 +80,16 @@ public class NameScreenFragment extends Fragment {
                 String name = inputName.getText().toString();
                 if(name.isEmpty()) {
                     Toast.makeText(getActivity(), " Type in a name", Toast.LENGTH_SHORT).show();
-                    /*
-                    inputName.setText("GENERATED NAME");
-                    name = inputName.getText().toString();
-
-                   NavDirections action = NameScreenFragmentDirections.actionNameScreenToUploadImageScreen(name);
-                   NavHostFragment.findNavController(NameScreenFragment.this).navigate(action);
-                     */
+                    
                 } else {
                     // recieving a bundle from the previous fragment/activity and setting the object name to be that.
 
                     user.setName(name);
+                    Log.d(TAG, "User name: " + user.getName());
+
 
                     NavDirections action = NameScreenFragmentDirections.actionNameScreenToUploadImageScreen(user);
+                    Log.d(TAG, "Next button clicked");             // for debugging
                     NavHostFragment.findNavController(NameScreenFragment.this).navigate(action);
 
                 }
