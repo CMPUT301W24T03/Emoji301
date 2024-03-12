@@ -9,8 +9,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+
 import android.os.Handler;
 import android.os.Looper;
+
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -42,6 +44,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
     /**
      * Opens the EventDetailsActivity to show the details of the selected event.
+     *
      * @param event The event to show details for.
      */
 
@@ -56,12 +59,13 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
      */
 
     public void showAddEventDialog() {
-        AddEventFragment dialog = new AddEventFragment();
+        AddEventFragment dialog = AddEventFragment.newInstance(user);
         dialog.show(getSupportFragmentManager(), "AddEventFragment");
     }
 
     /**
      * Called when an event is added or updated.
+     *
      * @param event The event that was added or updated.
      */
 
@@ -72,6 +76,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
     /**
      * Adds an event to the list of events and updates the ListView.
+     *
      * @param event The event to add.
      */
     public void addEvent(Event event) {
@@ -92,8 +97,10 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
             eventAdapter.notifyDataSetChanged();
         }
     }
+
     /**
      * Called when the activity is created.
+     *
      * @param savedInstanceState The saved instance state.
      */
     @Override
@@ -133,7 +140,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                     Glide.with(EventHome.this).load(user.getUploadedImageUri()).into(profileButton);
                 }
             });
-        } else if (user.getUploadedImageUri() ==null) {
+        } else if (user.getUploadedImageUri() == null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
@@ -141,8 +148,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                 }
             });
         }
-
-
 
 
 
@@ -156,7 +161,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
                 Intent intent = new Intent(EventHome.this, ProfileActivity.class);
 
-                intent.putExtra("userObject",user);
+                intent.putExtra("userObject", user);
                 startActivity(intent);
 
 
@@ -165,5 +170,5 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
 
     }
-
 }
+

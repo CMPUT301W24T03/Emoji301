@@ -27,8 +27,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.IOException;
 
 /**
- * UploadImageScreenFragment is the fragment that allows the user to upload an image
- * to be used as their profile picture.
+ * A simple {@link Fragment} subclass.
+ * Use the new method to
+ * create an instance of this fragment.
  */
 public class UploadImageScreenFragment extends Fragment {
     // attributes

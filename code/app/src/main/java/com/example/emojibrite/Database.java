@@ -50,6 +50,10 @@ public class Database {
      * @return the user id
      */
     public interface UserNameDBCallBack{
+        /**
+         * A method that is called when a user's name has been successfully retrieved
+         * @param name is a string of the retrieved user
+         */
         void onUserRetrieveNameComplete(String name);
     }
     /**
@@ -57,18 +61,27 @@ public class Database {
      * @return the user id
      */
     public interface SignInCallBack{
+        /**
+         * Part of the SignInCallBack interface which is called when the sign-in operation is
+         * completed
+         */
         void onSignInComplete();
     }
+    // todo: delete this interface BECAUSE it is not used and there is one called ImageBitmapCallBack
     /**
      * A method to get the user id
      * @return the user id
      */
     public interface ProfileImageCallBack{
+        /**
+         * This method is called when a profile image has been successfully processed or loaded
+         * @param profileImage The bitmap of the profile image has been successfully processed or loaded
+         */
         void onProfileImageComplete(Bitmap profileImage);
     }
     /**
-     * A method to get the user id
-     * @return the user id
+     * A constructor that is used to create a new instance of the database class
+     * @param context is the current state of the application or activity
      */
     public Database(Context context){
         this.context = context;
@@ -93,8 +106,8 @@ public class Database {
         return signedIn;
     }
     /**
-     * A method to get the user id
-     * @return the user id
+     * A method that is used to sign out a user
+     * from Firebase Authentication
      */
     public void signOutUser(){
 
@@ -118,15 +131,18 @@ once created, u can call getuseruid to get the user id and use it to get user da
         return userUid;
     }
     /**
-     * A method to get the user id
-     * @return the user id
+     * A method that sets the userUid field to the UID of the currently signed-in user.
+     * Use this method after the user has successfully signed in.
      */
     public void setUserUid(){
         userUid = mAuth.getCurrentUser().getUid();
     }
     /**
-     * A method to get the user id
-     * @return the user id
+     * A method that retrieves the username of a user from a Firestore document
+     * If the document exists, the onUserRetrieveNameComplete method of the provided callback with the param of name is called
+     * If the document does not exist, log it
+     * If an error occurs during document retrieval, log it.
+     * @param callBack is an instance of the UserNameDBCallBack interface which is used to handle the result of the database operation
      */
     public void getUserName(UserNameDBCallBack callBack){
         DocumentReference docRef = profileRef.document(userUid);
@@ -135,7 +151,6 @@ once created, u can call getuseruid to get the user id and use it to get user da
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
-                    Log.d(TAG, "DocumentSnapshot data name inside database function " + documentSnapshot.getString("name"));
                     callBack.onUserRetrieveNameComplete(documentSnapshot.getString("name"));
                 } else {
                     Log.d(TAG, "No such document");
@@ -149,8 +164,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
         });
     }
     /**
-     * A method to get the user id
-     * @return the user id
+     * A method that signs in a user anonymously using Firebase Auth/
+     * If the sign-in is successful, a new user is added to the databse with the user's unique ID.
+     * If it fails, log it
+     * @param callBack is an instance of SignInCallBack which used to handle the result of the sign-in operation.
      */
     public void anonymousSignIn(SignInCallBack callBack) {
         mAuth.signInAnonymously()
@@ -289,8 +306,12 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
 
     /**
-     * A method to get the user id
-     * @return the user id
+     * Retrieves a user document from the "user" collection in Firestore using the document uid.
+     * If the document exists, it is converted into a Users object and the `onUserDocumentRetrieved` method of the provided listener is called with the Users object.
+     * If the document doesn't exist, log it
+     * If an error occurs during the document retrieval,log it.
+     * @param uid is the user id of the document ot retrieve
+     * @param listener is an instance of OnUserDocumentRetrievedListener which is used to handle the result of the document retrieval.
      */
 
     public void getUserDocument(String uid, OnUserDocumentRetrievedListener listener) {
@@ -317,16 +338,20 @@ once created, u can call getuseruid to get the user id and use it to get user da
         });
     }
     /**
-     * A method to get the user id
-     * @return the user id
+     * An interface that serves as a callback for user document retrieval operations
      */
     public interface OnUserDocumentRetrievedListener {
         void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot);
     }
 
     /**
-     * A method to get the user id
-     * @return the user id
+     * Store an image URI in a firestore document based on user id and image type
+     * If the image type is "uploadedImage", the image URI is stored under the "uploadedImage" field.
+     * If the image type is "autoGenImage", the image URI is stored under the "autoGenImage" field.
+     * else nothing
+     * @param uid is the  user ID of the document to store the image URI in.
+     * @param imageUri is the URI of the image to store.
+     * @param imageType is the type of the image, either 'uploadedImage' or 'autoGenImage'
      */
     //uri here
     public void storeImageUri(String uid, String imageUri, String imageType) {
@@ -344,8 +369,12 @@ once created, u can call getuseruid to get the user id and use it to get user da
         docRef.set(imageUriMap, SetOptions.merge());
     }
     /**
-     * A method to get the user id
-     * @return the user id
+     * A method that retrieves the image as a bitmap from a given URI using Glide
+     * If the image type is "uploadedImage" or autoGenImage, the image is loaded into a bitmap and the `onImageBitmapComplete` method of the provided callback is called with the Bitmap.
+     * else nothing.
+     * @param callBack is an instance of the ImageBitmapCallBack interface. This callback is used to handle the result of the image retrieval.
+     * @param imageUri is the URI of the image to retrieve.
+     * @param imageType is the type of the image. This should be either "uploadedImage" or "autoGenImage".
      */
     public void getImageBitmapFromUri(String imageUri, String imageType, ImageBitmapCallBack callBack) {
         if (imageType.equals("uploadedImage") || imageType.equals("autoGenImage")) {
@@ -365,10 +394,13 @@ once created, u can call getuseruid to get the user id and use it to get user da
         }
     }
     /**
-     * A method to get the user id
-     * @return the user id
+     * An interface that serves as a callback for image processing operations
      */
     public interface ImageBitmapCallBack {
+        /**
+         * A method that is called when the image has been successfully loaded or processed
+         * @param bitmap The image has been successfully loaded or processed
+         */
         void onImageBitmapComplete(Bitmap bitmap);
     }
 
