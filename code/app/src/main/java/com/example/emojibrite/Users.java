@@ -1,33 +1,29 @@
 package com.example.emojibrite;
 
 
-import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Base64;
 
 import androidx.annotation.NonNull;
-
-import java.io.ByteArrayOutputStream;
 
 /**
  * Users class to store the user's information
  */
 public class Users implements Parcelable{
     // attributes
-    private String HomePage;
+    private String homePage;
     private String name;
     private String autoGenImageUri;
     private String uploadedImageUri;
     private String email;
     private String number;
     private String role;
-    private String uid;
+    private String profileUid;
 
     // set to false by default in constructors
     private boolean enableNotification;
     private boolean enableGeolocationTracking;
-    private String ImagePath;
+    private String imagePath;
 //    private boolean isAdmin;
 
     /**
@@ -40,24 +36,26 @@ public class Users implements Parcelable{
      * @param ImagePath of the picture
      * @param number   of the user
      */
-    public Users(String uid, String name, String email, String HomePage, String ImagePath, String number) {
-        this.uid = uid;
+    public Users(String profileUid, String name, String email, String HomePage, String ImagePath, String number) {
+        this.profileUid = profileUid;
         this.name = name;
         this.email = email;
-        this.HomePage = HomePage;
-        this.ImagePath = ImagePath;
+        this.homePage = HomePage;
+        this.imagePath = ImagePath;
         this.number = number;
         this.enableNotification = false;
         this.enableGeolocationTracking = false;
     }
+    public Users() {}
+
 
     /**
      * Users constructor with uid
      *
-     * @param uid unique id of the user
+     * @param profileUid unique id of the user
      */
-    public Users(String uid) {
-        this.uid = uid;
+    public Users(String profileUid) {
+        this.profileUid = profileUid;
         this.name = null;
         this.email = null;
         this.autoGenImageUri = null;
@@ -65,6 +63,7 @@ public class Users implements Parcelable{
         this.number = null;
         this.enableNotification = false;
         this.enableGeolocationTracking = false;
+        this.homePage = null;
 
     }
 
@@ -83,6 +82,12 @@ public class Users implements Parcelable{
     public void setUploadedImageUri(String uploadedImageUri) {
         this.uploadedImageUri = uploadedImageUri;
 
+    }
+    public String getHomePage() {
+        return homePage;
+    }
+    public void setHomePage(String homePage) {
+        this.homePage = homePage;
     }
 
     /**
@@ -107,7 +112,7 @@ public class Users implements Parcelable{
      * @return uid : the unique id of the user
      */
     public String getProfileUid() {
-        return uid;
+        return profileUid;
     }
 
     /**
@@ -141,28 +146,14 @@ public class Users implements Parcelable{
     public void setEmail(String email) {
         this.email = email;
     }
-    /**
-     * Gets the HomePage of the user
-     * @return HomePage of the user
-     */
-    public String getHomePage() {
-        return HomePage;
-    }
 
-    /**
-     * Gets the HomePage of the user
-     * @param HomePage of the user
-     */
-    public void setHomePage(String HomePage) {
-        this.HomePage = HomePage;
-    }
 
     /**
      * Gets the ImagePath of the user
      * @return ImagePath of the user
      */
     public String getImagePath() {
-        return ImagePath;
+        return imagePath;
     }
 
     /**
@@ -170,7 +161,7 @@ public class Users implements Parcelable{
      * @param autoGenImage of the user
      */
     public void setImagePath(String autoGenImage) {
-        this.ImagePath = autoGenImage;
+        this.imagePath = autoGenImage;
     }
 
     /**
@@ -239,8 +230,9 @@ public class Users implements Parcelable{
     }
 
 
-    /*
-    parcelable implementation
+    /**
+     * Parcelable constructor for the Users class
+     * @param in
      */
     protected Users(Parcel in) {
         //deserialization of the object
@@ -250,16 +242,21 @@ public class Users implements Parcelable{
         email = in.readString();
         number = in.readString();
         role = in.readString();
-        uid = in.readString();
+        profileUid = in.readString();
+        homePage = in.readString();
         enableNotification = in.readByte() != 0;
         enableGeolocationTracking = in.readByte() != 0;
     }
-
+    /**
+     * Parcelable creator for the Users class
+     */
     @Override
     public int describeContents() {
         return 0;
     }
-
+    /**
+     * Parcelable creator for the Users class
+     */
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
 
@@ -269,7 +266,8 @@ public class Users implements Parcelable{
         dest.writeString(email);
         dest.writeString(number);
         dest.writeString(role);
-        dest.writeString(uid);
+        dest.writeString(profileUid);
+        dest.writeString(homePage);
         dest.writeByte((byte) (enableNotification ? 1 : 0));
         dest.writeByte((byte) (enableGeolocationTracking ? 1 : 0));
     }

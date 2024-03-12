@@ -27,9 +27,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.IOException;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link UploadImageScreenFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * UploadImageScreenFragment is the fragment that allows the user to upload an image
+ * to be used as their profile picture.
  */
 public class UploadImageScreenFragment extends Fragment {
     // attributes
@@ -75,7 +74,11 @@ public class UploadImageScreenFragment extends Fragment {
 
         return uploadImageScreenLayout;
     }
-
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * @param context If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onAttach(@NonNull Context context) {
 
