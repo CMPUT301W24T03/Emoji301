@@ -36,7 +36,9 @@
                 android:layout_width="386dp"
                 android:layout_height="267dp"
                 android:layout_gravity="center_horizontal"
+
                 android:src="@drawable/ic_launcher_foreground" />
+
 
         </LinearLayout>
 
@@ -82,7 +84,9 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="61dp"
                 android:fontFamily="@font/alice"
+
                 android:text="resource" />
+
 
             <TextView
                 android:id="@+id/userPhoneNumber"

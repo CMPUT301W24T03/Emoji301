@@ -3,7 +3,10 @@ package com.example.emojibrite;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,22 +20,25 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.io.ByteArrayOutputStream;
-
+/**
+ * PreviewScreenFragment is the fragment that displays the user's profile picture and name
+ * before the user is taken to the EventHome Activity.
+ */
 public class PreviewScreenFragment extends Fragment {
     //attributes
     ImageView picture;
     TextView name;
     FloatingActionButton backButton;
     TextView nextButtonText;
+    TextView nameText;
 
-    Database database = new Database();
+    Database database = new Database(getActivity());
     Bitmap autoGenprofileImage;
 
     Users user;
-    ImageUpload imageUpload = new ImageUpload();
+
     private static final String TAG = "PreviewScreenFragment";
 
     /**
@@ -54,43 +60,46 @@ public class PreviewScreenFragment extends Fragment {
         user = userBundle.getParcelable("userObject");
         Log.d(TAG, "onCreateView for preview screen fragment: " + user.getProfileUid());
         picture = previewScreenLayout.findViewById(R.id.uploadImageImage);
-        database.setUserUid();
-        Log.d(TAG, "User UID: " + user.getUploadedImage());
-        if ( user.getUploadedImage() == null) {
-            Log.d(TAG, "The user's uploaded image is null");
-            ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator(user.getProfileUid(), user.getName());
-            Log.d(TAG, "instance of imagegenerator");
-            profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Bitmap>() {
-                public void onComplete(Bitmap bitmap) {
-                    Log.d(TAG, "inside oncomplete");
-                    autoGenprofileImage = bitmap;
-                    user.setAutoGenImage(autoGenprofileImage);
-                    Log.d(TAG, "half check");
-                    byte[] decodedString = Base64.decode(user.getAutoGenImage(), Base64.DEFAULT);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                    Log.d(TAG, "full check");
-                    getActivity().runOnUiThread(new Runnable() {
+
+        Log.d(TAG, "User UID: " + user.getProfileUid());
+        Log.d(TAG, "User name: " + user.getName());
+        if (user.getUploadedImageUri() == null) {
+            Log.d(TAG, "User didn't upload a picture");
+            // User didn't upload a picture, generate one based on the username
+            ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator(getContext(), user.getProfileUid(), user.getName());
+            profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(Uri result) {
+                    // Set the generated image as the ImageView
+                    Log.d(TAG, "Generated image URI: " + result);
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
-                            picture.setImageBitmap(decodedByte);
+                            Glide.with(getContext()).load(result).into(picture);
                         }
                     });
 
+                    user.setAutoGenImageUri(result.toString());
+                }
+            });
+        } else {
+            // User uploaded a picture, use that as the ImageView
+            Log.d(TAG, "User uploaded a picture");
+            //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(getContext()).load(user.getUploadedImageUri()).into(picture);
                 }
             });
 
-            }
-        else {
-            byte[] decodedString = Base64.decode(user.getUploadedImage(), Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            picture.setImageBitmap(decodedByte);
         }
-
-        name = previewScreenLayout.findViewById(R.id.usernameTextView);
-        name.setText(user.getName());
 
         backButton = previewScreenLayout.findViewById(R.id.uploadImageBackButton);
         nextButtonText = previewScreenLayout.findViewById(R.id.uploadImageScreenNext);
+        nameText = previewScreenLayout.findViewById(R.id.usernameTextView);
+
+        nameText.setText(user.getName());
 
         return previewScreenLayout;
     }
@@ -112,6 +121,7 @@ public class PreviewScreenFragment extends Fragment {
                 Log.d(TAG, "Next button clicked");
                 // go to the EventHome Activity and finish the current activity which is the AccountCreationActivity
                 // on which the fragments are hosted
+
                 Intent intent = new Intent(getActivity(), EventHome.class);
                 intent.putExtra("userObject", user); // pass the user object to the EventHomeActivity
 
@@ -130,8 +140,8 @@ public class PreviewScreenFragment extends Fragment {
             public void onClick(View v) {
                 Log.d(TAG, "Back button clicked");
                 NavController navController = Navigation.findNavController(view);
-                user.setUploadedImage(null);
-                user.setAutoGenImage(null);
+                user.setUploadedImageUri(null);
+                user.setAutoGenImageUri(null);
 
 
                 PreviewScreenFragmentDirections.ActionPreviewScreenToUploadImageScreen action =
@@ -144,26 +154,3 @@ public class PreviewScreenFragment extends Fragment {
 }
 
 
-/*
-profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Void>() {
-                public void onComplete(Void aVoid) {
-                    // After getProfileImage() is complete, call getProfileImageFromDatabase()
-                    Log.d(TAG, "inside oncomplete");
-                    database.getAutoGenProfileImageFromDatabase(new Database.ProfileImageCallBack(){
-                        @Override
-                        public void onProfileImageComplete(Bitmap profileImageFromDatabase) {
-                            Log.d(TAG, "inside onProfileImageComplete");
-                            Log.d(TAG, "ProfileImageFromDatabase: " + profileImageFromDatabase);
-                            // Use the profileImageFromDatabase bitmap here
-                            autoGenprofileImage = profileImageFromDatabase;
-                            user.setAutoGenImage(autoGenprofileImage);
-                            Log.d(TAG, "half check");
-                            byte[] decodedString = Base64.decode(user.getAutoGenImage(), Base64.DEFAULT);
-                            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                            Log.d(TAG, "full check");
-                            picture.setImageBitmap(autoGenprofileImage);
-                        }
-                    });
-                }
-            });
- */

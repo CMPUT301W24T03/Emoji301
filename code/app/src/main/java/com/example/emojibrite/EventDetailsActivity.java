@@ -2,6 +2,8 @@ package com.example.emojibrite;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -88,6 +90,30 @@ public class EventDetailsActivity extends AppCompatActivity {
             // In case the event does not have an image, a placeholder image is used.
             eventPosterImage.setImageResource(R.drawable.placeholder);
         }
+
+
+
+        //Organizer's name and profile picture:
+        ImageView organizerProfilePic = findViewById(R.id.EmojiBriteLogo);
+
+        setTextOrHide(findViewById(R.id.organizer_name), event.getOrganizer().getName());
+
+        if(event.getOrganizer().getUploadedImageUri()!=null){
+            new Handler(Looper. getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(EventDetailsActivity.this).load(event.getOrganizer().getUploadedImageUri()).into(organizerProfilePic);
+                }
+            });
+        } else if (event.getOrganizer().getUploadedImageUri() == null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(EventDetailsActivity.this).load(event.getOrganizer().getAutoGenImageUri()).into(organizerProfilePic);
+                }
+            });
+        }
+
 
         // Formatting and displaying the event date and time.
         String dateTime = "";
