@@ -57,9 +57,14 @@ public class AddEventFragment extends DialogFragment{
 
     private Uri selectedImageUri; // Image Uri for the event poster
 
+    private Users user;
+
 
 
     private static final int PICK_FROM_GALLERY = 1; // Constant for gallery pick request
+
+
+
 
 
 
@@ -108,6 +113,38 @@ public class AddEventFragment extends DialogFragment{
                 }
             }
     );
+
+
+    /**
+     * Static factory method to create a new instance of AddEventFragment.
+     * This method encapsulates the creation of the fragment and the setting of its arguments,
+     * particularly the {@link Users} object to be passed to the fragment.
+     *
+     * @param user The {@link Users} object to be passed to the fragment. It should contain user-specific data
+     *             needed for event creation.
+     * @return A new instance of AddEventFragment with the given {@link Users} object included in its arguments.
+     */
+    public static AddEventFragment newInstance(Users user) {
+        AddEventFragment fragment = new AddEventFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("user", user);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        // Check if the fragment has any arguments passed to it
+        if (getArguments() != null) {
+            // Retrieve the Users object from the fragment's arguments.
+            // It's used for operations within the fragment, like populating user-specific information.
+            user = getArguments().getParcelable("user");
+        }
+    }
+
+
 
 
     /**
@@ -187,7 +224,7 @@ public class AddEventFragment extends DialogFragment{
 
             }
 
-            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, capacity);
+            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
             listener.onEventAdded(newEvent);
 
             dismiss();
