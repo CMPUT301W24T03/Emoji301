@@ -46,7 +46,8 @@ public class Database {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String userUid = null;
     /**
-     * An interface that is used as a callback for user name retrieval operations
+     * A method to get the user id
+     * @return the user id
      */
     public interface UserNameDBCallBack{
         /**
@@ -56,7 +57,8 @@ public class Database {
         void onUserRetrieveNameComplete(String name);
     }
     /**
-     * An interface that is used as a callback for sign-in operations
+     * A method to get the user id
+     * @return the user id
      */
     public interface SignInCallBack{
         /**
@@ -67,7 +69,8 @@ public class Database {
     }
     // todo: delete this interface BECAUSE it is not used and there is one called ImageBitmapCallBack
     /**
-     * An interface that is used as a callback for image processing operations
+     * A method to get the user id
+     * @return the user id
      */
     public interface ProfileImageCallBack{
         /**
@@ -183,8 +186,8 @@ once created, u can call getuseruid to get the user id and use it to get user da
                             when you call mAuth.signInAnonymously(), it returns a Task object. When the sign-in operation is complete, the Task is marked as successful or failed. If it's successful, you can get the FirebaseUser instance by calling mAuth.getCurrentUser(). This FirebaseUser instance represents the user that just signed in.
                              */
                             addUser(new Users(userUid));
-                            Log.d(TAG, "User ID: " + user.getUid());
-                            Log.d(TAG, "User created");
+                            Log.d(TAG, "User ID1: " + user.getUid());
+                            Log.d(TAG, "User created1");
                             callBack.onSignInComplete();
 
                         } else {
@@ -229,7 +232,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
         else{
             Log.d(TAG, "User is not null---" +  user.getProfileUid());
         }
-        DocumentReference docRef = profileRef.document(user.getProfileUid());
+        DocumentReference docRef = db.collection("Users").document(user.getProfileUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -237,11 +240,12 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     DocumentSnapshot document = task.getResult();
                     if (!document.exists()) {
                         Log.d(TAG, "Document does not exist!");
-                        profileRef.document(user.getProfileUid()).set(user)
+                        DocumentReference docRef = db.collection("Users").document(user.getProfileUid());
+                        docRef.set(user)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Log.d(firestoreDebugTag, "DocumentSnapshot successfully written!");
+                                        Log.d(firestoreDebugTag, "DocumentSnapshot successfully written! 123");
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
@@ -254,7 +258,8 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     else{
                         Log.d(TAG, "Document exists!");
                         if (document.getString("name") == null) {
-                            profileRef.document(user.getProfileUid()).set(user)
+                            DocumentReference docRef = db.collection("Users").document(user.getProfileUid());
+                            docRef.set(user)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
@@ -276,6 +281,26 @@ once created, u can call getuseruid to get the user id and use it to get user da
             }
         });
     }
+    /**
+     * A method to get the user id
+     * @return the user id
+     */
+    public void setUserObject(Users user){
+        DocumentReference docRef = db.collection("Users").document(user.getProfileUid());
+        docRef.set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(firestoreDebugTag, "DocumentSnapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(firestoreDebugTag, "Error writing document", e);
+                    }
+                });
+    }
 
 
 
@@ -292,7 +317,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
     public void getUserDocument(String uid, OnUserDocumentRetrievedListener listener) {
         // Get the document with the specified UID
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("users").document(uid);
+        DocumentReference docRef = db.collection("Users").document(uid);
 
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -301,8 +326,8 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         // Convert the document into a Users object
-                        Users retrievedUser = document.toObject(Users.class);
-                        listener.onUserDocumentRetrieved(retrievedUser);
+                        //Users retrievedUser = document.toObject(Users.class);
+                        listener.onUserDocumentRetrieved(document);
                     } else {
                         Log.d("Firestore", "No such document");
                     }
@@ -316,11 +341,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * An interface that serves as a callback for user document retrieval operations
      */
     public interface OnUserDocumentRetrievedListener {
-        /**
-         * A method that is invoked when a user document has been successfully retrieved
-         * @param retrievedUser is a User object that represents the retrieved user document
-         */
-        void onUserDocumentRetrieved(Users retrievedUser);
+        void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot);
     }
 
     /**
@@ -335,16 +356,15 @@ once created, u can call getuseruid to get the user id and use it to get user da
     //uri here
     public void storeImageUri(String uid, String imageUri, String imageType) {
         // Get a reference to the user document
-        DocumentReference docRef = FirebaseFirestore.getInstance().collection("users").document(uid);
+        DocumentReference docRef = db.collection("Users").document(uid);
 
         // Create a map to hold the image URI
         Map<String, Object> imageUriMap = new HashMap<>();
         if (imageType.equals("uploadedImage")) {
-            imageUriMap.put("uploadedImage", imageUri);
+            imageUriMap.put("uploadedImageUri", imageUri);
         } else if (imageType.equals("autoGenImage")) {
-            imageUriMap.put("autoGenImage", imageUri);
+            imageUriMap.put("autoGenImageUri", imageUri);
         }
-
         // Store the image URI in the database
         docRef.set(imageUriMap, SetOptions.merge());
     }
@@ -384,162 +404,6 @@ once created, u can call getuseruid to get the user id and use it to get user da
         void onImageBitmapComplete(Bitmap bitmap);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*
-    ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator("aivan Edi", imageView, database.getUserUid());
-                        profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(Void aVoid) {
-                                // After getProfileImage() is complete, call getProfileImageFromDatabase()
-                                database.getProfileImageFromDatabase(new Database.ProfileImageCallBack() {
-                                    @Override
-                                    public void onProfileImageComplete(Bitmap profileImageFromDatabase) {
-                                        // Use the profileImageFromDatabase bitmap here
-                                        ImageView imageView = findViewById(R.id.profile_image);
-                                        imageView.setImageBitmap(profileImageFromDatabase);
-                                    }
-                                });
-                            }
-                        });
-     */
-    /**
-     * A method to get the profile collection
-     * @return the profile collection
-     * how to use?
-     *  RetrieveFid (new UserDatabaseCallBack() {
-     *   @Override
-     *   public void onUserRetrieveIdComplete(String userExist) {
-     *    print(userExist);
-     *    }
-     */
-    /*
-    public String RetrieveFid(userFidCallBack callBack){
-        String Fid = "";
-        FirebaseInstallations.getInstance().getId()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (task.isSuccessful()) {
-                            String FID = task.getResult();
-                            Log.d("Installations", "Installation ID: " + task.getResult());
-                            callBack.onUserRetrieveIdComplete(FID);
-                        } else {
-                            Log.e("Installations", "Unable to get Installation ID");
-                        }
-                    }
-                });
-        return Fid;
-    }
-
-     */
-    /**
-     * A method to check if a user exists
-     * @param callback the callback to use
-     *                 to return the result
-     *                 of the check
-     * how to use?
-     *    checkUserExist(new UserExistCallback() {
-     *     @Override
-     *     public void onUserExistCheckComplete(boolean userExists) {
-     *         if (userExists) {
-     *             System.out.println("User exists!");
-     *         } else {
-     *             System.out.println("User does not exist!");
-     *         }
-     *     }
-     * });
-     * database database = new Database();
-     *
-     * database.checkUserExist(new Database.userExistCallBack() {
-     *     @Override
-     *     public void onUserExistComplete(boolean userExist) {
-     *         if (userExist) {
-     *             // Handle the case where the user exists
-     *         } else {
-     *             // Handle the case where the user does not exist
-     *         }
-     *     }
-     * });
-     */
-    /*
-    public void checkUserExist(userExistCallBack callback){
-        RetrieveFid(new userFidCallBack() {
-            @Override
-            public void onUserRetrieveIdComplete(String userExist) {
-                Query query = profileRef.whereEqualTo("FID", userExist);
-
-                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            if(task.getResult().size() > 0){
-                                callback.onUserExistComplete(true);
-                            }else{
-                                callback.onUserExistComplete(false);
-                            }
-                        }else{
-
-                            callback.onUserExistComplete(false);
-                            //if it is some kind of error, it just returns false meaning user doesn't exist so it will create an account.
-                        }
-                    }
-                });
-    }
-*/
-
-    /**
-     * A method to get the user collection
-     * @return the user collection
-     */
-
-
-//    /**
-//     * A method to add a user to the database
-//     * @param user the user to add
-//     */
-//    public void addUser(Users user) {
-//        // refer to lab 5 for examples something like
-//        HashMap<String, String> fieldValuePair = new HashMap<>();
-//        fieldValuePair.put("name", user.getName());
-//        fieldValuePair.put("email", user.getEmail());
-//        fieldValuePair.put("role", user.getRole());
-//        userRef
-//                .document(user.getId())                 // uniquely generated id
-//                .set(fieldValuePair)                    // set the fields and values in firestore
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void unused) {
-//                        Log.d(firestoreDebugTag, "DocumentSnapshot successfully written! ");
-//                    }
-//                })
-//                .addOnFailureListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.d(firestoreDebugTag, "DocumentSnapshot successfully written! ");
-//                    }
-//                });
-//    }
-//
-//    public void removeUser(User user) {
-//
-//    }
 
 
 

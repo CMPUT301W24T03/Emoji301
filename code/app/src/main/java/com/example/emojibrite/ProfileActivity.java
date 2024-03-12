@@ -4,29 +4,34 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.w3c.dom.Text;
 
-//Todo: Add intent to recieve info, and display it in the profile page, upload function, remove function, add things to database depending on upload or remove
+import java.util.ArrayList;
 /**
  * The main activity for displaying and editing user profiles.
  * This activity allows users to view their profile information and initiate the editing process
  * through the {@link ProfileEditFragment}. It also handles the update callbacks from the fragment
  * to reflect changes in the user's profile.
  */
-public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnProfileUpdateListener {
+public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnInputSelected {
 
 
 
-    Users currentProfile = new Users("123456", "John Doe", "john@example.com", "https://example.com", "path_to_image", "123456789");
+    Users user;
+    ImageView profilePictureImageView;
 
 
     /**
@@ -40,13 +45,21 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        Intent intent = getIntent();
+        user = intent.getParcelableExtra("userObject");
+
+
 
         FloatingActionButton back = findViewById(R.id.backButton);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Handle button click to go back to the main activity
-                finish();
+                Intent intent = new Intent(ProfileActivity.this, EventHome.class);
+                intent.putExtra("userObject", user);
+                startActivity(intent);
+
+
             }
         });
 
@@ -57,129 +70,80 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
             @Override
             public void onClick(View view) {
                 // Initialize ProfileEditFragment and set the current profile
-                ProfileEditFragment profileEditFragment = new ProfileEditFragment(currentProfile);
-                profileEditFragment.setProfileUpdateListener(ProfileActivity.this);
+                ProfileEditFragment profileEditFragment = new ProfileEditFragment();
+
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("userObject", user);
+                profileEditFragment.setArguments(bundle);
+                profileEditFragment.show(getSupportFragmentManager(), "ProfileEditFragment");
+
 
                 // Show the ProfileEditFragment
-                profileEditFragment.show(getSupportFragmentManager(), "profile_edit_fragment");
+
             }
         });
 
-
-        // Retrieve information from SharedPreferences and set it to UI elements
-        SharedPreferences preferences = getSharedPreferences("ProfilePrefs", MODE_PRIVATE);
-        String storedEmail = preferences.getString("email", "");
-        String storedPhoneNumber = preferences.getString("phoneNumber", "");
-        String storedImagePath = preferences.getString("imagePath", "");
-        String storedName = preferences.getString("name", "");
-        String storedHomePage = preferences.getString("homePage", "");
-
-        updateProfileData(storedEmail, storedPhoneNumber, storedImagePath, storedName, storedHomePage);
-    }
-
-
-    /**
-     * Callback method called when the user's profile is updated.
-     *
-     * @param newEmail       The new email address.
-     * @param newPhoneNumber The new phone number.
-     * @param newImagePath   The new image path for the profile picture.
-     * @param newName        The new name.
-     * @param newHomePage    The new home page.
-     */
-    public void onProfileUpdate(String newEmail, String newPhoneNumber, String newImagePath, String newName, String newHomePage) {
-        // Update the userEmail, userPhone, name, and profile image in the activity
-        updateProfileData(newEmail, newPhoneNumber, newImagePath, newName, newHomePage);
-
-        // Update the currentProfile with the new information
-        currentProfile.setEmail(newEmail);
-        currentProfile.setNumber(newPhoneNumber);
-        currentProfile.setName(newName);
-        currentProfile.setHomePage(newHomePage);
-        currentProfile.setImagePath(newImagePath);
-
-        // Check if the image path is empty and handle it
-        if (newImagePath == null || newImagePath.isEmpty()) {
-            // Handle the removal of the profile picture in the activity (e.g., set default image)
-            ImageView profilePictureImageView = findViewById(R.id.profilePicture);
-            profilePictureImageView.setImageResource(R.drawable.profile_pic);
-
-            // Optionally, you can update the image path in SharedPreferences if needed
-            saveProfileData(newEmail, newPhoneNumber, "", newName, newHomePage);
-        }
-    }
-
-    /**
-     * Updates the UI with the provided profile data.
-     *
-     * @param newEmail       The new email address.
-     * @param newPhoneNumber The new phone number.
-     * @param newImagePath   The new image path for the profile picture.
-     * @param newName        The new name.
-     * @param newHomePage    The new home page.
-     */
-    private void updateProfileData(String newEmail, String newPhoneNumber, String newImagePath, String newName, String newHomePage) {
-        // Update the UI elements with the new data
         TextView emailTextView = findViewById(R.id.userEmail);
         TextView phoneNumberTextView = findViewById(R.id.userPhoneNumber);
         TextView nameTextView = findViewById(R.id.userName);
         TextView homePageTextView = findViewById(R.id.userHomePage);
-        ImageView profilePictureImageView = findViewById(R.id.profilePicture);
+        profilePictureImageView = findViewById(R.id.profilePicture);
 
-        // Save the updated information in SharedPreferences
-        saveProfileData(newEmail, newPhoneNumber, newImagePath, newName, newHomePage);
+        emailTextView.setText(user.getEmail());
+        phoneNumberTextView.setText(user.getNumber());
+        nameTextView.setText(user.getName());
+        homePageTextView.setText(user.getHomePage());
+        // Retrieve information from SharedPreferences and set it to UI elements
+
+        settingPfp();
+    }
+    /**
+     * Called when the user clicks the "Edit" button to edit their profile.
+     */
+    @Override
+    public void sendInput(Users input) {
+        user = input;
+        // Update the UI elements with the new profile data
+        TextView emailTextView = findViewById(R.id.userEmail);
+        TextView phoneNumberTextView = findViewById(R.id.userPhoneNumber);
+        TextView nameTextView = findViewById(R.id.userName);
+        TextView homePageTextView = findViewById(R.id.userHomePage);
+        profilePictureImageView = findViewById(R.id.profilePicture);
+
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                emailTextView.setText(user.getEmail());
+                phoneNumberTextView.setText(user.getNumber());
+                nameTextView.setText(user.getName());
+                homePageTextView.setText(user.getHomePage());
+
+            }
+        });
 
 
-        // Save the updated information in SharedPreferences
-//        saveProfileData(newEmail, newPhoneNumber, newImagePath);
-
-        emailTextView.setText(newEmail);
-        phoneNumberTextView.setText(newPhoneNumber);
-        nameTextView.setText(newName);
-        homePageTextView.setText(newHomePage);
-
-        if (newImagePath != null && !newImagePath.isEmpty()) {
-            profilePictureImageView.setImageResource(R.drawable.ic_launcher_foreground); // Load image from new path
-        } else {
-            profilePictureImageView.setImageResource(R.drawable.profile_pic); // Set default image
+        settingPfp();
+    }
+    /**
+     * Called when the user clicks the "Edit" button to edit their profile.
+     */
+    public void settingPfp(){
+        if (user.getUploadedImageUri() != null) {
+            // User uploaded a picture, use that as the ImageView
+            //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(ProfileActivity.this).load(user.getUploadedImageUri()).into(profilePictureImageView);
+                }
+            });
+        } else if (user.getUploadedImageUri() ==null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(ProfileActivity.this).load(user.getAutoGenImageUri()).into(profilePictureImageView);
+                }
+            });
         }
     }
-
-
-    /**
-     * Saves the updated profile data to SharedPreferences.
-     *
-     * @param newEmail       The new email address.
-     * @param newPhoneNumber The new phone number.
-     * @param newImagePath   The new image path for the profile picture.
-     * @param newName        The new name.
-     * @param newHomePage    The new home page.
-     */
-    private void saveProfileData(String newEmail, String newPhoneNumber, String newImagePath, String newName, String newHomePage) {
-
-        SharedPreferences preferences = getSharedPreferences("ProfilePrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-
-        editor.putString("email", newEmail);
-        editor.putString("phoneNumber", newPhoneNumber);
-        editor.putString("imagePath", newImagePath);
-        editor.putString("name", newName);
-        editor.putString("homePage", newHomePage);
-
-        editor.apply();
-    }
-
-    /**
-     * Updates the profile image in the UI.
-     *
-     * @param newImagePath The new image path for the profile picture.
-     */
-
-    private void updateProfileImage(String newImagePath) {
-        // Assuming you have an ImageView in your activity_profile.xml with id profileImage
-        ImageView profileImage = findViewById(R.id.profilePicture);
-
-        // For demonstration, assuming you're using a resource id
-    }
-
 }

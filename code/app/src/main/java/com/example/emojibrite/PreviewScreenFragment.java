@@ -123,6 +123,7 @@ public class PreviewScreenFragment extends Fragment {
                 // on which the fragments are hosted
 
                 Intent intent = new Intent(getActivity(), EventHome.class);
+                Log.d(TAG, "User name for EventHome: " + user.getName() + user.getProfileUid() + user.getUploadedImageUri()+user.getAutoGenImageUri());
                 intent.putExtra("userObject", user); // pass the user object to the EventHomeActivity
 
                 // if you want to pass data from the fragments to EventHomeActivity,

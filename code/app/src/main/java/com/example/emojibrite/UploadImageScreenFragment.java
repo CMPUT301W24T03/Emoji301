@@ -75,7 +75,11 @@ public class UploadImageScreenFragment extends Fragment {
 
         return uploadImageScreenLayout;
     }
-
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * @param context If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onAttach(@NonNull Context context) {
 

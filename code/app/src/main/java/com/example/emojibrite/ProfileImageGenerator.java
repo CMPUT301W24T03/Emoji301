@@ -119,26 +119,7 @@ public class ProfileImageGenerator {
 
                     Log.d("ProfileImageGenerator", "URI is sent to database");
 
-                    /*
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("autoGenImage", encodedImage);
-                    db.collection("Users").document(Uid).set(data)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.d("Firestore", "DocumentSnapshot successfully written!");
-                                    onCompleteListener.onComplete(null);
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w("Firestore", "Error writing document", e);
-                                    onCompleteListener.onComplete(null);
-                                }
-                            });
 
-                     */
                 }
             }
         });
