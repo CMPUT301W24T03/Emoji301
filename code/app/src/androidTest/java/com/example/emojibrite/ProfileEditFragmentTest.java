@@ -1,96 +1,93 @@
 package com.example.emojibrite;
-import android.content.Context;
-import android.widget.EditText;
-
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.matcher.BoundedMatcher;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import com.example.emojibrite.ProfileEditFragment;
-import com.example.emojibrite.Users;
-
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
+import android.os.Bundle;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+/*
 @RunWith(AndroidJUnit4.class)
 public class ProfileEditFragmentTest {
-    /*
 
-    private ProfileEditFragment profileEditFragment;
-    private boolean listenerCalled = false;
+    // Use ActivityScenario to launch the activity
+    private ActivityScenario<TestActivity> activityScenario;
 
     @Before
     public void setUp() {
-        // Create a mock user profile for testing
-        Users mockProfile = new Users("123456", "John Doe", "john@example.com", "https://example.com", "path_to_image", "123456789");
+        // Initialize a test user object with desired values
+        Users testUser = new Users("123", "Test User", "test@example.com", "https://example.com", null, "123456789");
 
-        // Initialize the fragment with the mock profile
-        profileEditFragment = new ProfileEditFragment(mockProfile);
+        // Launch the activity and add the fragment
+        activityScenario = ActivityScenario.launch(TestActivity.class);
+        activityScenario.onActivity(activity -> activity.setFragment(testUser));
 
-        // Start the fragment to test its behavior
-        startFragment(profileEditFragment);
     }
 
     @Test
-    public void testProfileEditFragmentInitialState() {
-        // Check if the initial values are correctly set in the EditText fields
-        onView(withId(R.id.editEmail)).check(matches(isEditTextValueEqualTo("john@example.com")));
-        onView(withId(R.id.editPhoneNumber)).check(matches(isEditTextValueEqualTo("123456789")));
-        onView(withId(R.id.editName)).check(matches(isEditTextValueEqualTo("John Doe")));
-        onView(withId(R.id.editHomePage)).check(matches(isEditTextValueEqualTo("https://example.com")));
-    }
+    public void testEditProfile() {
+        // Replace the text in EditText fields
+        onView(withId(R.id.editEmail)).perform(replaceText("newemail@example.com"));
+        onView(withId(R.id.editPhoneNumber)).perform(replaceText("987654321"));
+        onView(withId(R.id.editName)).perform(replaceText("New Name"));
+        onView(withId(R.id.editHomePage)).perform(replaceText("https://newhomepage.com"));
 
-    @Test
-    public void testProfileEditFragmentUpdateProfile() {
-        // Perform actions to update the profile
-        onView(withId(R.id.editEmail)).perform(typeText("newemail@example.com"));
-        onView(withId(R.id.editPhoneNumber)).perform(typeText("987654321"));
-        onView(withId(R.id.editName)).perform(typeText("New Name"));
-        onView(withId(R.id.editHomePage)).perform(typeText("https://newexample.com"));
-
-        // Save the changes by clicking the save button
+        // Click the save button
         onView(withId(R.id.saveButton)).perform(click());
 
-        // Verify if the listener is notified with the correct updated values
-        assert (listenerCalled);
+        // Check if the user object was updated
+        // You may need to modify this part based on the actual behavior of your app
+        // For example, you may want to check if the user object was updated in a ViewModel or database
+        onView(withId(R.id.userEmail)).check(matches(withText("newemail@example.com")));
+        onView(withId(R.id.userPhoneNumber)).check(matches(withText("987654321")));
+        onView(withId(R.id.userName)).check(matches(withText("New Name")));
+        onView(withId(R.id.userHomePage)).check(matches(withText("https://newhomepage.com")));
     }
 
+    @Test
+    public void testRemoveImage() {
+        // Click the remove image button
+        onView(withId(R.id.removeImageButton)).perform(click());
 
-    // Helper method to start a fragment for testing
-    private void startFragment(ProfileEditFragment fragment) {
-        FragmentManager fragmentManager = fragment.requireFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(fragment, null);
-        transaction.commit();
+        // Check if the user object was updated
+        // You may need to modify this part based on the actual behavior of your app
+        // For example, you may want to check if the user object was updated in a ViewModel or database
+        onView(withId(R.id.profilePicture)).check(matches(ViewMatchers.withTagValue(is(nullValue()))));
     }
 
-    // Helper method to check if the text in an EditText matches a given value
-    private static Matcher<Object> isEditTextValueEqualTo(String value) {
-        return new BoundedMatcher<Object, EditText>(EditText.class) {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Value should be equal to: " + value);
-            }
+    public static class TestActivity extends FragmentActivity {
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.test_profile_activity);
+        }
 
-            @Override
-            protected boolean matchesSafely(EditText item) {
-                return item.getText().toString().equals(value);
-            }
-        };
+        public void setFragment(Users user) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            ProfileEditFragment fragment = new ProfileEditFragment();
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("userObject", user);
+            fragment.setArguments(bundle);
+            transaction.replace(R.id.fragmentContainer, fragment);
+            transaction.commit();
+        }
     }
-
-     */
 }
+*/

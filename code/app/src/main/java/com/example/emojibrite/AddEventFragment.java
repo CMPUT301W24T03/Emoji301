@@ -1,5 +1,6 @@
 package com.example.emojibrite;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -56,6 +57,11 @@ public class AddEventFragment extends DialogFragment{
     private Button buttonSelectPic, switchCheckInQR, switchEventPageQR;
     private Uri selectedImageUri; // Image Uri for the event poster
     private Users user;
+
+    private Uri qrCodeCheckinURI, qrCodeEventURI;
+
+
+
     private static final int PICK_FROM_GALLERY = 1; // Constant for gallery pick request
 
 
@@ -104,6 +110,35 @@ public class AddEventFragment extends DialogFragment{
                     } catch (IOException e) {
                         e.printStackTrace();
                         Toast.makeText(getActivity(), "Failed to load image", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+    );
+
+    private final ActivityResultLauncher<Intent> startForResultCheckIn = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null) {
+                        String qrCodeUriString = data.getStringExtra("QR_CODE_URI");
+                        qrCodeCheckinURI = Uri.parse(qrCodeUriString);
+
+                    }
+                }
+            }
+    );
+
+
+    private final ActivityResultLauncher<Intent> startForResultEventDetails = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null) {
+                        String qrCodeUriString = data.getStringExtra("QR_CODE_URI");
+                        qrCodeEventURI = Uri.parse(qrCodeUriString);
+
                     }
                 }
             }
@@ -182,7 +217,7 @@ public class AddEventFragment extends DialogFragment{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), QRCodeEventActivity.class);
-                startActivity(intent);
+                startForResultEventDetails.launch(intent);
             }
         });
 
@@ -191,7 +226,7 @@ public class AddEventFragment extends DialogFragment{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), QRCodeCheckActivity.class);
-                startActivity(intent);
+                startForResultCheckIn.launch(intent);
             }
         });
 
@@ -219,7 +254,7 @@ public class AddEventFragment extends DialogFragment{
 
             }
 
-            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
+            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, qrCodeCheckinURI, qrCodeEventURI, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
             listener.onEventAdded(newEvent);
 
             dismiss();

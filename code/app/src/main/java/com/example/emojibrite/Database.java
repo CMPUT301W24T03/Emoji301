@@ -41,6 +41,8 @@ public class Database {
     private final FirebaseFirestore db= FirebaseFirestore.getInstance();
     private final CollectionReference profileRef = db.collection("Users");
 
+    private final CollectionReference eventRef = db.collection("Events");
+
     private String firestoreDebugTag = "Firestore";
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -392,6 +394,16 @@ once created, u can call getuseruid to get the user id and use it to get user da
          */
         void onImageBitmapComplete(Bitmap bitmap);
     }
+
+    //EVENT SECTION:
+
+    public void addEvent(Event event, OnCompleteListener<Void> onCompleteListener){}
+
+
+
+
+
+
 
 
 
