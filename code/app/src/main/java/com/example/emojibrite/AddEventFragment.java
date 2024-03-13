@@ -54,13 +54,8 @@ public class AddEventFragment extends DialogFragment{
 
     private ImageView imageEventPoster;
     private Button buttonSelectPic, switchCheckInQR, switchEventPageQR;
-
     private Uri selectedImageUri; // Image Uri for the event poster
-
     private Users user;
-
-
-
     private static final int PICK_FROM_GALLERY = 1; // Constant for gallery pick request
 
 

@@ -46,8 +46,8 @@ public class Database {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String userUid = null;
     /**
-     * A method to get the user id
-     * @return the user id
+     * An interface that serves as a callback for user name retrieval
+     *
      */
     public interface UserNameDBCallBack{
         /**
@@ -57,8 +57,8 @@ public class Database {
         void onUserRetrieveNameComplete(String name);
     }
     /**
-     * A method to get the user id
-     * @return the user id
+     * An interface that serves as a callback for sign in
+     *
      */
     public interface SignInCallBack{
         /**
@@ -67,18 +67,7 @@ public class Database {
          */
         void onSignInComplete();
     }
-    // todo: delete this interface BECAUSE it is not used and there is one called ImageBitmapCallBack
-    /**
-     * A method to get the user id
-     * @return the user id
-     */
-    public interface ProfileImageCallBack{
-        /**
-         * This method is called when a profile image has been successfully processed or loaded
-         * @param profileImage The bitmap of the profile image has been successfully processed or loaded
-         */
-        void onProfileImageComplete(Bitmap profileImage);
-    }
+
     /**
      * A constructor that is used to create a new instance of the database class
      * @param context is the current state of the application or activity
@@ -282,8 +271,8 @@ once created, u can call getuseruid to get the user id and use it to get user da
         });
     }
     /**
-     * A method to get the user id
-     * @return the user id
+     * A method to set the user object in the database
+     * @param user to set
      */
     public void setUserObject(Users user){
         DocumentReference docRef = db.collection("Users").document(user.getProfileUid());
