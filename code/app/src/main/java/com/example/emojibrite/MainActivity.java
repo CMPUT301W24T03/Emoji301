@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     TextView adminAccess;
     private static final String TAG = "MainActivityTAG";
     private Users user;
-    private Database database = new Database(this);
+    private Database database = new Database();
 
     //u can include String Fid to pass the firebase installation id
     @Override

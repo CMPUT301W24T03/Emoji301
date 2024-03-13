@@ -34,7 +34,7 @@ public class PreviewScreenFragment extends Fragment {
     TextView nextButtonText;
     TextView nameText;
 
-    Database database = new Database(getActivity());
+    Database database = new Database();
     Bitmap autoGenprofileImage;
 
     Users user;

@@ -45,7 +45,7 @@ public class ProfileEditFragment extends DialogFragment {
     ImageView profilePicture;
     Button removeImageButton;
     Button saveButton;
-    Database database = new Database(getActivity());
+    Database database = new Database();
     private Users user;
 
     private String nameAtStart;

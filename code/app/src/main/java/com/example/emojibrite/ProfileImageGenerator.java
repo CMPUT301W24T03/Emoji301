@@ -111,7 +111,7 @@ public class ProfileImageGenerator {
                     Uri imageUri = Uri.parse(response.request().url().toString());
 
                     // Store the URI in the database
-                    Database database = new Database(context);
+                    Database database = new Database();
                     database.storeImageUri(Uid, imageUri.toString(), "autoGenImage");
 
                     // Notify the onCompleteListener after the database operation is done

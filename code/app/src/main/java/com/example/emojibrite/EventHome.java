@@ -36,7 +36,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     EventAdapter eventAdapter; // Custom adapter to bind event data to the ListView
     ArrayList<Event> dataList;
     private Users user;
-    private Database database = new Database(this);
+    private Database database = new Database();
 
     ImageView profileButton;
 

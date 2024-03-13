@@ -45,7 +45,7 @@ public class UploadImageScreenFragment extends Fragment {
     private Uri imageUri;
 
     private Bitmap  imageBitMap;
-    private Database database = new Database(getActivity());
+    private Database database = new Database();
 
 
     /**

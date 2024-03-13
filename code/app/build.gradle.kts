@@ -49,10 +49,11 @@ dependencies {
     implementation("androidx.navigation:navigation-ui:2.7.7")
     implementation("androidx.activity:activity:1.8.0")
     //Unit testing + espresso
-    testImplementation("junit:junit:4.13.2")
+
+    androidTestImplementation ("androidx.test:runner:1.5.2")
+
     androidTestImplementation ("androidx.test.espresso:espresso-contrib:3.4.0")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
     //Fragment testing
     androidTestImplementation("androidx.fragment:fragment-testing:1.6.2")
     // NavigationTesting for navgraph
@@ -62,15 +63,12 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
     implementation("com.google.firebase:firebase-firestore")
     implementation ("com.google.firebase:firebase-storage:19.2.2")
+    testImplementation ("com.google.firebase:firebase-testing:22.0.0")
 
     //needed for getting the FID*firebase installation id
     implementation("com.google.firebase:firebase-installations:17.2.0")
-
-
     implementation("com.google.firebase:firebase-auth")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-
-
 
     implementation("pub.devrel:easypermissions:3.0.0")
     implementation("com.github.bumptech.glide:glide:4.12.0")
@@ -80,5 +78,8 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
-
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    testImplementation ("org.mockito:mockito-core:3.12.4")
 }

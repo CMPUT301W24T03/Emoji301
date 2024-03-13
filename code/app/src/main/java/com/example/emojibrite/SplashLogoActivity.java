@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * It displays the app logo for a few seconds before transitioning to the main activity.
  */
 public class SplashLogoActivity extends AppCompatActivity {
-    private Database database = new Database(this);
+    private Database database = new Database();
     @Override
     /**
      * onCreate method to handle the creation of the splash screen activity
