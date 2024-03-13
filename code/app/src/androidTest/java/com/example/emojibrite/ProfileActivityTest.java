@@ -24,7 +24,11 @@ import static org.hamcrest.Matchers.notNullValue;
 /*
 @RunWith(AndroidJUnit4.class)
 public class ProfileActivityTest {
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2bfd2daa89ea635408754bfd1df253972484a3da
     private ProfileActivity profileActivity;
 
     private Users mockUser;
