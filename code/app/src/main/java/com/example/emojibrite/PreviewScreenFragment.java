@@ -1,7 +1,13 @@
 package com.example.emojibrite;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,16 +20,25 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.Objects;
-
+/**
+ * PreviewScreenFragment is the fragment that displays the user's profile picture and name
+ * before the user is taken to the EventHome Activity.
+ */
 public class PreviewScreenFragment extends Fragment {
     //attributes
     ImageView picture;
     TextView name;
     FloatingActionButton backButton;
     TextView nextButtonText;
+    TextView nameText;
+
+    Database database = new Database(getActivity());
+    Bitmap autoGenprofileImage;
+
+    Users user;
+
     private static final String TAG = "PreviewScreenFragment";
 
     /**
@@ -41,10 +56,51 @@ public class PreviewScreenFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View previewScreenLayout = inflater.inflate(R.layout.fragment_preview_screen, container, false);
+        Bundle userBundle = getArguments();
+        user = userBundle.getParcelable("userObject");
+        Log.d(TAG, "onCreateView for preview screen fragment: " + user.getProfileUid());
         picture = previewScreenLayout.findViewById(R.id.uploadImageImage);
-        name = previewScreenLayout.findViewById(R.id.usernameTextView);
+
+        Log.d(TAG, "User UID: " + user.getProfileUid());
+        Log.d(TAG, "User name: " + user.getName());
+        if (user.getUploadedImageUri() == null) {
+            Log.d(TAG, "User didn't upload a picture");
+            // User didn't upload a picture, generate one based on the username
+            ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator(getContext(), user.getProfileUid(), user.getName());
+            profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(Uri result) {
+                    // Set the generated image as the ImageView
+                    Log.d(TAG, "Generated image URI: " + result);
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Glide.with(getContext()).load(result).into(picture);
+                        }
+                    });
+
+                    user.setAutoGenImageUri(result.toString());
+                }
+            });
+        } else {
+            // User uploaded a picture, use that as the ImageView
+            Log.d(TAG, "User uploaded a picture");
+            //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(getContext()).load(user.getUploadedImageUri()).into(picture);
+                }
+            });
+
+        }
+
         backButton = previewScreenLayout.findViewById(R.id.uploadImageBackButton);
         nextButtonText = previewScreenLayout.findViewById(R.id.uploadImageScreenNext);
+        nameText = previewScreenLayout.findViewById(R.id.usernameTextView);
+
+        nameText.setText(user.getName());
+
         return previewScreenLayout;
     }
 
@@ -56,6 +112,7 @@ public class PreviewScreenFragment extends Fragment {
      */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // this is were you want to get the thigns that are passed
 
         // when the next button is clicked, go to EventHome Activity.
         nextButtonText.setOnClickListener(new View.OnClickListener() {
@@ -64,7 +121,11 @@ public class PreviewScreenFragment extends Fragment {
                 Log.d(TAG, "Next button clicked");
                 // go to the EventHome Activity and finish the current activity which is the AccountCreationActivity
                 // on which the fragments are hosted
+
                 Intent intent = new Intent(getActivity(), EventHome.class);
+                Log.d(TAG, "User name for EventHome: " + user.getName() + user.getProfileUid() + user.getUploadedImageUri()+user.getAutoGenImageUri());
+                intent.putExtra("userObject", user); // pass the user object to the EventHomeActivity
+
                 // if you want to pass data from the fragments to EventHomeActivity,
                 // use the putExtra method. Then, in the EventHomeActivity, use the
                 // getIntent method to get the data
@@ -80,8 +141,17 @@ public class PreviewScreenFragment extends Fragment {
             public void onClick(View v) {
                 Log.d(TAG, "Back button clicked");
                 NavController navController = Navigation.findNavController(view);
-                navController.navigateUp();
+                user.setUploadedImageUri(null);
+                user.setAutoGenImageUri(null);
+
+
+                PreviewScreenFragmentDirections.ActionPreviewScreenToUploadImageScreen action =
+                        PreviewScreenFragmentDirections.actionPreviewScreenToUploadImageScreen(user);
+                navController.navigate(action);
             }
         });
     }
+
 }
+
+

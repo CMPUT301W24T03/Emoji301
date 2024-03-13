@@ -1,24 +1,14 @@
 package com.example.emojibrite;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Base64;
+import android.net.Uri;
 import android.util.Log;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -26,21 +16,48 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+/**
+ * This class is used to generate a profile image for a user
+ * using the ui-avatars.com API. The image is then stored in
+ * the Firestore database.
+ */
 public class ProfileImageGenerator {
     OkHttpClient client = new OkHttpClient();
     String name;
-    ImageView imageView;
+
     String Uid;
+    private Context context;
+    /**
+     * This interface is used to provide a callback for when the
+     * profile image is generated and stored in the database.
+     * @param <T> The type of the result
+     */
     public interface OnCompleteListener <T> {
         void onComplete(T result);
     }
-
-    public ProfileImageGenerator(String name, ImageView imageView, String Uid) {
+    /**
+     * This constructor is used to create a ProfileImageGenerator
+     * object with the user's name and Uid.
+     * @param context The context of the activity
+     * @param Uid The user's unique ID
+     * @param name The user's name
+     */
+    public ProfileImageGenerator(Context context, String Uid, String name) {
         this.name = name;
-        this.imageView = imageView;
+        this.context = context;
         this.Uid = Uid;
     }
-
+    /**
+     * This method is used to set the user's name.
+     * @param name The user's name
+     */
+    public void  setProfileImageName(String name) {
+        this.name = name;
+    }
+    /**
+     * This method is used to get the user's name.
+     * @return The user's name
+     */
     private void addingPlusToName() {
         String[] nameArray = name.split(" ");
         String newName = "";
@@ -50,18 +67,37 @@ public class ProfileImageGenerator {
         name = newName.substring(0, newName.length() - 1);
     }
 
-    public void getProfileImage( final OnCompleteListener<Void> onCompleteListener) {
+
+    /*
+    i call addPLustoName because the url needs the username to be in the format of "name+restOfNameAfterSpace "
+    i use a request and build it using the url.
+    aftewards, i use the Okhttp client to call the request and enqueue it. ofc, since it is a callback it takes time hence why there is onresponse
+    after u get a response, if it works, we use an inputstream to recieve the information, then decode it into bitmap,
+    since we have to sent it to the database, we have to turn it into a byte array, then encode it into a string using base64
+    then we just add it into the collection ProfileImages with the document ID being the Uid.
+    we put a listener to check if data insertion to the database is successful
+    NOT TOO SURE ABOUT THE ONCOMPLETE PART but it is for callback purposes
+     */
+    /**
+     * This method is used to get the user's profile image from the
+     * ui-avatars.com API and store it in the Firestore database.
+     * @param onCompleteListener The callback for when the profile
+     *                           image is generated and stored in the
+     *                           database
+     */
+    public void getProfileImage( final OnCompleteListener<Uri> onCompleteListener) {
         addingPlusToName();
         String url = "https://ui-avatars.com/api/?name=" + name;
 
         Request request = new Request.Builder()
                 .url(url)
                 .build();
+        Log.d("ProfileImageGenerator", "Request is built");
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.d("ProfileImageGenerator", "Failed to get profile image");
                 e.printStackTrace();
-
             }
 
             @Override
@@ -69,36 +105,27 @@ public class ProfileImageGenerator {
                 if (!response.isSuccessful()) {
                     throw new IOException("Unexpected code " + response);
                 } else {
-                    InputStream inputStream = response.body().byteStream();
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    Log.d("ProfileImageGenerator", "Response is successful");
 
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                    byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                    // Convert the response to a URI
+                    Uri imageUri = Uri.parse(response.request().url().toString());
 
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("image", encodedImage);
-                    db.collection("ProfileImages").document(Uid).set(data)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.d("Firestore", "DocumentSnapshot successfully written!");
-                                    onCompleteListener.onComplete(null);
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w("Firestore", "Error writing document", e);
-                                    onCompleteListener.onComplete(null);
-                                }
-                            });
+                    // Store the URI in the database
+                    Database database = new Database(context);
+                    database.storeImageUri(Uid, imageUri.toString(), "autoGenImage");
+
+                    // Notify the onCompleteListener after the database operation is done
+                    onCompleteListener.onComplete(imageUri);
+
+                    Log.d("ProfileImageGenerator", "URI is sent to database");
+
+
                 }
             }
         });
     }
 }
+
+
 
 

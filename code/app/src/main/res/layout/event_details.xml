@@ -323,13 +323,19 @@
             android:gravity="bottom|right"
             android:orientation="horizontal">
 
-            <ImageView
+            <Button
                 android:id="@+id/qr_code"
-                android:layout_width="26dp"
-                android:layout_height="30dp"
+                android:layout_width="145dp"
+                android:layout_height="35dp"
                 android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
-                android:src="@drawable/qr_pic" />
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/event_button_outlined"
+                android:fontFamily="@font/alegreya_sc"
+                android:text="QR codes"
+                android:textAllCaps="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
         </LinearLayout>
 
     </LinearLayout>

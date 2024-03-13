@@ -5,11 +5,22 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+
+import android.os.Handler;
+import android.os.Looper;
+
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
+
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
@@ -24,14 +35,16 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     ListView eventList;
     EventAdapter eventAdapter; // Custom adapter to bind event data to the ListView
     ArrayList<Event> dataList;
+    private Users user;
+    private Database database = new Database(this);
 
-    Button profileButton;
-
+    ImageView profileButton;
 
     private static final String TAG = "ProfileActivityTAG";
 
     /**
-     * Opens the EventDetailsActivity when an event is selected.
+     * Opens the EventDetailsActivity to show the details of the selected event.
+     *
      * @param event The event to show details for.
      */
 
@@ -42,17 +55,18 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     }
 
     /**
-     * Opens the AddEventFragment as a dialog to add a new event.
+     * Shows the AddEventFragment to add a new event.
      */
 
     public void showAddEventDialog() {
-        AddEventFragment dialog = new AddEventFragment();
+        AddEventFragment dialog = AddEventFragment.newInstance(user);
         dialog.show(getSupportFragmentManager(), "AddEventFragment");
     }
 
     /**
-     * This method is called when a new event is added from the AddEventFragment.
-     * @param event The new or updated event to add to the list.
+     * Called when an event is added or updated.
+     *
+     * @param event The event that was added or updated.
      */
 
     @Override
@@ -61,9 +75,9 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     }
 
     /**
-     * Adds an event to the dataList and updates the ListView.
-     * If the event already exists, it is updated. Otherwise, it's added to the list.
-     * @param event The event to add or update.
+     * Adds an event to the list of events and updates the ListView.
+     *
+     * @param event The event to add.
      */
     public void addEvent(Event event) {
         if (event != null) {
@@ -85,8 +99,9 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     }
 
     /**
-     * onCreate is called when the activity is starting.
-     * It initializes the activity, the ListView, and the FloatingActionButton.
+     * Called when the activity is created.
+     *
+     * @param savedInstanceState The saved instance state.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,13 +116,41 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         eventList.setOnItemClickListener(((parent, view, position, id) -> {
             Event selectedEvent = dataList.get(position);
-            showEditEventDialog(selectedEvent);
+
+            showEventDetails(selectedEvent);
+
         }));
 
+        Intent intent = getIntent();
+        user = intent.getParcelableExtra("userObject");
+        Log.d(TAG, "user name for EventHome: " + user.getName() + user.getProfileUid() + user.getUploadedImageUri()+user.getAutoGenImageUri() + user.getHomePage());
+        Log.d(TAG, "user id for EventHome: " + user.getProfileUid());
+        database.setUserObject(user);
         FloatingActionButton fab = findViewById(R.id.event_add_btn);
         fab.setOnClickListener(view -> showAddEventDialog());
 
-        FloatingActionButton profileButton = findViewById(R.id.profileButton);
+        ImageView profileButton = findViewById(R.id.profile_pic);
+
+        if (user.getUploadedImageUri() != null) {
+            // User uploaded a picture, use that as the ImageView
+            //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(EventHome.this).load(user.getUploadedImageUri()).into(profileButton);
+                }
+            });
+        } else if (user.getUploadedImageUri() == null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(EventHome.this).load(user.getAutoGenImageUri()).into(profileButton);
+                }
+            });
+        }
+
+
+
         // When profile is clicked, go to profile activity
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,7 +158,10 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
                 // Go to the ProfileActivity page
                 Log.d(TAG, "Enter button clicked"); // for debugging
+
                 Intent intent = new Intent(EventHome.this, ProfileActivity.class);
+
+                intent.putExtra("userObject", user);
                 startActivity(intent);
 
 
@@ -124,13 +170,5 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
 
     }
-
-
-
-
-    public void showEditEventDialog(Event eventToEdit) {
-        AddEventFragment dialog = AddEventFragment.newInstance(eventToEdit);
-        dialog.show(getSupportFragmentManager(), "AddEventFragment");
-    }
-
 }
+

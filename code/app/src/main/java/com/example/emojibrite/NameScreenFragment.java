@@ -15,14 +15,20 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 import android.util.Log;
+import android.widget.Toast;
 
-
+/**
+ * NameScreenFragment is the fragment for the name screen.
+ * It allows the user to enter their name and go to the next screen.
+ */
 public class NameScreenFragment extends Fragment {
     // attributes
     EditText inputName;
     TextView generateNameText;
     FloatingActionButton backButton;
     TextView nextButtonText;
+
+    Users user;
     private static final String TAG = "NameScreenFragment";
 
     /**
@@ -35,7 +41,7 @@ public class NameScreenFragment extends Fragment {
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return
+     * @return The View for the fragment's UI, or null.
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -44,17 +50,27 @@ public class NameScreenFragment extends Fragment {
         generateNameText = nameScreenLayout.findViewById(R.id.generateNameTextView);
         backButton = nameScreenLayout.findViewById(R.id.nameScreenBackButton);
         nextButtonText = nameScreenLayout.findViewById(R.id.nameScreenBackNext);
+
+        Bundle bundle = getArguments();
+
+        user = bundle.getParcelable("userObject");
+
+        //user =NameScreenFragmentArgs.fromBundle(getArguments()).getUserObject();
+        Log.d(TAG, "onCreateView for name screen fragment: " + user.getProfileUid());
+
         return nameScreenLayout;
     }
 
     /**
-     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
-     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
+     * Called immediately after onCreateView(LayoutInflater, ViewGroup, Bundle) has returned,
+     * but before any saved state has been restored in to the view.
+     * It is safe to perform operations on views in this method.
+     * @param view               The View returned by onCreateView(LayoutInflater, ViewGroup, Bundle).
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
      */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         // when the next button is clicked, go to the next fragment
         nextButtonText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,15 +79,19 @@ public class NameScreenFragment extends Fragment {
                 // if name is empty, auto generate a name automatically and randomly
                 String name = inputName.getText().toString();
                 if(name.isEmpty()) {
-                    inputName.setText("GENERATED NAME");    // Todo: auto generate a name
-                    name = inputName.getText().toString();
-                    // navigate to the next fragment
-                    //NavDirections action = NameScreenFragmentDirections.actionNameScreenToUploadImageScreen(name);
-                    //NavHostFragment.findNavController(NameScreenFragment.this).navigate(action);
+                    Toast.makeText(getActivity(), " Type in a name", Toast.LENGTH_SHORT).show();
+                    
                 } else {
-                    // there is a name so pass it and navigate to the next fragment
-                    //NavDirections action = NameScreenFragmentDirections.actionNameScreenToUploadImageScreen(name);
-                    //NavHostFragment.findNavController(NameScreenFragment.this).navigate(action);
+                    // recieving a bundle from the previous fragment/activity and setting the object name to be that.
+
+                    user.setName(name);
+                    Log.d(TAG, "User name: " + user.getName());
+
+
+                    NavDirections action = NameScreenFragmentDirections.actionNameScreenToUploadImageScreen(user);
+                    Log.d(TAG, "Next button clicked");             // for debugging
+                    NavHostFragment.findNavController(NameScreenFragment.this).navigate(action);
+
                 }
             }
         });
