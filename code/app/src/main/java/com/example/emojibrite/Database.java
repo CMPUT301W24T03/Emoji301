@@ -29,7 +29,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -408,7 +410,99 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
     //EVENT SECTION:
 
-    public void addEvent(Event event, OnCompleteListener<Void> onCompleteListener){}
+    /**
+     * Adds an event to the Firebase Firestore database.
+     * This method creates a map of event details and stores it under a document identified by the event's ID.
+     *
+     * @param event The event object containing the details of the event.
+     * @param onCompleteListener A listener that is called upon the completion of the event addition process.
+     */
+    public void addEvent(Event event, OnCompleteListener<Void> onCompleteListener) {
+        // Creating a map to hold event details.
+        Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("id",event.getId());
+        eventMap.put("eventTitle", event.getEventTitle());
+        eventMap.put("description", event.getDescription());
+        eventMap.put("date", event.getDate());
+        eventMap.put("time", event.getTime());
+        eventMap.put("milestone", event.getMilestone());
+        eventMap.put("location", event.getLocation());
+        eventMap.put("capacity", event.getCapacity());
+        // For Uri objects, converted into strings?
+        eventMap.put("imageUri", event.getImagePath() != null ? event.getImagePath().toString() : null);
+        eventMap.put("checkInQRCode", event.getCheckInQRCode() != null ? event.getCheckInQRCode().toString() : null);
+        eventMap.put("eventQRCode", event.getEventQRCode() != null ? event.getEventQRCode().toString() : null);
+
+        if (event.getImagePath()!=null){
+            Log.d(TAG, event.getImagePath().toString()); //testing
+        }
+
+        // Adding organizer to details
+        if (event.getOrganizer() != null) {
+            Map<String, Object> organizerMap = new HashMap<>();
+            Users organizer = event.getOrganizer();
+            organizerMap.put("organizerId", organizer.getProfileUid());
+            organizerMap.put("organizerName", organizer.getName());
+            organizerMap.put("organizerGenerated", organizer.getAutoGenImageUri());
+            organizerMap.put("organizerUploaded", organizer.getProfileUid());
+            // Add other relevant fields from the Users class
+            eventMap.put("organizer", organizerMap);
+        }
+
+        // Storing the event map in Firestore under the event's ID.
+        eventRef.document(event.getId()).set(eventMap)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Event successfully written!"))
+                .addOnFailureListener(e -> Log.w(TAG, "Error writing event", e))
+                .addOnCompleteListener(onCompleteListener);
+    }
+
+    /**
+     * Retrieves a list of events organized by a specific user from the Firestore database.
+     * This method queries the Firestore database for events where the 'organizerId' matches the provided ID.
+     *
+     * @param organizerId The unique ID of the organizer whose events are to be retrieved.
+     * @param listener A listener that is called when events are successfully retrieved.
+     */
+
+    public void getEventsByOrganizer(String organizerId, OnEventsRetrievedListener listener) {
+        // Querying Firestore for events organized by the specified user.
+        eventRef.whereEqualTo("organizer.organizerId", organizerId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    // List to hold the retrieved events.
+                    List<Event> events = new ArrayList<>();
+                    for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
+                        Event event = snapshot.toObject(Event.class);
+                        Log.d(TAG,"Event ID " + event.getId());
+                        Log.d(TAG, "Event Title: " + event.getEventTitle());
+                        Log.d(TAG, "Event Image URI: " + event.getImagePath());
+                        Log.d(TAG,"Description: " + event.getDescription());
+
+                        // Adding the event to the list.
+                        events.add(event);
+                    }
+
+                    // Calling the listener method with the list of retrieved events
+                    listener.onEventsRetrieved(events);
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Error fetching events", e));
+    }
+
+
+    /**
+     * An interface for listeners that handle the retrieval of a list of events.
+     * Implement this interface to receive a callback when a list of events is successfully retrieved.
+     */
+    public interface OnEventsRetrievedListener {
+        /**
+         * Method called when a list of events is successfully retrieved.
+         *
+         * @param events A list of Event objects.
+         */
+        void onEventsRetrieved(List<Event> events);
+    }
+
+
 
 
 

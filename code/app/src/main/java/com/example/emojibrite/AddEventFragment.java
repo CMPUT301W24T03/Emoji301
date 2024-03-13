@@ -256,6 +256,7 @@ public class AddEventFragment extends DialogFragment{
 
             }
 
+//            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
             Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, qrCodeCheckinURI, qrCodeEventURI, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
             listener.onEventAdded(newEvent);
 

@@ -21,6 +21,9 @@ public class Event implements Serializable {
     private Uri checkInQRCode;
     private Uri eventQRCode;
 
+    private String checkInQRCodeString; // Store as String
+    private String eventQRCodeString;   // Store as String
+
     private Integer capacity;
 
     private String id;
@@ -28,6 +31,24 @@ public class Event implements Serializable {
     private Users organizer;
 
 
+
+
+    public Event(String id, Uri imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Uri checkInQRCode, Uri eventQRCode, Integer capacity, Users organizer){
+
+        this.imageUri=imageUri;
+        this.eventTitle=eventTitle;
+        this.date=date;
+        this.time=time;
+        this.description=description;
+        this.milestone=milestone;
+        this.location=location;
+        this.eventQRCode=eventQRCode;
+        this.checkInQRCode=checkInQRCode;
+        this.id = generateRandomId();
+        this.capacity = capacity;
+        this.organizer = organizer;
+
+    }
 
 
 
@@ -109,6 +130,8 @@ public class Event implements Serializable {
 
     }
 
+    public Event(){}
+
     private String generateRandomId(){
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder sb = new StringBuilder();
@@ -166,12 +189,12 @@ public class Event implements Serializable {
 
     public void setCheckInQRCode(Uri checkInQRCode)
     {
-        this.checkInQRCode=checkInQRCode;
+        this.checkInQRCodeString = checkInQRCode != null ? checkInQRCode.toString() : null;
     }
 
     public void setEventQRCode(Uri eventQRCode)
     {
-        this.eventQRCode=eventQRCode;
+        this.eventQRCodeString = eventQRCode != null ? eventQRCode.toString() : null;
     }
 
     public void setOrganizer(Users organizer){this.organizer=organizer;}
@@ -209,11 +232,11 @@ public class Event implements Serializable {
     }
 
     public Uri getCheckInQRCode() {
-        return checkInQRCode;
+        return checkInQRCodeString != null ? Uri.parse(checkInQRCodeString) : null;
     }
 
     public Uri getEventQRCode() {
-        return eventQRCode;
+        return eventQRCodeString != null ? Uri.parse(eventQRCodeString) : null;
     }
 
     public Integer getCapacity(){return capacity;}
