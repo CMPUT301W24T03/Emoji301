@@ -1,7 +1,6 @@
 package com.example.emojibrite;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,6 +26,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the new method to
+ * create an instance of this fragment.
+ */
 public class UploadImageScreenFragment extends Fragment {
     // attributes
     Button uploadImageButton;
@@ -41,7 +45,7 @@ public class UploadImageScreenFragment extends Fragment {
     private Uri imageUri;
 
     private Bitmap  imageBitMap;
-    private Database database = new Database();
+    private Database database = new Database(getActivity());
 
 
     /**
@@ -63,11 +67,19 @@ public class UploadImageScreenFragment extends Fragment {
         BackButton = uploadImageScreenLayout.findViewById(R.id.uploadImageScreenBackButton);
         nextButtonText = uploadImageScreenLayout.findViewById(R.id.uploadImageScreenNext);
         database.setUserUid();
-        user = UploadImageScreenFragmentArgs.fromBundle(getArguments()).getUserObject();
+        Bundle bundle = getArguments();
+        user = bundle.getParcelable("userObject");
+        Log.d(TAG, "User UID: " + user.getProfileUid());
+
         Log.d(TAG, "onCreateView for upload image screen fragment: " + user.getProfileUid());
+
         return uploadImageScreenLayout;
     }
-
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * @param context If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onAttach(@NonNull Context context) {
 
@@ -75,20 +87,14 @@ public class UploadImageScreenFragment extends Fragment {
 
         // Initialize the ActivityResultLauncher in onAttach()
         pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-            // Callback is invoked after the user selects a media item or closes the
-            // photo picker.
             if (uri != null) {
                 Log.d("PhotoPicker", "Selected URI: " + uri);
 
-                try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
-                    database.sendUploadedProfileImageToDatabase(bitmap);
-                    user.setUploadedImage(bitmap);
-                    Log.d("PhotoPicker", "Selected Bitmap: " + bitmap);
-                } catch (IOException e) {
-                    Log.d("PhotoPicker", "Error getting bitmap from URI: " + e.getMessage());
-                    throw new RuntimeException(e);
-                }
+                // Store the URI of the selected image in the Users object and in the database
+                user.setUploadedImageUri(uri.toString());
+                database.storeImageUri(user.getProfileUid(), uri.toString(), "uploadedImage");
+
+                // Retrieve the image from the URI
 
             } else {
                 Log.d("PhotoPicker", "No media selected");
@@ -126,9 +132,13 @@ public class UploadImageScreenFragment extends Fragment {
             public void onClick(View v) {
                 Log.d(TAG, "Back button clicked");
                 NavController navController = Navigation.findNavController(view);
-                user.setAutoGenImage(null);
-                user.setUploadedImage(null);
+                user.setAutoGenImageUri(null);
+                user.setUploadedImageUri(null);
                 user.setName(null);
+                UploadImageScreenFragmentDirections.ActionUploadImageScreenToNameScreen action =
+                        UploadImageScreenFragmentDirections.actionUploadImageScreenToNameScreen(user);
+                navController.navigate(action);
+
 
 
             }

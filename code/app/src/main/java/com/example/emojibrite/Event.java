@@ -25,11 +25,43 @@ public class Event implements Serializable {
 
     private String id;
 
-    private String organizer;
+    private Users organizer;
 
 
 
 
+
+    public Event(Uri imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Uri checkInQRCode, Uri eventQRCode, Integer capacity, Users organizer){
+
+        this.imageUri=imageUri;
+        this.eventTitle=eventTitle;
+        this.date=date;
+        this.time=time;
+        this.description=description;
+        this.milestone=milestone;
+        this.location=location;
+        this.eventQRCode=eventQRCode;
+        this.checkInQRCode=checkInQRCode;
+        this.id = generateRandomId();
+        this.capacity = capacity;
+        this.organizer = organizer;
+
+    }
+
+    public Event(Uri imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Integer capacity, Users organizer){
+
+        this.imageUri=imageUri;
+        this.eventTitle=eventTitle;
+        this.date=date;
+        this.time=time;
+        this.description=description;
+        this.milestone=milestone;
+        this.location=location;
+        this.id = generateRandomId();
+        this.capacity = capacity;
+        this.organizer = organizer;
+
+    }
 
     public Event(Uri imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Uri checkInQRCode, Uri eventQRCode, Integer capacity){
 
@@ -44,6 +76,7 @@ public class Event implements Serializable {
         this.checkInQRCode=checkInQRCode;
         this.id = generateRandomId();
         this.capacity = capacity;
+
 
     }
 
@@ -141,6 +174,8 @@ public class Event implements Serializable {
         this.eventQRCode=eventQRCode;
     }
 
+    public void setOrganizer(Users organizer){this.organizer=organizer;}
+
     public Uri getImagePath()
     {
         return imageUri;
@@ -182,6 +217,10 @@ public class Event implements Serializable {
     }
 
     public Integer getCapacity(){return capacity;}
+
+    public Users getOrganizer(){return organizer;}
+
+
 
 
 }
