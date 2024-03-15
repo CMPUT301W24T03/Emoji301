@@ -67,6 +67,10 @@ public class Users implements Parcelable{
 
     }
 
+    public void setProfileUid(String profileUid) {
+        this.profileUid = profileUid;
+    }
+
     /**
      * gets the uploaded image
      * @return uploadedImage : the image uploaded by the user

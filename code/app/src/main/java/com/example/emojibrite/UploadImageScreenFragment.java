@@ -101,8 +101,6 @@ public class UploadImageScreenFragment extends Fragment {
             }
         });
     }
-
-
     /**
      * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
      * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
@@ -111,7 +109,6 @@ public class UploadImageScreenFragment extends Fragment {
      */
     public void onViewCreated(@NonNull View view, Bundle savedInstancesState) {
         super.onViewCreated(view, savedInstancesState);
-
         //String name = UploadImageScreenFragmentArgs.fromBundle(getArguments()).getUserObject();
         // when the next button is clicked, go to the next fragment - PreviewScreenFragment
         nextButtonText.setOnClickListener(new View.OnClickListener() {
@@ -125,7 +122,6 @@ public class UploadImageScreenFragment extends Fragment {
                 NavHostFragment.findNavController(UploadImageScreenFragment.this).navigate(action);
             }
         });
-
         // when the back button is clicked, go back to the previous fragment - NameScreenFragment
         BackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,12 +134,8 @@ public class UploadImageScreenFragment extends Fragment {
                 UploadImageScreenFragmentDirections.ActionUploadImageScreenToNameScreen action =
                         UploadImageScreenFragmentDirections.actionUploadImageScreenToNameScreen(user);
                 navController.navigate(action);
-
-
-
             }
         });
-
         uploadImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
