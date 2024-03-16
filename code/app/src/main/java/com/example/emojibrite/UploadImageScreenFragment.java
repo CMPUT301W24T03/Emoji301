@@ -67,11 +67,8 @@ public class UploadImageScreenFragment extends Fragment {
         BackButton = uploadImageScreenLayout.findViewById(R.id.uploadImageScreenBackButton);
         nextButtonText = uploadImageScreenLayout.findViewById(R.id.uploadImageScreenNext);
         database.setUserUid();
-        Bundle bundle = getArguments();
-        user = bundle.getParcelable("userObject");
-        Log.d(TAG, "User UID: " + user.getProfileUid());
 
-        Log.d(TAG, "onCreateView for upload image screen fragment: " + user.getProfileUid());
+        initializeUser(uploadImageScreenLayout);
 
         return uploadImageScreenLayout;
     }
@@ -82,9 +79,7 @@ public class UploadImageScreenFragment extends Fragment {
      */
     @Override
     public void onAttach(@NonNull Context context) {
-
         super.onAttach(context);
-
         // Initialize the ActivityResultLauncher in onAttach()
         pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
             if (uri != null) {
@@ -102,7 +97,6 @@ public class UploadImageScreenFragment extends Fragment {
         });
     }
 
-
     /**
      * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
      * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
@@ -117,41 +111,75 @@ public class UploadImageScreenFragment extends Fragment {
         nextButtonText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "Next button clicked");
-                // if image is empty, auto generate?
-                // when the next button is clicked, go to the next fragment.
-                // put stuff you want to pass into the brackets. Make sure to add name and image
-                NavDirections action = UploadImageScreenFragmentDirections.actionUploadImageScreenToPreviewScreen(user);    // put name and image here
-                NavHostFragment.findNavController(UploadImageScreenFragment.this).navigate(action);
+                navigateToImagePreview(v);
             }
         });
-
         // when the back button is clicked, go back to the previous fragment - NameScreenFragment
         BackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "Back button clicked");
-                NavController navController = Navigation.findNavController(view);
-                user.setAutoGenImageUri(null);
-                user.setUploadedImageUri(null);
-                user.setName(null);
-                UploadImageScreenFragmentDirections.ActionUploadImageScreenToNameScreen action =
-                        UploadImageScreenFragmentDirections.actionUploadImageScreenToNameScreen(user);
-                navController.navigate(action);
-
-
-
+                navigateBackToNameScreen(v);
             }
         });
-
         uploadImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                pickMedia.launch(new PickVisualMediaRequest.Builder()
-                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                        .build());
+                launchMediaPicker(v);
             }
         });
+    }
+
+    /**
+     * Called when the next button is clicked
+     * Navigates to the ImagePreviewScreen
+     * @param view The view that was clicked to trigger navigation
+     */
+    protected void navigateToImagePreview(View view) {
+        Log.d(TAG, "Next button clicked");
+        // if image is empty, auto generate?
+        // when the next button is clicked, go to the next fragment.
+        // put stuff you want to pass into the brackets. Make sure to add name and image
+        NavDirections action = UploadImageScreenFragmentDirections.actionUploadImageScreenToPreviewScreen(user);    // put name and image here
+        NavHostFragment.findNavController(UploadImageScreenFragment.this).navigate(action);
+    }
+
+    /**
+     * Called when the back button is clicked
+     * Navigates back to the name screen
+     * It also clears the user's auto-generated image URI, uploaded image URI, and name.
+     * @param view The view that was clicked to trigger navigation
+     */
+    protected void navigateBackToNameScreen(View view) {
+        Log.d(TAG, "Back button clicked");
+        NavController navController = Navigation.findNavController(view);
+        user.setAutoGenImageUri(null);
+        user.setUploadedImageUri(null);
+        user.setName(null);
+        UploadImageScreenFragmentDirections.ActionUploadImageScreenToNameScreen action =
+                UploadImageScreenFragmentDirections.actionUploadImageScreenToNameScreen(user);
+        navController.navigate(action);
+    }
+
+    /**
+     * Called when the UploadImage button is clicked
+     * Launches the media picker to allow the user to select an image.
+     * @param view The view that was clicked to trigger navigation
+     */
+    protected void launchMediaPicker(View view) {
+        pickMedia.launch(new PickVisualMediaRequest.Builder()
+                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                .build());
+    }
+
+    /**
+     * Initializes the user object from the arguments bundle
+     * @param view The view that will be used to find view elements
+     */
+    private void initializeUser(View view) {
+        Bundle bundle = getArguments();
+        user = bundle.getParcelable("userObject");
+        Log.d(TAG, "User UID: " + user.getProfileUid());
+
+        Log.d(TAG, "onCreateView for upload image screen fragment: " + user.getProfileUid());
     }
 }
