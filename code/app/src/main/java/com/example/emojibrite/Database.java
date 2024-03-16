@@ -472,7 +472,6 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     // List to hold the retrieved events.
                     List<Event> events = new ArrayList<>();
                     for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
-                        // Converting the document snapshot to an Event object
                         Event event = snapshot.toObject(Event.class);
                         Log.d(TAG,"Event ID " + event.getId());
                         Log.d(TAG, "Event Title: " + event.getEventTitle());
@@ -483,7 +482,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
                         events.add(event);
                     }
 
-                    // Invoking the onEventsRetrieved method of the listener and passing the list of retrieved events
+                    // Calling the listener method with the list of retrieved events
                     listener.onEventsRetrieved(events);
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Error fetching events", e));
