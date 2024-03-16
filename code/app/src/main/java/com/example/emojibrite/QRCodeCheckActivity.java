@@ -1,5 +1,7 @@
 package com.example.emojibrite;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.BarcodeFormat;
@@ -21,6 +24,8 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -88,8 +93,23 @@ public class QRCodeCheckActivity extends AppCompatActivity {
         });
 
         // Listener for the back navigation button
-        backCheckInQRCode.setOnClickListener(v -> finish());
+        backCheckInQRCode.setOnClickListener(v -> {returnResult();});
 
+    }
+
+    private Uri saveImage(Bitmap bitmap, String fileName) throws IOException {
+        // Get the cache directory
+        File cachePath = new File(getCacheDir(), "images");
+        cachePath.mkdirs();
+
+        // Create the file in the cache directory
+        File imageFile = new File(cachePath, fileName);
+        FileOutputStream stream = new FileOutputStream(imageFile); // Overwrites this image every time
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        stream.close();
+
+        // Get the URI of the file
+        return FileProvider.getUriForFile(this, "com.example.emojibrite", imageFile);
     }
 
     /**
@@ -110,13 +130,19 @@ public class QRCodeCheckActivity extends AppCompatActivity {
             Bitmap bitmap = encoder.createBitmap(bitMatrix);
             qrCode.setImageBitmap(bitmap);
 
-        } catch (WriterException e) {
+            selectedImageUri = saveImage(bitmap, "qr_code_" + QRid + ".png");
+
+        } catch (WriterException | IOException e) {
             throw new RuntimeException(e);
         }
 
         //Log.d("QRID", Long.toString(QRid));
 
     }
+
+
+
+
 
 
     /**
@@ -148,6 +174,14 @@ public class QRCodeCheckActivity extends AppCompatActivity {
     private void openGallery() {
 
         mGetContent.launch("image/*"); // "image/*" indicates that only image types are selectable
+    }
+
+    private void returnResult() {
+        Intent resultIntent = new Intent();
+        // Assume 'selectedImageUri' is the URI of your generated or selected QR code
+        resultIntent.putExtra("QR_CODE_URI", selectedImageUri.toString());
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish();
     }
 
 

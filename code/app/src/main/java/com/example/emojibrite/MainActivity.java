@@ -51,11 +51,31 @@ public class MainActivity extends AppCompatActivity {
         enterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 database.anonymousSignIn(new Database.SignInCallBack() {
                     @Override
                     public void onSignInComplete() {
                         Log.d(TAG, "is the user signed in or not???????????????????" + database.isUserSignedIn());
                         Log.d(TAG, " user id: " + database.getUserUid());
+                        database.getUserName(new Database.UserNameDBCallBack() {
+
+                            @Override
+                            public void onUserRetrieveNameComplete(String name) {
+                                if (name != null) {
+                                    Log.d(TAG, "Enter button clicked"); // for debugging
+                                    Intent intent = new Intent(MainActivity.this, EventHome.class);
+                                    //TODO send in information to event page
+                                    startActivity(intent);
+                                } else {
+                                    Intent intent = new Intent(MainActivity.this, AccountCreationActivity.class);
+                                    Log.d(TAG, " user id: before intent is send " + database.getUserUid());
+                                    intent.putExtra("Uid", database.getUserUid());
+                                    startActivity(intent);
+                                    Log.d(TAG, "IT worked!!!!"); // for debugging
+                                }
+                            }
+                        });
+                        //ImageView imageView = findViewById(R.id.profile_image);
                         database.getUserDocument(database.getUserUid(), new Database.OnUserDocumentRetrievedListener() {
                             @Override
                             public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot) {
@@ -85,6 +105,18 @@ public class MainActivity extends AppCompatActivity {
                         });
                     }
                 });
+
+
+//                // if the user exists in database, go to the event page
+//                Log.d(TAG, "Enter button clicked"); // for debugging
+//                Intent intent = new Intent(MainActivity.this, EventHome.class);
+//                startActivity(intent);
+                // else go to nameScreenFragment through the AccountCreationActivity
+
+
+                // else go to nameScreenFragment
+
+                //Log.d(TAG, "is the user signed in or not???" + database.isUserSignedIn()); // for debugging
             }
         });
     }

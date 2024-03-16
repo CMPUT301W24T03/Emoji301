@@ -149,7 +149,7 @@ public class ProfileEditFragment extends DialogFragment {
                             dismiss();
                         }
 
-                });
+                    });
                 }
                 else{
                     database.setUserObject(user);

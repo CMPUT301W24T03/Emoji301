@@ -36,9 +36,7 @@
                 android:layout_width="386dp"
                 android:layout_height="267dp"
                 android:layout_gravity="center_horizontal"
-
                 android:src="@drawable/ic_launcher_foreground" />
-
 
         </LinearLayout>
 
