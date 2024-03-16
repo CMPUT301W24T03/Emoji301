@@ -429,12 +429,12 @@ once created, u can call getuseruid to get the user id and use it to get user da
         eventMap.put("location", event.getLocation());
         eventMap.put("capacity", event.getCapacity());
         // For Uri objects, converted into strings?
-        eventMap.put("imageUri", event.getImagePath() != null ? event.getImagePath().toString() : null);
+        eventMap.put("imageUri", event.getImageUri() != null ? event.getImageUri().toString() : null);
         eventMap.put("checkInQRCode", event.getCheckInQRCode() != null ? event.getCheckInQRCode().toString() : null);
         eventMap.put("eventQRCode", event.getEventQRCode() != null ? event.getEventQRCode().toString() : null);
 
-        if (event.getImagePath()!=null){
-            Log.d(TAG, event.getImagePath().toString()); //testing
+        if (event.getImageUri()!=null){
+            Log.d(TAG, event.getImageUri().toString()); //testing
         }
 
         // Adding organizer to details
@@ -472,17 +472,18 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     // List to hold the retrieved events.
                     List<Event> events = new ArrayList<>();
                     for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
+                        // Converting the document snapshot to an Event object
                         Event event = snapshot.toObject(Event.class);
                         Log.d(TAG,"Event ID " + event.getId());
                         Log.d(TAG, "Event Title: " + event.getEventTitle());
-                        Log.d(TAG, "Event Image URI: " + event.getImagePath());
+                        Log.d(TAG, "Event Image URI: " + event.getImageUri());
                         Log.d(TAG,"Description: " + event.getDescription());
 
                         // Adding the event to the list.
                         events.add(event);
                     }
 
-                    // Calling the listener method with the list of retrieved events
+                    // Invoking the onEventsRetrieved method of the listener and passing the list of retrieved events
                     listener.onEventsRetrieved(events);
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Error fetching events", e));

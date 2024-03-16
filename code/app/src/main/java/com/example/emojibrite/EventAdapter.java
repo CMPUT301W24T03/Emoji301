@@ -85,12 +85,12 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         eventTime.setText(event.getTime());
 
-        if (event.getImagePath() != null) {
-            Glide.with(getContext()).load(event.getImagePath()).into(eventImage);
-            Log.d(TAG, "PICTURE LOOOOAAADDING");
+        if (event.getImageUri() != null) {
+            Glide.with(getContext()).load(event.getImageUri()).into(eventImage);
+            Log.d(TAG, "PICTURE LOOOOAAADDING: EVENTADAPTER");
         } else {
             eventImage.setImageResource(R.drawable.placeholder);
-            Log.d(TAG, "PICTURE NOOOOOOOT LOOOOAAADDING");
+            Log.d(TAG, "PICTURE NOOOOOOOT LOOOOAAADDING: EVENTADAPTER");
         }
 
 

@@ -83,9 +83,9 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         // Handling event poster image loading.
         ImageView eventPosterImage = findViewById(R.id.image_event_poster);
-        if (event.getImagePath() != null) {
+        if (event.getImageUri() != null) {
             // Using Glide library to load the image from the URL/path.
-            Glide.with(this).load(event.getImagePath()).into(eventPosterImage);
+            Glide.with(this).load(event.getImageUri()).into(eventPosterImage);
         } else {
             // In case the event does not have an image, a placeholder image is used.
             eventPosterImage.setImageResource(R.drawable.placeholder);

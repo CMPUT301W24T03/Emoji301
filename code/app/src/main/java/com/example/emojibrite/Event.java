@@ -11,18 +11,18 @@ import java.util.Random;
  */
 public class Event implements Serializable {
 
-    private Uri imageUri;
+    private String imageUri;
     private String eventTitle;
     private Date date;
     private String time;
     private String description;
     private Integer milestone;
     private String location;
-    private Uri checkInQRCode;
-    private Uri eventQRCode;
+    private String checkInQRCode;
+    private String eventQRCode;
 
-    private String checkInQRCodeString; // Store as String
-    private String eventQRCodeString;   // Store as String
+//    private Uri checkInQRCode; // Store as String
+//    private Uri eventQRCode;   // Store as String
 
     private Integer capacity;
 
@@ -33,7 +33,7 @@ public class Event implements Serializable {
 
 
 
-    public Event(String id, Uri imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Uri checkInQRCode, Uri eventQRCode, Integer capacity, Users organizer){
+    public Event(String id, String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity, Users organizer){
 
         this.imageUri=imageUri;
         this.eventTitle=eventTitle;
@@ -52,7 +52,7 @@ public class Event implements Serializable {
 
 
 
-    public Event(Uri imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Uri checkInQRCode, Uri eventQRCode, Integer capacity, Users organizer){
+    public Event(String  imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity, Users organizer){
 
         this.imageUri=imageUri;
         this.eventTitle=eventTitle;
@@ -69,7 +69,7 @@ public class Event implements Serializable {
 
     }
 
-    public Event(Uri imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Integer capacity, Users organizer){
+    public Event(String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Integer capacity, Users organizer){
 
         this.imageUri=imageUri;
         this.eventTitle=eventTitle;
@@ -84,7 +84,7 @@ public class Event implements Serializable {
 
     }
 
-    public Event(Uri imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Uri checkInQRCode, Uri eventQRCode, Integer capacity){
+    public Event(String  imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity){
 
         this.imageUri=imageUri;
         this.eventTitle=eventTitle;
@@ -101,7 +101,7 @@ public class Event implements Serializable {
 
     }
 
-    public Event(Uri imageUri, String eventTitle, Date date, String time, String description, String location, Uri checkInQRCode, Uri eventQRCode, Integer capacity){
+    public Event(String imageUri, String eventTitle, Date date, String time, String description, String location, String checkInQRCode, String eventQRCode, Integer capacity){
 
         this.imageUri=imageUri;
         this.eventTitle=eventTitle;
@@ -115,7 +115,7 @@ public class Event implements Serializable {
 
     } //without milestones. Feel free to suggest more stuff
 
-    public Event(Uri imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Integer capacity){
+    public Event(String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Integer capacity){
 
         this.imageUri=imageUri;
         this.eventTitle=eventTitle;
@@ -136,9 +136,9 @@ public class Event implements Serializable {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
-        for (int i = 0; i<6;i++){
-            int inddex = random.nextInt(chars.length());
-            sb.append(chars.charAt(inddex));
+        for (int i = 0; i<12;i++){
+            int index = random.nextInt(chars.length());
+            sb.append(chars.charAt(index));
         }
         return sb.toString();
     }
@@ -155,7 +155,7 @@ public class Event implements Serializable {
 
 
 
-    public void setImagePath(Uri imageUri) {
+    public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
     }
     public void setEventTitle(String eventTitle)
@@ -187,21 +187,21 @@ public class Event implements Serializable {
         this.location=location;
     }
 
-    public void setCheckInQRCode(Uri checkInQRCode)
+    public void setCheckInQRCode(String checkInQRCode)
     {
-        this.checkInQRCodeString = checkInQRCode != null ? checkInQRCode.toString() : null;
+        this.checkInQRCode = checkInQRCode;
     }
 
-    public void setEventQRCode(Uri eventQRCode)
+    public void setEventQRCode(String eventQRCode)
     {
-        this.eventQRCodeString = eventQRCode != null ? eventQRCode.toString() : null;
+        this.eventQRCode = eventQRCode;
     }
 
     public void setOrganizer(Users organizer){this.organizer=organizer;}
 
-    public Uri getImagePath()
+    public Uri getImageUri()
     {
-        return imageUri;
+        return imageUri != null ? Uri.parse(imageUri) : null; //reconverting the string to an Image
     }
 
     public String getEventTitle()
@@ -232,18 +232,16 @@ public class Event implements Serializable {
     }
 
     public Uri getCheckInQRCode() {
-        return checkInQRCodeString != null ? Uri.parse(checkInQRCodeString) : null;
+
+        return checkInQRCode != null ? Uri.parse(checkInQRCode): null;
     }
 
     public Uri getEventQRCode() {
-        return eventQRCodeString != null ? Uri.parse(eventQRCodeString) : null;
+        return eventQRCode != null ? Uri.parse(eventQRCode): null;
     }
 
     public Integer getCapacity(){return capacity;}
 
     public Users getOrganizer(){return organizer;}
-
-
-
 
 }
