@@ -70,6 +70,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
+    testImplementation("org.mockito:mockito-core:3.12.4")
+    androidTestImplementation("org.mockito:mockito-android:3.12.4")
 
 
     implementation("pub.devrel:easypermissions:3.0.0")
@@ -78,7 +80,7 @@ dependencies {
     //QR Code dependency
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 
 }

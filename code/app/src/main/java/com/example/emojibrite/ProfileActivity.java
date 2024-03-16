@@ -49,53 +49,51 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         user = intent.getParcelableExtra("userObject");
 
 
+        if (user != null) {
+            FloatingActionButton back = findViewById(R.id.backButton);
+            back.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Handle button click to go back to the main activity
+                    Intent intent = new Intent(ProfileActivity.this, EventHome.class);
+                    intent.putExtra("userObject", user);
+                    startActivity(intent);
+                }
+            });
 
-        FloatingActionButton back = findViewById(R.id.backButton);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Handle button click to go back to the main activity
-                Intent intent = new Intent(ProfileActivity.this, EventHome.class);
-                intent.putExtra("userObject", user);
-                startActivity(intent);
+            FloatingActionButton editButton = findViewById(R.id.editButton);
 
+            editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Initialize ProfileEditFragment and set the current profile
+                    ProfileEditFragment profileEditFragment = new ProfileEditFragment();
 
-            }
-        });
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("userObject", user);
+                    profileEditFragment.setArguments(bundle);
+                    profileEditFragment.show(getSupportFragmentManager(), "ProfileEditFragment");
+                }
+            });
 
-        FloatingActionButton editButton = findViewById(R.id.editButton);
+            TextView emailTextView = findViewById(R.id.userEmail);
+            TextView phoneNumberTextView = findViewById(R.id.userPhoneNumber);
+            TextView nameTextView = findViewById(R.id.userName);
+            TextView homePageTextView = findViewById(R.id.userHomePage);
+            profilePictureImageView = findViewById(R.id.profilePicture);
 
-        editButton.setOnClickListener(new View.OnClickListener() {
-            // Create an instance of the ProfileEditFragment
-            @Override
-            public void onClick(View view) {
-                // Initialize ProfileEditFragment and set the current profile
-                ProfileEditFragment profileEditFragment = new ProfileEditFragment();
+            emailTextView.setText(user.getEmail());
+            phoneNumberTextView.setText(user.getNumber());
+            nameTextView.setText(user.getName());
+            homePageTextView.setText(user.getHomePage());
 
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("userObject", user);
-                profileEditFragment.setArguments(bundle);
-                profileEditFragment.show(getSupportFragmentManager(), "ProfileEditFragment");
-
-
-                // Show the ProfileEditFragment
-
-            }
-        });
-
-        TextView emailTextView = findViewById(R.id.userEmail);
-        TextView phoneNumberTextView = findViewById(R.id.userPhoneNumber);
-        TextView nameTextView = findViewById(R.id.userName);
-        TextView homePageTextView = findViewById(R.id.userHomePage);
-        profilePictureImageView = findViewById(R.id.profilePicture);
-
-        emailTextView.setText(user.getEmail());
-        phoneNumberTextView.setText(user.getNumber());
-        nameTextView.setText(user.getName());
-        homePageTextView.setText(user.getHomePage());
-        // Retrieve information from SharedPreferences and set it to UI elements
-
-        settingPfp();
+            settingPfp();
+        } else {
+            // Handle the case where the user object is null (e.g., show an error message)
+            Log.e("ProfileActivity", "User object is null");
+            // You might want to finish the activity or handle this situation differently based on your requirements.
+            finish();
+        }
     }
     /**
      * Called when the user clicks the "Edit" button to edit their profile.
