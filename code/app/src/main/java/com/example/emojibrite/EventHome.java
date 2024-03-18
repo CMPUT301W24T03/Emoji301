@@ -95,6 +95,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     private void updateLocalEventList(Event event) {
         int index = -1;
         for (int i = 0; i < dataList.size(); i++) {
+
             String existingEventId = dataList.get(i).getId();
             String newEventId = event.getId();
             // Check if both IDs are non-null and equal

@@ -438,15 +438,19 @@ once created, u can call getuseruid to get the user id and use it to get user da
         }
 
         // Adding organizer to details
+//        if (event.getOrganizer() != null) {
+//            Map<String, Object> organizerMap = new HashMap<>();
+//            Users organizer = event.getOrganizer();
+//            organizerMap.put("organizerId", organizer.getProfileUid());
+////            organizerMap.put("organizerName", organizer.getName());
+////            organizerMap.put("organizerGenerated", organizer.getAutoGenImageUri());
+////            organizerMap.put("organizerUploaded", organizer.getProfileUid());
+////            // Add other relevant fields from the Users class
+//            eventMap.put("organizer", organizerMap);
+//        }
+
         if (event.getOrganizer() != null) {
-            Map<String, Object> organizerMap = new HashMap<>();
-            Users organizer = event.getOrganizer();
-            organizerMap.put("organizerId", organizer.getProfileUid());
-            organizerMap.put("organizerName", organizer.getName());
-            organizerMap.put("organizerGenerated", organizer.getAutoGenImageUri());
-            organizerMap.put("organizerUploaded", organizer.getProfileUid());
-            // Add other relevant fields from the Users class
-            eventMap.put("organizer", organizerMap);
+            eventMap.put("organizer", event.getOrganizer());
         }
 
         // Storing the event map in Firestore under the event's ID.
@@ -466,7 +470,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
     public void getEventsByOrganizer(String organizerId, OnEventsRetrievedListener listener) {
         // Querying Firestore for events organized by the specified user.
-        eventRef.whereEqualTo("organizer.organizerId", organizerId)
+        eventRef.whereEqualTo("organizer", organizerId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     // List to hold the retrieved events.
@@ -477,6 +481,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
                         Log.d(TAG, "Event Title: " + event.getEventTitle());
                         Log.d(TAG, "Event Image URI: " + event.getImageUri());
                         Log.d(TAG,"Description: " + event.getDescription());
+                        Log.d(TAG,"Organizer: "+ event.getOrganizer());
 
                         // Adding the event to the list.
                         events.add(event);
@@ -501,6 +506,33 @@ once created, u can call getuseruid to get the user id and use it to get user da
          */
         void onEventsRetrieved(List<Event> events);
     }
+
+
+
+    public interface EventCallBack{
+        void onEventFetched(Event event);
+    }
+
+    public void getEventById(String eventId, EventCallBack callBack){
+        eventRef.document(eventId).get().addOnSuccessListener(documentSnapshot -> {
+            if(documentSnapshot.exists()){
+                Log.d(TAG, "Raw Firestore Data: " + documentSnapshot.getData());
+                Event event = documentSnapshot.toObject(Event.class);
+                Log.d(TAG,"EVENT ID:"+eventId);
+//                if(event.getOrganizer() != null) {
+//                    Log.d(TAG,"EVENT ORGANIZER NAME:"+event.getOrganizer().getName());
+//                } else {
+//                    Log.d(TAG, "Organizer is null");
+//                }
+                Log.d(TAG,"URI IMAGE:"+event.getImageUri());
+                Log.d(TAG, "Organizer ID: "+event.getOrganizer());
+                callBack.onEventFetched(event);
+            }
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Error fetching event", e);
+        });
+    }
+
 
 
 

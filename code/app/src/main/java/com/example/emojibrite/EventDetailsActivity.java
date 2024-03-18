@@ -1,15 +1,20 @@
 package com.example.emojibrite;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.DocumentSnapshot;
+
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -39,12 +44,16 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         ImageView backButton = findViewById(R.id.imageView); //back button
         Button attendeesButton = findViewById(R.id.attendees_button);
+
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 finish();
             }
+
+
         });
 
         attendeesButton.setOnClickListener(new View.OnClickListener() {
@@ -67,11 +76,25 @@ public class EventDetailsActivity extends AppCompatActivity {
         // Retrieving the event ID passed from the previous activity.
         String eventId = getIntent().getStringExtra("eventId");
         // Getting the event details from the EventRepository using the event ID.
-        Event event = EventRepository.getInstance().getEventById(eventId);
-        if (event != null) {
-            // If the event is found, set up the views to display.
-            setupViews(event);
-        }
+//        Event event = EventRepository.getInstance().getEventById(eventId);
+//        if (event != null) {
+//            // If the event is found, set up the views to display.
+//            setupViews(event);
+//            Log.d(TAG,event.getId());
+//            Log.d(TAG,event.getOrganizer().getProfileUid());
+//
+//        }
+        Database database = new Database(this);
+        database.getEventById(eventId, new Database.EventCallBack() {
+            @Override
+            public void onEventFetched(Event event) {
+                if(event != null) {
+                    setupViews(event);
+                } else {
+                    // Handle the case where event is null
+                }
+            }
+        });
     }
 
     /**
@@ -85,31 +108,26 @@ public class EventDetailsActivity extends AppCompatActivity {
         ImageView eventPosterImage = findViewById(R.id.image_event_poster);
         if (event.getImageUri() != null) {
             // Using Glide library to load the image from the URL/path.
-            Glide.with(this).load(event.getImageUri()).into(eventPosterImage);
+            Glide.with(EventDetailsActivity.this).load(event.getImageUri()).into(eventPosterImage);
         } else {
             // In case the event does not have an image, a placeholder image is used.
             eventPosterImage.setImageResource(R.drawable.placeholder);
         }
 
-
-
-        //Organizer's name and profile picture:
-        ImageView organizerProfilePic = findViewById(R.id.EmojiBriteLogo);
-
-        setTextOrHide(findViewById(R.id.organizer_name), event.getOrganizer().getName());
-
-        if(event.getOrganizer().getUploadedImageUri()!=null){
-            new Handler(Looper. getMainLooper()).post(new Runnable() {
+        if (event.getOrganizer()!=null){
+            Database database = new Database(this);
+            database.getUserDocument(event.getOrganizer(), new Database.OnUserDocumentRetrievedListener(){
                 @Override
-                public void run() {
-                    Glide.with(EventDetailsActivity.this).load(event.getOrganizer().getUploadedImageUri()).into(organizerProfilePic);
-                }
-            });
-        } else if (event.getOrganizer().getUploadedImageUri() == null) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    Glide.with(EventDetailsActivity.this).load(event.getOrganizer().getAutoGenImageUri()).into(organizerProfilePic);
+                public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot){
+                    if (documentSnapshot.exists()){
+                        Users organizer = documentSnapshot.toObject(Users.class);
+                        if (organizer!=null){
+                            setOrganizerViews(organizer);
+                        }
+                        else{
+                            Log.d(TAG,"no organizer document. CHECK FIREBASE");
+                        }
+                    }
                 }
             });
         }
@@ -129,6 +147,33 @@ public class EventDetailsActivity extends AppCompatActivity {
         setTextOrHide(findViewById(R.id.capacity), (event.getCapacity() != null) ? String.valueOf(event.getCapacity()) : null);
         setTextOrHide(findViewById(R.id.more_details_Event), event.getDescription());
         setTextOrHide(findViewById(R.id.location_details), event.getLocation());
+    }
+
+    /**
+     * The function is to generate real time organizer's data such as their username and profile picture
+     * @param organizer The organizer as the user object contains all the organizer's information
+     */
+    private void setOrganizerViews(Users organizer) {
+        ImageView organizerProfilePic = findViewById(R.id.EmojiBriteLogo);
+        setTextOrHide(findViewById(R.id.organizer_name), organizer.getName());
+
+        //CHECK IF ORGANIZER HAS
+        if(organizer.getUploadedImageUri()!=null){
+            new Handler(Looper. getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(EventDetailsActivity.this).load(organizer.getUploadedImageUri()).into(organizerProfilePic);
+                }
+            });
+        } else if (organizer.getUploadedImageUri() == null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(EventDetailsActivity.this).load(organizer.getAutoGenImageUri()).into(organizerProfilePic);
+                }
+            });
+        }
+
     }
 
 
