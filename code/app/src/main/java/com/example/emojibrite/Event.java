@@ -31,7 +31,21 @@ public class Event implements Serializable {
     private String organizer;
 
 
-
+    /**
+     * This is a construction class for events
+     * @param id this is the event ID
+     * @param imageUri This is the event poster
+     * @param eventTitle This is the event title
+     * @param date This is the date of the event
+     * @param time This is the time of the event
+     * @param description This is the event description
+     * @param milestone This is the milestone of the event
+     * @param location This is the location of the event
+     * @param checkInQRCode This is the QR Code for checking in
+     * @param eventQRCode This is the QR Code for event details
+     * @param capacity This is the event capacity
+     * @param organizer This is the organizer id
+     */
 
     public Event(String id, String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity, String organizer){
 

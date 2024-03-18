@@ -508,10 +508,26 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
 
 
-
+    /**
+     * An intrfacce for a callback to be invoked when a single event is fetched
+     */
     public interface EventCallBack{
+
+        /**
+         * Called when an event is successfully fetched from the Firestore database.
+         *
+         * @param event The {@link Event} object representing the fetched event.
+         */
         void onEventFetched(Event event);
     }
+
+    /**
+     * Fetches a single event from the Firestore database using the event ID.
+     * If the event is found, the provided {@link EventCallBack} is invoked with the retrieved event.
+     *
+     * @param eventId The unique ID of the event to fetch.
+     * @param callBack The callback that will handle the event once it is fetched.
+     */
 
     public void getEventById(String eventId, EventCallBack callBack){
         eventRef.document(eventId).get().addOnSuccessListener(documentSnapshot -> {
