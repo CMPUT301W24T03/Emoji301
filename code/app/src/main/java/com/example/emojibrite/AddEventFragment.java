@@ -61,6 +61,7 @@ public class AddEventFragment extends DialogFragment{
     private Users user;
 
     private Uri qrCodeCheckinURI, qrCodeEventURI;
+    private String selectedImageUriStr;
 
 
 
@@ -103,7 +104,8 @@ public class AddEventFragment extends DialogFragment{
             new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
-                    selectedImageUri = uri; // Save the selected image Uri.
+                    selectedImageUri = uri;// Save the selected image Uri.
+                    selectedImageUriStr = selectedImageUri.toString();
                     try {
                         // Use MediaStore to fetch the selected image as a Bitmap
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
@@ -114,6 +116,7 @@ public class AddEventFragment extends DialogFragment{
                         Toast.makeText(getActivity(), "Failed to load image", Toast.LENGTH_SHORT).show();
                     }
                 }
+                else{selectedImageUriStr = null;}
             }
     );
 
@@ -256,8 +259,12 @@ public class AddEventFragment extends DialogFragment{
 
             }
 
+            String imageUriString = selectedImageUri != null ? selectedImageUri.toString() : null;
+            String checkInUriString = qrCodeCheckinURI != null ? qrCodeCheckinURI.toString() : null;
+            String eventUriString = qrCodeEventURI != null ? qrCodeEventURI.toString() : null;
+
 //            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
-            Event newEvent = new Event(selectedImageUri.toString(), title, eventDate, timeString, description, milestone, location, qrCodeCheckinURI.toString(), qrCodeEventURI.toString(), capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
+            Event newEvent = new Event(imageUriString, title, eventDate, timeString, description, milestone, location, checkInUriString, eventUriString, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
             listener.onEventAdded(newEvent);
 
             dismiss();

@@ -165,11 +165,13 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
-        Log.d(TAG, "user name for EventHome: " + user.getName() + user.getProfileUid() + user.getUploadedImageUri()+user.getAutoGenImageUri() + user.getHomePage());
-        Log.d(TAG, "user id for EventHome: " + user.getProfileUid());
-        database.setUserObject(user);
-        FloatingActionButton fab = findViewById(R.id.event_add_btn);
-        fab.setOnClickListener(view -> showAddEventDialog());
+        if(user!=null) {
+            Log.d(TAG, "user name for EventHome: " + user.getName() + user.getProfileUid() + user.getUploadedImageUri() + user.getAutoGenImageUri() + user.getHomePage());
+            Log.d(TAG, "user id for EventHome: " + user.getProfileUid());
+            database.setUserObject(user);
+            FloatingActionButton fab = findViewById(R.id.event_add_btn);
+            fab.setOnClickListener(view -> showAddEventDialog());
+        }
 
         ImageView profileButton = findViewById(R.id.profile_pic);
 
