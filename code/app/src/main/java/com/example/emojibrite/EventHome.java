@@ -63,16 +63,58 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         dialog.show(getSupportFragmentManager(), "AddEventFragment");
     }
 
-    /**
-     * Called when an event is added or updated.
-     *
-     * @param event The event that was added or updated.
-     */
 
+    /**
+     * Callback method triggered when an event is added.
+     * It attempts to add the event to the Firestore database.
+     *
+     * @param event The event object to be added. This should not be null.
+     */
     @Override
-    public void onEventAdded(Event event) {
-        addEvent(event);
+    public void onEventAdded(Event event){
+        if (event!=null){
+            //We call the addEvent method in database class
+            database.addEvent(event, task -> {
+                if (task.isSuccessful()){
+                    Log.d(TAG, "Event added successfully into database");
+                    updateLocalEventList(event);
+                }
+                else {
+                    Log.e(TAG, "ERROR IN ADDING TO THE DATABASE", task.getException());
+                }
+            });
+        }
     }
+
+    /**
+     * Updates the local list of events. This method is called after an event is successfully added
+     * to the Firestore database to reflect the change in the local user interface.
+     *
+     * @param event The newly added or updated event.
+     */
+    private void updateLocalEventList(Event event) {
+        int index = -1;
+        for (int i = 0; i < dataList.size(); i++) {
+            String existingEventId = dataList.get(i).getId();
+            String newEventId = event.getId();
+            // Check if both IDs are non-null and equal
+            if (existingEventId != null && newEventId != null && existingEventId.equals(newEventId)) {
+                index = i;
+                break;
+            }
+        }
+        if (index != -1) {
+            // If the event is found, update it in the list.
+            dataList.set(index, event);
+        } else {
+            // If the event is not found, add it to the list.
+            dataList.add(event);
+        }
+        // Notify the adapter that the data has changed to update the UI.
+        eventAdapter.notifyDataSetChanged();
+    }
+
+
 
     /**
      * Adds an event to the list of events and updates the ListView.
@@ -147,6 +189,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                     Glide.with(EventHome.this).load(user.getAutoGenImageUri()).into(profileButton);
                 }
             });
+
+            fetchEventsForCurrentUser();
         }
 
 
@@ -169,6 +213,26 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         });
 
 
+    }
+
+    /**
+     * Fetches events from the Firestore database that are organized by the current user.
+     * This method queries the database for events where the current user is the organizer and updates
+     * the local list to reflect these events. This is typically used to populate the UI with relevant data.
+     */
+    private void fetchEventsForCurrentUser() {
+
+        if (user != null) {
+            // Retrieve the unique ID of the current user.
+            String currentUserId = user.getProfileUid();
+            // Call the method in the Database class to get events organized by this user.
+            database.getEventsByOrganizer(currentUserId, events -> {
+                // Clear the current list of events to prepare for updated data.
+                dataList.clear();
+                dataList.addAll(events); // Add all the retrieved events to the local list.
+                eventAdapter.notifyDataSetChanged();
+            });
+        }
     }
 }
 

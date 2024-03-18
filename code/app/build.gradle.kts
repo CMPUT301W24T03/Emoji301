@@ -58,9 +58,9 @@ dependencies {
     }
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    //Fragment testing
-    androidTestImplementation("androidx.fragment:fragment-testing:1.6.2")
-    // NavigationTesting for navgraph
+    //Fragment + fragment scenario testing
+    debugImplementation("androidx.fragment:fragment-testing:1.6.2")
+    // NavigationTesting for navigation graph
     androidTestImplementation("androidx.navigation:navigation-testing:2.7.7")
 
     // firebase stuff
