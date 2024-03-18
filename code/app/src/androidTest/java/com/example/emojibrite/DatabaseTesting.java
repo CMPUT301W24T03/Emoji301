@@ -18,8 +18,11 @@ import org.junit.runner.RunWith;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import java.util.concurrent.ExecutionException;
 
 @RunWith(AndroidJUnit4.class)
 public class DatabaseTesting {
@@ -28,7 +31,7 @@ public class DatabaseTesting {
     private CollectionReference profileRef = db.collection("Users");
     private  Users user = new Users();
 
-    private Database database = new Database(db);
+
 
 
 
@@ -41,10 +44,62 @@ public class DatabaseTesting {
         user.setName("testName");
 
     }
+    @Test
+    public void testGetUserDocument()  {
+        Database database = new Database(FirebaseFirestore.getInstance());
+        String testUid = "testUid"; // replace with a valid uid
+
+        // Call the method
+        database.getUserDocument(testUid, new Database.OnUserDocumentRetrievedListener() {
+            @Override
+            public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot) {
+                // Check that the document is not null
+                assertNotNull(documentSnapshot);
+                // Perform other assertions here if needed
+            }
+        });
+    }
+    @Test
+    public void testStoreImageUri() {
+        Database database = new Database(FirebaseFirestore.getInstance());
+        String testUid = "testUid"; // replace with a valid uid
+        String testUploadedImageUri = "testUploadedImageUri";
+        String testAutoGenImageUri = "testAutoGenImageUri";
+
+        // Call the method for uploadedImage
+        database.storeImageUri(testUid, testUploadedImageUri, "uploadedImage");
+
+        // Retrieve the document and check if the uploadedImage URI was stored correctly
+        database.getUserDocument(testUid, new Database.OnUserDocumentRetrievedListener() {
+            @Override
+            public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot) {
+                // Check that the document is not null
+                assertNotNull(documentSnapshot);
+                // Check that the uploadedImage URI was stored correctly
+                assertEquals(testUploadedImageUri, documentSnapshot.getString("uploadedImageUri"));
+            }
+        });
+
+        // Call the method for autoGenImage
+        database.storeImageUri(testUid, testAutoGenImageUri, "autoGenImage");
+
+        // Retrieve the document and check if the autoGenImage URI was stored correctly
+        database.getUserDocument(testUid, new Database.OnUserDocumentRetrievedListener() {
+            @Override
+            public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot) {
+                // Check that the document is not null
+                assertNotNull(documentSnapshot);
+                // Check that the autoGenImage URI was stored correctly
+                assertEquals(testAutoGenImageUri, documentSnapshot.getString("autoGenImageUri"));
+            }
+        });
+    }
 
     @Test
     public void testSetUserObject() {
+        Database database = new Database(FirebaseFirestore.getInstance());
         database.setUserObject(user);
+
         profileRef.document(user.getProfileUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(Task<DocumentSnapshot> task) {

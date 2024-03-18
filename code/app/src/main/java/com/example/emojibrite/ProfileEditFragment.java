@@ -139,7 +139,7 @@ public class ProfileEditFragment extends DialogFragment {
                 user.setNumber(EditPhoneNumber.getText().toString());
                 user.setName(EditName.getText().toString());
                 if (nameAtStart != user.getName()){
-                    ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator(getContext(), user.getProfileUid(), user.getName());
+                    ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator(user.getProfileUid(), user.getName());
                     profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Uri>() {
                         @Override
                         public void onComplete(Uri result) {
@@ -212,7 +212,7 @@ public class ProfileEditFragment extends DialogFragment {
         }
         else if (user.getUploadedImageUri() == null && user.getAutoGenImageUri() == null){
 
-            ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator(getContext(), user.getProfileUid(), user.getName());
+            ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator(user.getProfileUid(), user.getName());
             profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Uri>() {
                 @Override
                 public void onComplete(Uri result) {

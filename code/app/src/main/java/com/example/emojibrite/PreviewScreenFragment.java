@@ -66,7 +66,7 @@ public class PreviewScreenFragment extends Fragment {
         if (user.getUploadedImageUri() == null) {
             Log.d(TAG, "User didn't upload a picture");
             // User didn't upload a picture, generate one based on the username
-            ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator(getContext(), user.getProfileUid(), user.getName());
+            ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator(user.getProfileUid(), user.getName());
             profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Uri>() {
                 @Override
                 public void onComplete(Uri result) {
