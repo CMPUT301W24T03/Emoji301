@@ -428,6 +428,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
         eventMap.put("milestone", event.getMilestone());
         eventMap.put("location", event.getLocation());
         eventMap.put("capacity", event.getCapacity());
+        eventMap.put("checkInID", event.getCheckInID());
         // For Uri objects, converted into strings?
         eventMap.put("imageUri", event.getImageUri() != null ? event.getImageUri().toString() : null);
         eventMap.put("checkInQRCode", event.getCheckInQRCode() != null ? event.getCheckInQRCode().toString() : null);
