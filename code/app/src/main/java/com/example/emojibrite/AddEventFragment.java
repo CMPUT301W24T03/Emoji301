@@ -264,7 +264,7 @@ public class AddEventFragment extends DialogFragment{
             String eventUriString = qrCodeEventURI != null ? qrCodeEventURI.toString() : null;
 
 //            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
-            Event newEvent = new Event(imageUriString, title, eventDate, timeString, description, milestone, location, checkInUriString, eventUriString, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
+            Event newEvent = new Event(imageUriString, title, eventDate, timeString, description, milestone, location, checkInUriString, eventUriString, capacity, user.getProfileUid()); //ADDING USER WHICH WE GET AS AN ARGUMENT
             listener.onEventAdded(newEvent);
 
             dismiss();
