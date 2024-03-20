@@ -1,5 +1,7 @@
 package com.example.emojibrite;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -13,15 +15,26 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.MultiFormatReader;
 import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.RGBLuminanceSource;
+import com.google.zxing.Result;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.common.HybridBinarizer;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Random;
 
 /**
  * Activity for displaying and sharing a QR code associated with event check-in.
@@ -40,6 +53,8 @@ public class QRCodeCheckActivity extends AppCompatActivity {
     Uri selectedImageUri;
 
     ImageView qrCode;
+
+    String checkInID;
 
     private Button generateQRButton, uploadButton;
 
@@ -64,6 +79,8 @@ public class QRCodeCheckActivity extends AppCompatActivity {
 
         uploadButton.setOnClickListener(v -> openGallery());
 
+        checkInID=generateRandomId();
+
 
 
         generateQRButton = findViewById(R.id.generate_button);
@@ -83,40 +100,70 @@ public class QRCodeCheckActivity extends AppCompatActivity {
         generateQRButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                generateQR();
+                generateQR(checkInID);
             }
         });
 
         // Listener for the back navigation button
-        backCheckInQRCode.setOnClickListener(v -> finish());
+        backCheckInQRCode.setOnClickListener(v -> {returnResult();});
 
+    }
+
+    private Uri saveImage(Bitmap bitmap, String fileName) throws IOException {
+        // Get the cache directory
+        File cachePath = new File(getCacheDir(), "images");
+        cachePath.mkdirs();
+
+        // Create the file in the cache directory
+        File imageFile = new File(cachePath, fileName);
+        FileOutputStream stream = new FileOutputStream(imageFile); // Overwrites this image every time
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        stream.close();
+
+        // Get the URI of the file
+        return FileProvider.getUriForFile(this, "com.example.emojibrite", imageFile);
+    }
+
+
+
+    private String generateRandomId(){
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i<13;i++){
+            int index = random.nextInt(chars.length());
+            sb.append(chars.charAt(index));
+        }
+        return sb.toString();
     }
 
     /**
      * Function that generates a check in QR code from a 12 digit ID.
      */
-    public void generateQR(){
-        // generating a 12 digit code between 100000000000 and 999999999999
-        long a = 100000000000L;
-        long b = 999999999999L;
-        long QRid = (long) Math.floor(Math.random() * b) + a;
+    public void generateQR(String checkInID){
 
         // generating the qr code now
         MultiFormatWriter writer = new MultiFormatWriter();
         // need a try catch in case
         try {
-            BitMatrix bitMatrix = writer.encode(Long.toString(QRid), BarcodeFormat.QR_CODE, 400,400);
+            BitMatrix bitMatrix = writer.encode(checkInID, BarcodeFormat.QR_CODE, 400,400);
             BarcodeEncoder encoder = new BarcodeEncoder();
             Bitmap bitmap = encoder.createBitmap(bitMatrix);
             qrCode.setImageBitmap(bitmap);
 
-        } catch (WriterException e) {
+            selectedImageUri = saveImage(bitmap, "qr_code_" + checkInID + ".png");
+
+        } catch (WriterException | IOException e) {
             throw new RuntimeException(e);
         }
 
         //Log.d("QRID", Long.toString(QRid));
 
     }
+
+
+
+
 
 
     /**
@@ -127,18 +174,43 @@ public class QRCodeCheckActivity extends AppCompatActivity {
             uri -> {
                 if (uri != null) {
                     selectedImageUri = uri; // Save the selected image Uri.
+
                     try {
-                        // Use MediaStore to fetch the selected image as a Bitmap
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(QRCodeCheckActivity.this.getContentResolver(), uri);
-                        // Set the bitmap to the ImageView for display
+                        // Load the bitmap from the gallery
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                         qrCode.setImageBitmap(bitmap);
+
+                        // Optionally, decode the QR code if you need to retrieve information from it
+                        String decodedCheckInId = decodeQRCode(bitmap);
+                        if(decodedCheckInId != null) {
+                            checkInID = decodedCheckInId;
+                            // If decoded successfully, handle the event ID
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
-                        Toast.makeText(QRCodeCheckActivity.this, "Failed to load image", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Failed to load image", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
     );
+
+
+    private String decodeQRCode(Bitmap bitmap) {
+        try {
+            int[] intArray = new int[bitmap.getWidth()*bitmap.getHeight()];
+            // Copy pixel data from the Bitmap into the 'intArray' array
+            bitmap.getPixels(intArray, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+            LuminanceSource source = new RGBLuminanceSource(bitmap.getWidth(), bitmap.getHeight(), intArray);
+            BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
+
+            Result result = new MultiFormatReader().decode(binaryBitmap);
+            return result.getText();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
     /**
@@ -148,6 +220,15 @@ public class QRCodeCheckActivity extends AppCompatActivity {
     private void openGallery() {
 
         mGetContent.launch("image/*"); // "image/*" indicates that only image types are selectable
+    }
+
+    private void returnResult() {
+        Intent resultIntent = new Intent();
+        // Assume 'selectedImageUri' is the URI of your generated or selected QR code
+        resultIntent.putExtra("QR_CODE_URI", selectedImageUri.toString());
+        resultIntent.putExtra("Check_In_ID",checkInID);
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish();
     }
 
 
