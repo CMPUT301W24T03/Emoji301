@@ -53,8 +53,7 @@
         <ImageView
             android:id="@+id/event_qr_pic_check_in"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:src="@drawable/qr_scan_pic" />
+            android:layout_height="300dp"/>
         <Button
             android:id="@+id/generate_button"
             android:layout_width="150dp"
