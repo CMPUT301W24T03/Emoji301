@@ -428,6 +428,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
         eventMap.put("milestone", event.getMilestone());
         eventMap.put("location", event.getLocation());
         eventMap.put("capacity", event.getCapacity());
+        eventMap.put("checkInID", event.getCheckInID());
         // For Uri objects, converted into strings?
         eventMap.put("imageUri", event.getImageUri() != null ? event.getImageUri().toString() : null);
         eventMap.put("checkInQRCode", event.getCheckInQRCode() != null ? event.getCheckInQRCode().toString() : null);
@@ -547,6 +548,25 @@ once created, u can call getuseruid to get the user id and use it to get user da
         }).addOnFailureListener(e -> {
             Log.e(TAG, "Error fetching event", e);
         });
+    }
+
+
+    public void fetchAllEventsDatabase(OnEventsRetrievedListener listener){
+        eventRef.get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List <Event> events = new ArrayList<>();
+                    for (DocumentSnapshot snapshot : queryDocumentSnapshots){
+                        Event event = snapshot.toObject(Event.class);
+                        Log.d(TAG,"Event ID " + event.getId());
+                        Log.d(TAG, "Event Title: " + event.getEventTitle());
+                        Log.d(TAG, "Event Image URI: " + event.getImageUri());
+                        Log.d(TAG,"Description: " + event.getDescription());
+                        Log.d(TAG,"Organizer: "+ event.getOrganizer());
+                        events.add(event);
+                    }
+                    // Calling the listener method with the list of retrieved events
+                    listener.onEventsRetrieved(events);
+                }).addOnFailureListener(e-> Log.e(TAG,"error fetching all the events", e));
     }
 
 

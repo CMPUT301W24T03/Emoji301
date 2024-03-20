@@ -30,6 +30,8 @@ public class Event implements Serializable {
 
     private String organizer;
 
+    private String checkInID;
+
 
     /**
      * This is a construction class for events
@@ -47,7 +49,7 @@ public class Event implements Serializable {
      * @param organizer This is the organizer id
      */
 
-    public Event(String id, String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity, String organizer){
+    public Event(String id, String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity, String organizer, String checkInID){
 
         this.imageUri=imageUri;
         this.eventTitle=eventTitle;
@@ -58,9 +60,10 @@ public class Event implements Serializable {
         this.location=location;
         this.eventQRCode=eventQRCode;
         this.checkInQRCode=checkInQRCode;
-        this.id = generateRandomId();
+        this.id = id;
         this.capacity = capacity;
         this.organizer = organizer;
+        this.checkInID = checkInID;
 
     }
 
@@ -167,6 +170,8 @@ public class Event implements Serializable {
 
     public void setCapacity(){this.capacity=capacity;}
 
+    public void setCheckInID(){this.checkInID=checkInID;}
+
 
 
     public void setImageUri(String imageUri) {
@@ -257,5 +262,7 @@ public class Event implements Serializable {
     public Integer getCapacity(){return capacity;}
 
     public String getOrganizer(){return organizer;}
+
+    public String getCheckInID(){return checkInID;}
 
 }

@@ -38,6 +38,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     private Users user;
     private Database database = new Database(this);
 
+//    Button otherEvent = findViewById(R.id.other_events_button);
+
     ImageView profileButton;
 
     private static final String TAG = "ProfileActivityTAG";
@@ -164,6 +166,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         }));
 
+        Button otherEvent = findViewById(R.id.other_events_button);
+
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
         if(user!=null) {
@@ -185,6 +189,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                     Glide.with(EventHome.this).load(user.getUploadedImageUri()).into(profileButton);
                 }
             });
+            fetchEventsForCurrentUser();
         } else if (user.getUploadedImageUri() == null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
@@ -214,6 +219,19 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
             }
         });
+
+        otherEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG,"Other events button clicked");
+                Intent intent2 = new Intent(EventHome.this, OtherEventHome.class);
+
+                intent2.putExtra("userObject", user);
+                startActivity(intent2);  // Use intent2 to start the activity
+            }
+        });
+
+
 
 
     }

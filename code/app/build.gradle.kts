@@ -69,6 +69,7 @@ dependencies {
 
     implementation("com.google.firebase:firebase-auth")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.journeyapps:zxing-android-embedded:4.2.0")
 
 
 
@@ -80,5 +81,6 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
+
 
 }
