@@ -4,6 +4,7 @@ package com.example.emojibrite;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -32,6 +33,8 @@ public class OtherEventHome extends AppCompatActivity {
     private Users user;
     private Database database = new Database(this);
 
+    Context context = this;
+
     ImageView profileButton;
 
     private static final String TAG = "ProfileActivityTAG";
@@ -42,9 +45,12 @@ public class OtherEventHome extends AppCompatActivity {
      * @param event The event to show details for.
      */
 
-    private void showEventDetails(Event event) {
+    private void showEventDetails(Event event, Users user) {
         Intent intent = new Intent(this, EventDetailsActivity.class);
         intent.putExtra("eventId", event.getId());
+        if (user!=null){
+            Log.d("TAG","CHECKING CHECKING CHECKING  "+ user.getProfileUid());}
+        intent.putExtra("userlol",user.getProfileUid()); //You send the current user profile id into the details section
         startActivity(intent);
     }
 
@@ -73,11 +79,7 @@ public class OtherEventHome extends AppCompatActivity {
             }
         });
 
-        eventList.setOnItemClickListener(((parent, view, position, id) -> {
-            Event selectedEvent = dataList1.get(position);
 
-            showEventDetails(selectedEvent);
-        }));
 
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
@@ -104,6 +106,12 @@ public class OtherEventHome extends AppCompatActivity {
             fetchAllEvents();
 
     }
+
+        eventList.setOnItemClickListener(((parent, view, position, id) -> {
+            Event selectedEvent = dataList1.get(position);
+
+            showEventDetails(selectedEvent,user);
+        }));
     }
 
     private void fetchAllEvents(){
