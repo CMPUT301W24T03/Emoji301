@@ -27,7 +27,7 @@
 
         <activity
             android:name=".QRScanningActivity"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="fullSensor"
