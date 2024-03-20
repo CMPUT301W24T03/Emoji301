@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 
 
@@ -25,6 +26,12 @@ import java.util.Locale;
  * and sets up the views to display this data.
  */
 public class EventDetailsActivity extends AppCompatActivity {
+
+    String currentUser;
+
+    ArrayList<String> signedAttendees;
+
+    Button signingup, attendeesButton;
 
 
 
@@ -43,13 +50,23 @@ public class EventDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.event_details);
 
         ImageView backButton = findViewById(R.id.imageView); //back button
-        Button attendeesButton = findViewById(R.id.attendees_button);
+        attendeesButton = findViewById(R.id.attendees_button);
+        signingup=findViewById(R.id.sign_up_button);
+
+        Intent intent = getIntent();
+        currentUser = intent.getStringExtra("userlol"); // get the user
+
+        if (currentUser!=null){
+            Log.d(TAG,"YEPPIEEEE "+currentUser);
+        }
+        else{
+            Log.d(TAG, "SAAAAAAD IT IS NULL");
+        }
 
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 finish();
             }
 
@@ -131,6 +148,27 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             });
         }
+
+
+
+        if (event.getOrganizer().equals(currentUser)){ // you get the current user and the organizer
+            //if both their ids match, that means they are the organizer itslf
+            //so they do not have to sign up aka, we can remove it
+            signingup.setVisibility(View.GONE);
+            Log.d(TAG,"SIGNINGUP BUTTON IS GOOONE");
+
+        }
+        else{
+            //if they are not the same, that means that the current user is an attendee
+            //therefore they dont have to see the attendees list
+            Log.d(TAG,"OOPS, FAILED");
+            Log.d(TAG,("ORGANIZER:")+event.getOrganizer());
+            Log.d(TAG,"Current User"+currentUser);
+            attendeesButton.setVisibility(View.GONE);
+
+        }
+
+
 
 
         // Formatting and displaying the event date and time.

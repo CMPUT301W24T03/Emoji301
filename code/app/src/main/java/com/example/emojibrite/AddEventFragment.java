@@ -58,9 +58,7 @@ public class AddEventFragment extends DialogFragment{
 
     private ImageView imageEventPoster;
     private Button buttonSelectPic, switchCheckInQR, switchEventPageQR;
-
     private Uri selectedImageUri; // Image Uri for the event poster
-
     private Users user;
 
     private Uri qrCodeCheckinURI, qrCodeEventURI;
