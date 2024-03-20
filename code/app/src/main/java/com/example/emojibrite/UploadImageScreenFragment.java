@@ -45,7 +45,7 @@ public class UploadImageScreenFragment extends Fragment {
     private Uri imageUri;
 
     private Bitmap  imageBitMap;
-    private Database database = new Database(getActivity());
+    private Database database = new Database();
 
 
     /**
@@ -105,7 +105,6 @@ public class UploadImageScreenFragment extends Fragment {
      */
     public void onViewCreated(@NonNull View view, Bundle savedInstancesState) {
         super.onViewCreated(view, savedInstancesState);
-
         //String name = UploadImageScreenFragmentArgs.fromBundle(getArguments()).getUserObject();
         // when the next button is clicked, go to the next fragment - PreviewScreenFragment
         nextButtonText.setOnClickListener(new View.OnClickListener() {

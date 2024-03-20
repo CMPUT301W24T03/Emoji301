@@ -26,7 +26,7 @@ public class ProfileImageGenerator {
     String name;
 
     String Uid;
-    private Context context;
+
     /**
      * This interface is used to provide a callback for when the
      * profile image is generated and stored in the database.
@@ -38,15 +38,15 @@ public class ProfileImageGenerator {
     /**
      * This constructor is used to create a ProfileImageGenerator
      * object with the user's name and Uid.
-     * @param context The context of the activity
      * @param Uid The user's unique ID
      * @param name The user's name
      */
-    public ProfileImageGenerator(Context context, String Uid, String name) {
+    public ProfileImageGenerator(String Uid, String name) {
         this.name = name;
-        this.context = context;
+
         this.Uid = Uid;
     }
+
     /**
      * This method is used to set the user's name.
      * @param name The user's name
@@ -99,7 +99,6 @@ public class ProfileImageGenerator {
                 Log.d("ProfileImageGenerator", "Failed to get profile image");
                 e.printStackTrace();
             }
-
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (!response.isSuccessful()) {
@@ -111,15 +110,13 @@ public class ProfileImageGenerator {
                     Uri imageUri = Uri.parse(response.request().url().toString());
 
                     // Store the URI in the database
-                    Database database = new Database(context);
+                    Database database = new Database();
                     database.storeImageUri(Uid, imageUri.toString(), "autoGenImage");
 
                     // Notify the onCompleteListener after the database operation is done
                     onCompleteListener.onComplete(imageUri);
 
                     Log.d("ProfileImageGenerator", "URI is sent to database");
-
-
                 }
             }
         });

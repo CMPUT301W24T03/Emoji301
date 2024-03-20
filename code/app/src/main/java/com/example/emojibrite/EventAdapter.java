@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,7 +88,13 @@ public class EventAdapter extends ArrayAdapter<Event> {
         eventTime.setText(event.getTime());
 
         if (event.getImageUri() != null) {
-            Glide.with(getContext()).load(event.getImageUri()).into(eventImage);
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                 @Override
+                 public void run() {
+                     Glide.with(getContext()).load(event.getImageUri()).into(eventImage);
+                 }
+             });
+//            Glide.with(getContext()).load(event.getImageUri()).into(eventImage);
             Log.d(TAG, "PICTURE LOOOOAAADDING");
         } else {
             eventImage.setImageResource(R.drawable.placeholder);
