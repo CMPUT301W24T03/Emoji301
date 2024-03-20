@@ -25,6 +25,13 @@
         android:theme="@style/Theme.EmojiBrite"
         tools:targetApi="31">
 
+        <activity
+            android:name=".QRScanningActivity"
+            android:exported="true" />
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="screenOrientation"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -46,7 +53,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity> <!-- Account Creation Activity -->
+            android:exported="true" /> <!-- Account Creation Activity -->
         <activity
             android:name=".AccountCreationActivity"
             android:exported="false" /> <!-- Fragments dont belong here. Also, the Continuous Integration(CI) flagged this, thus "x" beside your branch -->
@@ -73,6 +80,7 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
         <activity
             android:name=".OtherEventHome"
             android:exported="false" />
