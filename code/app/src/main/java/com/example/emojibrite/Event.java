@@ -28,12 +28,48 @@ public class Event implements Serializable {
 
     private String id;
 
-    private Users organizer;
+    private String organizer;
+
+    private String checkInID;
+
+
+    /**
+     * This is a construction class for events
+     * @param id this is the event ID
+     * @param imageUri This is the event poster
+     * @param eventTitle This is the event title
+     * @param date This is the date of the event
+     * @param time This is the time of the event
+     * @param description This is the event description
+     * @param milestone This is the milestone of the event
+     * @param location This is the location of the event
+     * @param checkInQRCode This is the QR Code for checking in
+     * @param eventQRCode This is the QR Code for event details
+     * @param capacity This is the event capacity
+     * @param organizer This is the organizer id
+     */
+
+    public Event(String id, String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity, String organizer, String checkInID){
+
+        this.imageUri=imageUri;
+        this.eventTitle=eventTitle;
+        this.date=date;
+        this.time=time;
+        this.description=description;
+        this.milestone=milestone;
+        this.location=location;
+        this.eventQRCode=eventQRCode;
+        this.checkInQRCode=checkInQRCode;
+        this.id = id;
+        this.capacity = capacity;
+        this.organizer = organizer;
+        this.checkInID = checkInID;
+
+    }
 
 
 
-
-    public Event(String id, String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity, Users organizer){
+    public Event(String  imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity, String organizer){
 
         this.imageUri=imageUri;
         this.eventTitle=eventTitle;
@@ -50,26 +86,7 @@ public class Event implements Serializable {
 
     }
 
-
-
-    public Event(String  imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity, Users organizer){
-
-        this.imageUri=imageUri;
-        this.eventTitle=eventTitle;
-        this.date=date;
-        this.time=time;
-        this.description=description;
-        this.milestone=milestone;
-        this.location=location;
-        this.eventQRCode=eventQRCode;
-        this.checkInQRCode=checkInQRCode;
-        this.id = generateRandomId();
-        this.capacity = capacity;
-        this.organizer = organizer;
-
-    }
-
-    public Event(String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Integer capacity, Users organizer){
+    public Event(String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Integer capacity, String organizer){
 
         this.imageUri=imageUri;
         this.eventTitle=eventTitle;
@@ -153,6 +170,8 @@ public class Event implements Serializable {
 
     public void setCapacity(){this.capacity=capacity;}
 
+    public void setCheckInID(){this.checkInID=checkInID;}
+
 
 
     public void setImageUri(String imageUri) {
@@ -197,7 +216,7 @@ public class Event implements Serializable {
         this.eventQRCode = eventQRCode;
     }
 
-    public void setOrganizer(Users organizer){this.organizer=organizer;}
+    public void setOrganizer(String organizer){this.organizer=organizer;}
 
     public Uri getImageUri()
     {
@@ -242,6 +261,8 @@ public class Event implements Serializable {
 
     public Integer getCapacity(){return capacity;}
 
-    public Users getOrganizer(){return organizer;}
+    public String getOrganizer(){return organizer;}
+
+    public String getCheckInID(){return checkInID;}
 
 }

@@ -38,6 +38,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     private Users user;
     private Database database = new Database();
 
+//    Button otherEvent = findViewById(R.id.other_events_button);
+
     ImageView profileButton;
 
     private static final String TAG = "ProfileActivityTAG";
@@ -95,6 +97,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     private void updateLocalEventList(Event event) {
         int index = -1;
         for (int i = 0; i < dataList.size(); i++) {
+
             String existingEventId = dataList.get(i).getId();
             String newEventId = event.getId();
             // Check if both IDs are non-null and equal
@@ -163,13 +166,17 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         }));
 
+        Button otherEvent = findViewById(R.id.other_events_button);
+
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
-        Log.d(TAG, "user name for EventHome: " + user.getName() + user.getProfileUid() + user.getUploadedImageUri()+user.getAutoGenImageUri() + user.getHomePage());
-        Log.d(TAG, "user id for EventHome: " + user.getProfileUid());
-        database.setUserObject(user);
-        FloatingActionButton fab = findViewById(R.id.event_add_btn);
-        fab.setOnClickListener(view -> showAddEventDialog());
+        if(user!=null) {
+            Log.d(TAG, "user name for EventHome: " + user.getName() + user.getProfileUid() + user.getUploadedImageUri() + user.getAutoGenImageUri() + user.getHomePage());
+            Log.d(TAG, "user id for EventHome: " + user.getProfileUid());
+            database.setUserObject(user);
+            FloatingActionButton fab = findViewById(R.id.event_add_btn);
+            fab.setOnClickListener(view -> showAddEventDialog());
+        }
 
         ImageView profileButton = findViewById(R.id.profile_pic);
 
@@ -182,6 +189,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                     Glide.with(EventHome.this).load(user.getUploadedImageUri()).into(profileButton);
                 }
             });
+            fetchEventsForCurrentUser();
         } else if (user.getUploadedImageUri() == null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
@@ -211,6 +219,19 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
             }
         });
+
+        otherEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG,"Other events button clicked");
+                Intent intent2 = new Intent(EventHome.this, OtherEventHome.class);
+
+                intent2.putExtra("userObject", user);
+                startActivity(intent2);  // Use intent2 to start the activity
+            }
+        });
+
+
 
 
     }

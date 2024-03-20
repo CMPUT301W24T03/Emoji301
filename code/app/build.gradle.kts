@@ -75,6 +75,7 @@ dependencies {
 
     implementation("com.google.firebase:firebase-auth")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.journeyapps:zxing-android-embedded:4.2.0")
 
     implementation ("com.google.guava:guava:31.1-jre")
 
@@ -93,4 +94,6 @@ dependencies {
 
 
 
+
 }
+
