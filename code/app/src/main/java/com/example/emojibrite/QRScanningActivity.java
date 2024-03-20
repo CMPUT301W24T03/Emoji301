@@ -47,8 +47,8 @@ public class QRScanningActivity extends AppCompatActivity {
      * Function to scan a QR code.
      */
     private void QR_scan(){
+        // setting up ability to scan
         ScanOptions options = new ScanOptions();
-        options.setPrompt("Scan QR code");
         options.setOrientationLocked(true);
         options.setDesiredBarcodeFormats("QR_CODE");
 
