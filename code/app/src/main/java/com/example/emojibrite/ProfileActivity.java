@@ -1,6 +1,7 @@
 package com.example.emojibrite;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +9,7 @@ import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -32,6 +34,10 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
 
     Users user;
     ImageView profilePictureImageView;
+    SwitchCompat adminToggle;
+    SwitchCompat geoToggle;
+
+    SwitchCompat notifToggle;
 
 
     /**
@@ -54,7 +60,20 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (user.getEnableAdmin()) {
+                    // User is an admin, go to the OtherEventHome activity
+                    Intent intent = new Intent(ProfileActivity.this, OtherEventHome.class);
+                    intent.putExtra("userObject", user);
+                    startActivity(intent);
+                } else {
+                    // User is not an admin, go to the EventHome activity
+                    Intent intent = new Intent(ProfileActivity.this, EventHome.class);
+                    intent.putExtra("userObject", user);
+                    startActivity(intent);
+                }
+                Database database = new Database();
                 // Handle button click to go back to the main activity
+                database.setUserObject(user);
                 Intent intent = new Intent(ProfileActivity.this, EventHome.class);
                 intent.putExtra("userObject", user);
                 startActivity(intent);
@@ -88,11 +107,18 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         TextView nameTextView = findViewById(R.id.userName);
         TextView homePageTextView = findViewById(R.id.userHomePage);
         profilePictureImageView = findViewById(R.id.profilePicture);
+        adminToggle = findViewById(R.id.adminModeSwitch);
+        geoToggle = findViewById(R.id.geolocationSwitch);
+        notifToggle = findViewById(R.id.notificationSwitch);
 
         emailTextView.setText(user.getEmail());
         phoneNumberTextView.setText(user.getNumber());
         nameTextView.setText(user.getName());
         homePageTextView.setText(user.getHomePage());
+        adminToggle.setChecked(user.getEnableAdmin());
+        notifToggle.setChecked(user.getEnableNotification());
+        geoToggle.setChecked(user.getEnableGeolocation());
+
         // Retrieve information from SharedPreferences and set it to UI elements
 
         settingPfp();
@@ -117,11 +143,8 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                 phoneNumberTextView.setText(user.getNumber());
                 nameTextView.setText(user.getName());
                 homePageTextView.setText(user.getHomePage());
-
             }
         });
-
-
         settingPfp();
     }
     /**

@@ -107,7 +107,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
 
 
-        database = new Database(this);
+        database = new Database();
         database.getEventById(eventId, new Database.EventCallBack() {
             @Override
             public void onEventFetched(Event event) {
@@ -184,7 +184,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
 
         if (event.getOrganizer()!=null){
-            Database database = new Database(this);
+            Database database = new Database();
             database.getUserDocument(event.getOrganizer(), new Database.OnUserDocumentRetrievedListener(){
                 @Override
                 public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot){

@@ -31,7 +31,7 @@ public class OtherEventHome extends AppCompatActivity {
     EventAdapter eventAdapter; // Custom adapter to bind event data to the ListView
     ArrayList<Event> dataList1;
     private Users user;
-    private Database database = new Database(this);
+    private Database database = new Database();
 
     Context context = this;
 

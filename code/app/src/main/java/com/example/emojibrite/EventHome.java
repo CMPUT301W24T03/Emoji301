@@ -36,7 +36,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     EventAdapter eventAdapter; // Custom adapter to bind event data to the ListView
     ArrayList<Event> dataList;
     private Users user;
-    private Database database = new Database(this);
+    private Database database = new Database();
 
 //    Button otherEvent = findViewById(R.id.other_events_button);
 
@@ -151,7 +151,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         if(user!=null) {
             Log.d(TAG, "user name for EventHome: " + user.getName() + user.getProfileUid() + user.getUploadedImageUri() + user.getAutoGenImageUri() + user.getHomePage());
             Log.d(TAG, "user id for EventHome: " + user.getProfileUid());
-            database.setUserObject(user);
+
             FloatingActionButton fab = findViewById(R.id.event_add_btn);
             fab.setOnClickListener(view -> showAddEventDialog());
         }
