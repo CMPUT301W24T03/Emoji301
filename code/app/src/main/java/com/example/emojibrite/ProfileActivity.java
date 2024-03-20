@@ -117,11 +117,8 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                 phoneNumberTextView.setText(user.getNumber());
                 nameTextView.setText(user.getName());
                 homePageTextView.setText(user.getHomePage());
-
             }
         });
-
-
         settingPfp();
     }
     /**
