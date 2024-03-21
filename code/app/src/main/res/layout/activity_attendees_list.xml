@@ -35,7 +35,7 @@
             android:textSize="20sp" />
 
     </LinearLayout>
-
+<!--Everything from here down can replaced with a fragment container. -->
     <LinearLayout
         android:id="@+id/buttons_event"
         android:layout_width="match_parent"
