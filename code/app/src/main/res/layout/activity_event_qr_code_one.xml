@@ -69,18 +69,6 @@
             android:textSize="12sp" />
 
         <Button
-            android:id="@+id/upload_button_event_in1"
-            android:layout_width="150dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/qr_button_solid"
-            android:layout_gravity="center_horizontal"
-            android:text="Upload"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
-
-        <Button
             android:id="@+id/share_button_event_in1"
             android:layout_width="150dp"
             android:layout_height="30dp"

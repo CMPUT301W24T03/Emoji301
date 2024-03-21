@@ -73,7 +73,7 @@ dependencies {
 
 
 
-    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-auth") // dupe?
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.journeyapps:zxing-android-embedded:4.2.0")
 
@@ -91,8 +91,9 @@ dependencies {
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.0")
+
 
 
 }
