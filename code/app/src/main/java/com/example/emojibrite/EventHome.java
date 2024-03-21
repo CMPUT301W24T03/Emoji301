@@ -142,6 +142,9 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
+        //this allows the user to not be stuck on admin activity all the time
+        user.setEnableAdmin(false);
+
         Log.d(TAG, "PROFILE PIC EVENT HOME "+user.getUploadedImageUri());
         if(user!=null) {
             Log.d(TAG, "user name for EventHome: " + user.getName() + user.getProfileUid() + user.getUploadedImageUri() + user.getAutoGenImageUri() + user.getHomePage());

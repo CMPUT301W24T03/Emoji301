@@ -76,6 +76,10 @@
         <activity
             android:name=".OtherEventHome"
             android:exported="false" />
+        <activity
+            android:name = "AdminActivity"
+            android:exported="false"
+            />
     </application>
 
 </manifest>
