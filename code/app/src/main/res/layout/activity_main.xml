@@ -12,16 +12,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
         <LinearLayout
             android:id="@+id/greenSection"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="@color/dark_green"
-            android:gravity="center"
-            android:orientation="vertical">
-
+            android:orientation="vertical"
+            android:gravity="center">
             <ImageView
                 android:id="@+id/EmojiBriteLogo"
                 android:layout_width="284dp"
@@ -34,27 +32,36 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
+            android:orientation="vertical"
+            android:gravity="center">
             <Button
                 android:id="@+id/enterButton"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/guest_bttn"
                 android:text="@string/enter" />
-
             <TextView
                 android:id="@+id/qrCodeText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
                 android:fontFamily="@font/alice"
                 android:text="Scan QR code"
-                android:textSize="15sp" />
+                android:layout_marginTop="15dp"
+                android:textSize="15sp"/>
         </LinearLayout>
 
     </LinearLayout>
-    
+
+    <TextView
+        android:id="@+id/adminAccessText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Admin Access"
+        android:textSize="14sp"
+        android:fontFamily="@font/alice"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp" />
 
 </RelativeLayout>

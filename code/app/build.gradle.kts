@@ -80,8 +80,6 @@ dependencies {
     implementation ("com.google.guava:guava:31.1-jre")
 
 
-    testImplementation("org.mockito:mockito-core:3.12.4")
-    androidTestImplementation("org.mockito:mockito-android:3.12.4")
 
 
     implementation("pub.devrel:easypermissions:3.0.0")
@@ -90,9 +88,10 @@ dependencies {
     //QR Code dependency
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
-
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.0")
+
+
 
 
 

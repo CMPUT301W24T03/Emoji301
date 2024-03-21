@@ -1,3 +1,4 @@
+
 package com.example.emojibrite;
 
 import static android.app.PendingIntent.getActivity;
@@ -51,7 +52,7 @@ public class QRCodeEventActivity extends AppCompatActivity {
     Button generate_event;
 
     Uri selectedImageUri;
-//upload_button_event_in1
+    //upload_button_event_in1
     ImageView qrCode;
 
     String eventId;
@@ -168,6 +169,3 @@ public class QRCodeEventActivity extends AppCompatActivity {
         return FileProvider.getUriForFile(this, "com.example.emojibrite", imageFile);
     }
 }
-
-
-

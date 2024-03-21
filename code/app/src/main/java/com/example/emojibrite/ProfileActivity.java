@@ -1,3 +1,4 @@
+
 package com.example.emojibrite;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -61,49 +62,6 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         TextView nameTextView = findViewById(R.id.userName);
         TextView homePageTextView = findViewById(R.id.userHomePage);
         adminText = findViewById(R.id.adminModeLabel);
-
-        if (user != null) {
-            FloatingActionButton back = findViewById(R.id.backButton);
-            back.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // Handle button click to go back to the main activity
-                    Intent intent = new Intent(ProfileActivity.this, EventHome.class);
-                    intent.putExtra("userObject", user);
-                    startActivity(intent);
-                }
-            });
-
-            FloatingActionButton editButton = findViewById(R.id.editButton);
-
-            editButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // Initialize ProfileEditFragment and set the current profile
-                    ProfileEditFragment profileEditFragment = new ProfileEditFragment();
-
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("userObject", user);
-                    profileEditFragment.setArguments(bundle);
-                    profileEditFragment.show(getSupportFragmentManager(), "ProfileEditFragment");
-                }
-            });
-
-            profilePictureImageView = findViewById(R.id.profilePicture);
-
-            emailTextView.setText(user.getEmail());
-            phoneNumberTextView.setText(user.getNumber());
-            nameTextView.setText(user.getName());
-            homePageTextView.setText(user.getHomePage());
-
-            settingPfp();
-        } else {
-            // Handle the case where the user object is null (e.g., show an error message)
-            Log.e("ProfileActivity", "User object is null");
-            // You might want to finish the activity or handle this situation differently based on your requirements.
-            finish();
-        }
-
 
         profilePictureImageView = findViewById(R.id.profilePicture);
         adminToggle = findViewById(R.id.adminModeSwitch);

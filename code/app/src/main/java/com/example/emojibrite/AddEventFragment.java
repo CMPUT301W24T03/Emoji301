@@ -304,10 +304,10 @@ public class AddEventFragment extends DialogFragment{
      * Called to launch the gallery instance
      */
 //    @AfterPermissionGranted(PICK_FROM_GALLERY)
-private void openGallery() {
+    private void openGallery() {
 
-    mGetContent.launch("image/*"); // "image/*" indicates that only image types are selectable
-}
+        mGetContent.launch("image/*"); // "image/*" indicates that only image types are selectable
+    }
 
 
     /**

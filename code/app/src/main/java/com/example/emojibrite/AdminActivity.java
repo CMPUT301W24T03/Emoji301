@@ -52,7 +52,20 @@ public class AdminActivity extends AppCompatActivity{
             }
         });
 
+        eventBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent( AdminActivity.this, EventHome.class);
+                intent.putExtra("EventHome", user);
+                startActivity(intent);
+            }
+        });
+
+
     }
+
+
+
     private void displayProfileIcon(){
         if (user.getUploadedImageUri() != null) {
             // User uploaded a picture, use that as the ImageView
@@ -71,6 +84,8 @@ public class AdminActivity extends AppCompatActivity{
                 }
             });
         }
-
     }
+
+
+
 }

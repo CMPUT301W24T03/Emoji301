@@ -199,5 +199,3 @@ public class PreviewScreenFragment extends Fragment {
         navController.navigate(action);
     }
 }
-
-
