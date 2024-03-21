@@ -23,29 +23,14 @@ public class Users implements Parcelable{
     // set to false by default in constructors
     private boolean enableNotification;
     private boolean enableGeolocationTracking;
-    private String imagePath;
-//    private boolean isAdmin;
 
-    /**
-     * Users constructor with name, email, link to ImagePath  which can be
-     * generated picture or the picture from the gallery,
-     * and number
-     * @param name      of the user
-     * @param email     of the user
-     * @param HomePage  Homepage of the user
-     * @param ImagePath of the picture
-     * @param number   of the user
-     */
-    public Users(String profileUid, String name, String email, String HomePage, String ImagePath, String number) {
-        this.profileUid = profileUid;
-        this.name = name;
-        this.email = email;
-        this.homePage = HomePage;
-        this.imagePath = ImagePath;
-        this.number = number;
-        this.enableNotification = false;
-        this.enableGeolocationTracking = false;
-    }
+    private boolean enableAdmin;
+    private String imagePath;
+
+
+
+
+
     public Users() {}
 
 
@@ -65,6 +50,16 @@ public class Users implements Parcelable{
         this.enableGeolocationTracking = false;
         this.homePage = null;
 
+    }
+    public void setEnableAdmin(boolean enableAdmin) {
+        this.enableAdmin = enableAdmin;
+    }
+    public boolean getEnableAdmin() {
+        return enableAdmin;
+    }
+
+    public void setProfileUid(String profileUid) {
+        this.profileUid = profileUid;
     }
 
     /**
@@ -184,7 +179,7 @@ public class Users implements Parcelable{
      * Gets the enableNotification of the user
      * @return the enableNotification of the user
      */
-    public boolean isEnableNotification() {
+    public boolean getEnableNotification() {
         return enableNotification;
     }
 
@@ -200,7 +195,7 @@ public class Users implements Parcelable{
      * Gets the enableGeolocationTracking of the user
      * @return the enableGeolocationTracking of the user
      */
-    public boolean isEnableGeolocationTracking() {
+    public boolean getEnableGeolocation(){
 
         return enableGeolocationTracking;
     }
@@ -209,7 +204,7 @@ public class Users implements Parcelable{
      * Sets the enableGeolocationTracking of the user
      * @param enableGeolocationTracking of the user
      */
-    public void setEnableGeolocationTracking(boolean enableGeolocationTracking) {
+    public void setEnableGeolocation(boolean enableGeolocationTracking) {
         this.enableGeolocationTracking = enableGeolocationTracking;
     }
 
@@ -246,6 +241,9 @@ public class Users implements Parcelable{
         homePage = in.readString();
         enableNotification = in.readByte() != 0;
         enableGeolocationTracking = in.readByte() != 0;
+        enableAdmin = in.readByte() != 0;
+
+
     }
     /**
      * Parcelable creator for the Users class
@@ -270,6 +268,8 @@ public class Users implements Parcelable{
         dest.writeString(homePage);
         dest.writeByte((byte) (enableNotification ? 1 : 0));
         dest.writeByte((byte) (enableGeolocationTracking ? 1 : 0));
+        dest.writeByte((byte) (enableAdmin ? 1 : 0));
+
     }
 
     /**

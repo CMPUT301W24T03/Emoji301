@@ -1,6 +1,7 @@
 package com.example.emojibrite;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +9,7 @@ import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -32,6 +34,12 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
 
     Users user;
     ImageView profilePictureImageView;
+    SwitchCompat adminToggle;
+    SwitchCompat geoToggle;
+
+    SwitchCompat notifToggle;
+
+    TextView adminText;
 
 
     /**
@@ -48,22 +56,44 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
 
+        TextView emailTextView = findViewById(R.id.userEmail);
+        TextView phoneNumberTextView = findViewById(R.id.userPhoneNumber);
+        TextView nameTextView = findViewById(R.id.userName);
+        TextView homePageTextView = findViewById(R.id.userHomePage);
+        adminText = findViewById(R.id.adminModeLabel);
 
+        profilePictureImageView = findViewById(R.id.profilePicture);
+        adminToggle = findViewById(R.id.adminModeSwitch);
+        geoToggle = findViewById(R.id.geolocationSwitch);
+        notifToggle = findViewById(R.id.notificationSwitch);
 
         FloatingActionButton back = findViewById(R.id.backButton);
+        FloatingActionButton editButton = findViewById(R.id.editButton);
+
+
+
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Handle button click to go back to the main activity
-                Intent intent = new Intent(ProfileActivity.this, EventHome.class);
-                intent.putExtra("userObject", user);
-                startActivity(intent);
+                user.setEnableAdmin(adminToggle.isChecked());
+                user.setEnableGeolocation(geoToggle.isChecked());
+                user.setEnableNotification(notifToggle.isChecked());
 
-
+                if (user.getEnableAdmin()) {
+                    Log.d("ProfileActivity", "User is an admin");
+                    // User is an admin, go to the OtherEventHome activity
+                    Intent intent = new Intent(ProfileActivity.this, AdminActivity.class);
+                    intent.putExtra("userObject", user);
+                    startActivity(intent);
+                } else {
+                    // User is not an admin, go to the EventHome activity
+                    Intent intent = new Intent(ProfileActivity.this, EventHome.class);
+                    intent.putExtra("userObject", user);
+                    startActivity(intent);
+                }
             }
         });
 
-        FloatingActionButton editButton = findViewById(R.id.editButton);
 
         editButton.setOnClickListener(new View.OnClickListener() {
             // Create an instance of the ProfileEditFragment
@@ -71,28 +101,25 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
             public void onClick(View view) {
                 // Initialize ProfileEditFragment and set the current profile
                 ProfileEditFragment profileEditFragment = new ProfileEditFragment();
-
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("userObject", user);
                 profileEditFragment.setArguments(bundle);
                 profileEditFragment.show(getSupportFragmentManager(), "ProfileEditFragment");
-
-
                 // Show the ProfileEditFragment
-
             }
         });
 
-        TextView emailTextView = findViewById(R.id.userEmail);
-        TextView phoneNumberTextView = findViewById(R.id.userPhoneNumber);
-        TextView nameTextView = findViewById(R.id.userName);
-        TextView homePageTextView = findViewById(R.id.userHomePage);
-        profilePictureImageView = findViewById(R.id.profilePicture);
 
         emailTextView.setText(user.getEmail());
         phoneNumberTextView.setText(user.getNumber());
         nameTextView.setText(user.getName());
         homePageTextView.setText(user.getHomePage());
+        adminToggle.setChecked(user.getEnableAdmin());
+        notifToggle.setChecked(user.getEnableNotification());
+        geoToggle.setChecked(user.getEnableGeolocation());
+
+        checkRole();
+
         // Retrieve information from SharedPreferences and set it to UI elements
 
         settingPfp();
@@ -117,12 +144,24 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                 phoneNumberTextView.setText(user.getNumber());
                 nameTextView.setText(user.getName());
                 homePageTextView.setText(user.getHomePage());
-
             }
         });
-
-
         settingPfp();
+    }
+
+    private void checkRole(){
+        if (user.getRole().equals("3") || user.getRole().equals("2")){
+            //meaning they are the MAIN admin or moderator
+            adminToggle.setVisibility(View.VISIBLE);
+            adminText.setVisibility(View.VISIBLE);
+            Log.d("ProfileActivity", "User is an admin");
+
+        }
+        else {
+            Log.d("ProfileActivity", "User is not an admin321");
+            adminToggle.setVisibility(View.GONE);
+            adminText.setVisibility(View.GONE);
+        }
     }
     /**
      * Called when the user clicks the "Edit" button to edit their profile.
