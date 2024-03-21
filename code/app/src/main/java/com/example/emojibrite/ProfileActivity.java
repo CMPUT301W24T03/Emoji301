@@ -89,10 +89,6 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                 }
             });
 
-            TextView emailTextView = findViewById(R.id.userEmail);
-            TextView phoneNumberTextView = findViewById(R.id.userPhoneNumber);
-            TextView nameTextView = findViewById(R.id.userName);
-            TextView homePageTextView = findViewById(R.id.userHomePage);
             profilePictureImageView = findViewById(R.id.profilePicture);
 
             emailTextView.setText(user.getEmail());
