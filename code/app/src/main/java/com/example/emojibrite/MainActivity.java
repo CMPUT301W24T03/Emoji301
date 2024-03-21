@@ -22,7 +22,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class MainActivity extends AppCompatActivity {
     Button enterButton;
     TextView scanQRCode;
-    TextView adminAccess;
     private static final String TAG = "MainActivityTAG";
     private Users user;
     private Database database = new Database(this);
@@ -41,8 +40,6 @@ public class MainActivity extends AppCompatActivity {
         // Initialize the button and text view
         enterButton = findViewById(R.id.enterButton);
         scanQRCode = findViewById(R.id.qrCodeText);
-        adminAccess = findViewById(R.id.adminAccessText);
-
 
         /* When Enter Button is clicked, go to the next activity.
          * But which one??
