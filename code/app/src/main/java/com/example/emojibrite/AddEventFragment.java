@@ -1,5 +1,7 @@
 package com.example.emojibrite;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -12,6 +14,7 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -55,13 +58,13 @@ public class AddEventFragment extends DialogFragment{
 
     private ImageView imageEventPoster;
     private Button buttonSelectPic, switchCheckInQR, switchEventPageQR;
-
     private Uri selectedImageUri; // Image Uri for the event poster
-
     private Users user;
 
     private Uri qrCodeCheckinURI, qrCodeEventURI;
     private String selectedImageUriStr;
+
+    private String eventId, checkInID;
 
 
 
@@ -128,6 +131,7 @@ public class AddEventFragment extends DialogFragment{
                     if (data != null) {
                         String qrCodeUriString = data.getStringExtra("QR_CODE_URI");
                         qrCodeCheckinURI = Uri.parse(qrCodeUriString);
+                        checkInID = data.getStringExtra("Check_In_ID");
 
                     }
                 }
@@ -143,6 +147,7 @@ public class AddEventFragment extends DialogFragment{
                     if (data != null) {
                         String qrCodeUriString = data.getStringExtra("QR_CODE_URI");
                         qrCodeEventURI = Uri.parse(qrCodeUriString);
+                        eventId = data.getStringExtra("EventId");
 
                     }
                 }
@@ -263,8 +268,11 @@ public class AddEventFragment extends DialogFragment{
             String checkInUriString = qrCodeCheckinURI != null ? qrCodeCheckinURI.toString() : null;
             String eventUriString = qrCodeEventURI != null ? qrCodeEventURI.toString() : null;
 
+            Log.d(TAG,"EVENT DERIVED QR CODE ID: "+eventId);
+            Log.d(TAG,"CHECK IN QR CODE ID: "+checkInID);
+
 //            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
-            Event newEvent = new Event(imageUriString, title, eventDate, timeString, description, milestone, location, checkInUriString, eventUriString, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
+            Event newEvent = new Event(eventId,imageUriString, title, eventDate, timeString, description, milestone, location, checkInUriString, eventUriString, capacity, user.getProfileUid(),checkInID); //ADDING USER WHICH WE GET AS AN ARGUMENT
             listener.onEventAdded(newEvent);
 
             dismiss();

@@ -30,7 +30,8 @@ public class PreviewScreenFragment extends Fragment {
     FloatingActionButton backButton;
     TextView nextButtonText;
     TextView nameText;
-    Database database = new Database(getActivity());
+
+    Database database = new Database();
     Bitmap autoGenprofileImage;
     Users user;
 
@@ -124,7 +125,7 @@ public class PreviewScreenFragment extends Fragment {
     private void generateProfileImage() {
         Log.d(TAG, "User didn't upload a picture");
         // User didn't upload a picture, generate one based on the username
-        ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator(getContext(), user.getProfileUid(), user.getName());
+        ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator( user.getProfileUid(), user.getName());
         profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Uri>() {
             @Override
             public void onComplete(Uri result) {

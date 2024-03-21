@@ -36,7 +36,9 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     EventAdapter eventAdapter; // Custom adapter to bind event data to the ListView
     ArrayList<Event> dataList;
     private Users user;
-    private Database database = new Database(this);
+    private Database database = new Database();
+
+//    Button otherEvent = findViewById(R.id.other_events_button);
 
     ImageView profileButton;
 
@@ -48,9 +50,12 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
      * @param event The event to show details for.
      */
 
-    private void showEventDetails(Event event) {
+    private void showEventDetails(Event event, Users user) {
         Intent intent = new Intent(this, EventDetailsActivity.class);
         intent.putExtra("eventId", event.getId());
+        if (user!=null){
+        Log.d("TAG","CHECKING CHECKING CHECKING  "+ user.getProfileUid());}
+        intent.putExtra("userlol",user.getProfileUid()); //You send the current user profile id into the details section
         startActivity(intent);
     }
 
@@ -95,6 +100,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     private void updateLocalEventList(Event event) {
         int index = -1;
         for (int i = 0; i < dataList.size(); i++) {
+
             String existingEventId = dataList.get(i).getId();
             String newEventId = event.getId();
             // Check if both IDs are non-null and equal
@@ -114,32 +120,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         eventAdapter.notifyDataSetChanged();
     }
 
-
-
-    /**
-     * Adds an event to the list of events and updates the ListView.
-     *
-     * @param event The event to add.
-     */
-    public void addEvent(Event event) {
-        if (event != null) {
-            EventRepository.getInstance().addEvent(event);
-            int index = -1;
-            for (int i = 0; i < dataList.size(); i++) {
-                if (dataList.get(i).getId().equals(event.getId())) {
-                    index = i;
-                    break;
-                }
-            }
-            if (index != -1) {
-                dataList.set(index, event);
-            } else {
-                dataList.add(event);
-            }
-            eventAdapter.notifyDataSetChanged();
-        }
-    }
-
     /**
      * Called when the activity is created.
      *
@@ -156,19 +136,20 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         eventAdapter = new EventAdapter(this, dataList);
         eventList.setAdapter(eventAdapter);
 
-        eventList.setOnItemClickListener(((parent, view, position, id) -> {
-            Event selectedEvent = dataList.get(position);
 
-            showEventDetails(selectedEvent);
 
-        }));
+        Button otherEvent = findViewById(R.id.other_events_button);
 
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
+        //this allows the user to not be stuck on admin activity all the time
+        user.setEnableAdmin(false);
+
+        Log.d(TAG, "PROFILE PIC EVENT HOME "+user.getUploadedImageUri());
         if(user!=null) {
             Log.d(TAG, "user name for EventHome: " + user.getName() + user.getProfileUid() + user.getUploadedImageUri() + user.getAutoGenImageUri() + user.getHomePage());
             Log.d(TAG, "user id for EventHome: " + user.getProfileUid());
-            database.setUserObject(user);
+
             FloatingActionButton fab = findViewById(R.id.event_add_btn);
             fab.setOnClickListener(view -> showAddEventDialog());
         }
@@ -184,6 +165,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                     Glide.with(EventHome.this).load(user.getUploadedImageUri()).into(profileButton);
                 }
             });
+            fetchEventsForCurrentUser();
         } else if (user.getUploadedImageUri() == null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
@@ -193,7 +175,18 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
             });
 
             fetchEventsForCurrentUser();
+
+
+
         }
+
+
+        eventList.setOnItemClickListener(((parent, view, position, id) -> {
+            Event selectedEvent = dataList.get(position);
+
+            showEventDetails(selectedEvent, user);
+
+        }));
 
 
 
@@ -213,6 +206,19 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
             }
         });
+
+        otherEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG,"Other events button clicked");
+                Intent intent2 = new Intent(EventHome.this, OtherEventHome.class);
+
+                intent2.putExtra("userObject", user);
+                startActivity(intent2);  // Use intent2 to start the activity
+            }
+        });
+
+
 
 
     }
