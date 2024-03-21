@@ -90,25 +90,9 @@ dependencies {
     //QR Code dependency
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
-<<<<<<< HEAD
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
-=======
-<<<<<<< HEAD
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
-=======
->>>>>>> development
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.0")
-
-
-
 
 
 }
-<<<<<<< HEAD
-=======
->>>>>>> c70b23e608a7cfcc7b3b79cdb2c6461d85df9bbf
->>>>>>> development
-
