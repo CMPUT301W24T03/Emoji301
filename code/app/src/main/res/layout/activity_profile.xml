@@ -180,7 +180,8 @@
                         android:layout_height="wrap_content"
                         android:padding="10dp"
                         android:scaleX="1.5"
-                        android:scaleY="1.5" />
+                        android:scaleY="1.5"
+                        android:visibility="gone"/>
 
                     <TextView
                         android:id="@+id/adminModeLabel"
@@ -189,6 +190,7 @@
                         android:layout_marginStart="10dp"
                         android:fontFamily="@font/alice"
                         android:text="Admin mode"
+                        android:visibility="gone"
                         android:textSize="20sp" />
 
                 </LinearLayout>
