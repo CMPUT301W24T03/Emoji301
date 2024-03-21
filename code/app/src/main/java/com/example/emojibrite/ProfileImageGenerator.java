@@ -108,13 +108,21 @@ public class ProfileImageGenerator {
 
                     // Convert the response to a URI
                     Uri imageUri = Uri.parse(response.request().url().toString());
+                    Log.d("ProfileImageGenerator", "URI is parsed" + imageUri.toString());
+
+                    // Convert the URI to a string and adding / cuz it is somehow needed. idk why
+                    String change = imageUri.toString() + "/";
 
                     // Store the URI in the database
+                    //we aren't goign to store uri in database in this part.
+                    /*
                     Database database = new Database();
                     database.storeImageUri(Uid, imageUri.toString(), "autoGenImage");
 
+                     */
+
                     // Notify the onCompleteListener after the database operation is done
-                    onCompleteListener.onComplete(imageUri);
+                    onCompleteListener.onComplete(Uri.parse(change));
 
                     Log.d("ProfileImageGenerator", "URI is sent to database");
                 }
