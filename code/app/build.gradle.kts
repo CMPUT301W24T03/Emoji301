@@ -73,7 +73,7 @@ dependencies {
 
 
 
-    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-auth") // dupe?
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.journeyapps:zxing-android-embedded:4.2.0")
 

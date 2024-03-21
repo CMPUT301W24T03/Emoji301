@@ -48,7 +48,7 @@ public class QRCodeEventActivity extends AppCompatActivity {
 
     FloatingActionButton backEventQRCode;
 
-    Button generate_event, upload_event;
+    Button generate_event;
 
     Uri selectedImageUri;
 //upload_button_event_in1
@@ -81,8 +81,6 @@ public class QRCodeEventActivity extends AppCompatActivity {
 
         generate_event = findViewById(R.id.generate_button_event1);
 
-        upload_event = findViewById(R.id.upload_button_event_in1);
-
         // Set click listener for the share button to enable QR code sharing
         qrCodeShare.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,8 +101,6 @@ public class QRCodeEventActivity extends AppCompatActivity {
                 generateQR(eventId);
             }
         });
-
-        upload_event.setOnClickListener(v -> openGallery());
         // Listener for the back navigation button
         backEventQRCode.setOnClickListener(v -> {returnResult();});
 
@@ -171,68 +167,6 @@ public class QRCodeEventActivity extends AppCompatActivity {
         // Get the URI of the file
         return FileProvider.getUriForFile(this, "com.example.emojibrite", imageFile);
     }
-
-
-    /**
-     * This is responsible for dealing with launching and retreiving a picture
-     */
-    private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
-            new ActivityResultContracts.GetContent(),
-            uri -> {
-                if (uri != null) {
-                    selectedImageUri = uri; // Save the selected image Uri.
-
-                    try {
-                        // Load the bitmap from the gallery
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                        qrCode.setImageBitmap(bitmap);
-
-                        // Optionally, decode the QR code if you need to retrieve information from it
-                        String decodedEventId = decodeQRCode(bitmap);
-                        if(decodedEventId != null) {
-                            eventId = decodedEventId;
-                            // If decoded successfully, handle the event ID
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Toast.makeText(this, "Failed to load image", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-    );
-
-
-    private String decodeQRCode(Bitmap bitmap) {
-        try {
-            int[] intArray = new int[bitmap.getWidth()*bitmap.getHeight()];
-            // Copy pixel data from the Bitmap into the 'intArray' array
-            bitmap.getPixels(intArray, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-
-            LuminanceSource source = new RGBLuminanceSource(bitmap.getWidth(), bitmap.getHeight(), intArray);
-            BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
-
-            Result result = new MultiFormatReader().decode(binaryBitmap);
-            return result.getText();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
-
-
-    /**
-     * Called to launch the gallery instance
-     */
-//    @AfterPermissionGranted(PICK_FROM_GALLERY)
-    private void openGallery() {
-
-        mGetContent.launch("image/*"); // "image/*" indicates that only image types are selectable
-    }
-
-
-
 }
 
 
