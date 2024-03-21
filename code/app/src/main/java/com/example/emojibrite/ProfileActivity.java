@@ -151,6 +151,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     }
 
     private void checkRole(){
+
         if (user.getRole().equals("3") || user.getRole().equals("2")){
             //meaning they are the MAIN admin or moderator
             adminToggle.setVisibility(View.VISIBLE);

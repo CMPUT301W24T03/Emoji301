@@ -95,7 +95,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         }
     }
 
-
     /**
      * Updates the local list of events. This method is called after an event is successfully added
      * to the Firestore database to reflect the change in the local user interface.
@@ -180,21 +179,13 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
             });
 
             fetchEventsForCurrentUser();
-
-
-
         }
-
-
         eventList.setOnItemClickListener(((parent, view, position, id) -> {
             Event selectedEvent = dataList.get(position);
 
             showEventDetails(selectedEvent, user);
 
         }));
-
-
-
         // When profile is clicked, go to profile activity
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -209,8 +200,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                 intent.putExtra("userObject", user);
 
                 startActivity(intent);
-
-
             }
         });
 
@@ -224,10 +213,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                 startActivity(intent2);  // Use intent2 to start the activity
             }
         });
-
-
-
-
     }
 
     /**

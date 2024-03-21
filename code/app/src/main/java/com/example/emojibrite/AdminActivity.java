@@ -42,30 +42,42 @@ public class AdminActivity extends AppCompatActivity{
             public void onClick(View v) {
 
                 // Go to the ProfileActivity page
-
                 Intent intent = new Intent(AdminActivity.this, ProfileActivity.class);
-
                 intent.putExtra("userObject", user);
                 startActivity(intent);
-
-
             }
         });
-
+        //the intent for the buttons below are just place holders for the updated ui'
         eventBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent( AdminActivity.this, EventHome.class);
-                intent.putExtra("EventHome", user);
+                // Go to the EventHome page
+                Intent intent = new Intent(AdminActivity.this, EventHome.class);
+                intent.putExtra("userObject", user);
                 startActivity(intent);
             }
         });
 
+        accountBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Go to the AccountActivity page
+                Intent intent = new Intent(AdminActivity.this, EventHome.class);
+                intent.putExtra("userObject", user);
+                startActivity(intent);
+            }
+        });
 
+        imageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Go to the ImageActivity page
+                Intent intent = new Intent(AdminActivity.this, EventHome.class);
+                intent.putExtra("userObject", user);
+                startActivity(intent);
+            }
+        });
     }
-
-
-
     private void displayProfileIcon(){
         if (user.getUploadedImageUri() != null) {
             // User uploaded a picture, use that as the ImageView
@@ -84,8 +96,6 @@ public class AdminActivity extends AppCompatActivity{
                 }
             });
         }
+
     }
-
-
-
 }

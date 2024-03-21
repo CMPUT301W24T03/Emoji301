@@ -242,12 +242,12 @@ once created, u can call getuseruid to get the user id and use it to get user da
         // Create a map to hold the image URI
         Map<String, Object> imageUriMap = new HashMap<>();
         if (imageType.equals("uploadedImage")) {
-            imageUriMap.put("uploadedImageUri", imageUri);
+            docRef.update("uploadedImageUri", imageUri);
         } else if (imageType.equals("autoGenImage")) {
-            imageUriMap.put("autoGenImageUri", imageUri);
+            docRef.update("autoGenImageUri", imageUri);
         }
         // Store the image URI in the database
-        docRef.set(imageUriMap, SetOptions.merge());
+
     }
     /**
      * An interface that serves as a callback for image processing operations
