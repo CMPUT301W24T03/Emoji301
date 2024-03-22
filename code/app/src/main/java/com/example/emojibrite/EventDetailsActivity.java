@@ -67,6 +67,16 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
 
 
+        Button attendeesButton = findViewById(R.id.attendees_button);
+        TextView showMap = findViewById(R.id.show_map);
+
+        showMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EventDetailsActivity.this, MapsActivity.class);
+                startActivity(intent);
+            }
+        });
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,7 +90,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         attendeesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EventDetailsActivity.this, AttendeesActivity.class);
+                Intent intent = new Intent(EventDetailsActivity.this, AttendeesListActivity.class);
+                // todo: give attendees list activity something like the event id or list of attendees, etc.
+                // intent.putExtra("attendees", signedAttendees); for example
+                Log.d("Aivan" , "Attendees button clicked");
                 startActivity(intent);
             }
         });

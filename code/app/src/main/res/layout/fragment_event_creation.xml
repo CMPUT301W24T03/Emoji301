@@ -170,25 +170,39 @@
                 android:fontFamily="@font/frank_ruhl_libre"
                 android:inputType="text" />
         </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/button_generate_checkin_qr"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
+            android:layout_marginStart = "5dp"
             android:layout_height="wrap_content"
+            android:background="@drawable/event_button_solid"
             android:checked="true"
             android:fontFamily="@font/frank_ruhl_libre"
-            android:text="@string/check_in_qr_code" />
+            android:text="@string/check_in_qr_code"
+            android:textColor="@color/white"
+            android:textSize="11dp" />
 
         <Button
             android:id="@+id/button_generate_eventpage_qr"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
+            android:layout_marginStart = "25dp"
             android:layout_height="wrap_content"
             android:checked="true"
+            android:background="@drawable/event_button_solid"
             android:fontFamily="@font/frank_ruhl_libre"
+            android:textColor="@color/white"
+            android:textSize="11dp"
             android:text="@string/event_page_qr_code" />
+    </LinearLayout>
 
         <Button
             android:id="@+id/button_next"
+            android:layout_marginTop = "25dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
