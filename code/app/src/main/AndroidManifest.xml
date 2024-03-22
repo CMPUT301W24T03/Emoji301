@@ -2,18 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.emojibrite">
-
-
-    <!-- Devices running Android 12L (API level 32) or lower  -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
-    <!-- Devices running Android 13 (API level 33) or higher -->
+    <!-- Devices running Android 12L (API level 32) or lower -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" /> <!-- Devices running Android 13 (API level 33) or higher -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <!-- To handle the reselection within the app on Android 14 (API level 34) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" /> <!-- To handle the reselection within the app on Android 14 (API level 34) -->
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
-
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.INTERNET" />
+
+
 
     <application
         android:allowBackup="true"
@@ -26,6 +25,14 @@
         android:theme="@style/Theme.EmojiBrite"
         tools:targetApi="31">
 
+        <activity
+            android:name=".QRScanningActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="screenOrientation"/>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.emojibrite"
@@ -34,12 +41,10 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/paths" />
-        </provider>
-
-        <!-- SplashLogoActivity + Main -->
+        </provider> <!-- SplashLogoActivity + Main -->
         <activity
-        android:name=".SplashLogoActivity"
-        android:exported="true">
+            android:name=".SplashLogoActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,44 +52,41 @@
             </intent-filter>
         </activity>
         <activity
-        android:name=".MainActivity"
-        android:exported="true">
-        </activity>
-
-        <!-- Account Creation Activity-->
+            android:name=".MainActivity"
+            android:exported="true" /> <!-- Account Creation Activity -->
         <activity
             android:name=".AccountCreationActivity"
-            android:exported="false"/>
-
-        <!--Fragments dont belong here. Also, the Continuous Integration(CI) flagged this, thus "x" beside your branch-->
-        <!--        &lt;!&ndash; AddEventFragment &ndash;&gt;-->
-        <!--        <activity-->
-        <!--            android:name=".AddEventFragment"-->
-        <!--            android:exported="false" />-->
-
+            android:exported="false" /> <!-- Fragments dont belong here. Also, the Continuous Integration(CI) flagged this, thus "x" beside your branch -->
 
         <activity
-        android:name=".ProfileActivity"
-        android:exported="false" />
-
-        <!-- Event related -->
+            android:name=".ProfileActivity"
+            android:exported="false" /> <!-- Event related -->
         <activity
             android:name=".EventHome"
             android:exported="false" />
         <activity
             android:name=".EventDetailsActivity"
-            android:exported="false"/>
+            android:exported="false" />
+        <activity android:name=".AttendeesListActivity"
+            android:exported="false" />
         <activity
             android:name=".QRCodeEventActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".QRCodeCheckActivity"
-            android:exported="false"/>
+            android:exported="false" />
 
         <meta-data
-        android:name="preloaded_fonts"
-        android:resource="@array/preloaded_fonts" />
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
 
+        <activity
+            android:name=".OtherEventHome"
+            android:exported="false" />
+        <activity
+            android:name = "AdminActivity"
+            android:exported="false"
+            />
     </application>
 
 </manifest>

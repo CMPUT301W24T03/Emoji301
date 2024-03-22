@@ -54,8 +54,7 @@
         <ImageView
             android:id="@+id/event_qr_pic"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:src="@drawable/qr_scan_pic" />
+            android:layout_height="300dp"/>
 
         <Button
             android:id="@+id/generate_button_event1"
@@ -65,18 +64,6 @@
             android:layout_marginTop="50dp"
             android:background="@drawable/qr_button_solid"
             android:text="Generate"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/upload_button_event_in1"
-            android:layout_width="150dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/qr_button_solid"
-            android:layout_gravity="center_horizontal"
-            android:text="Upload"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="12sp" />

@@ -24,7 +24,7 @@
     <fragment
         android:id="@+id/uploadImageScreen"
         android:name="com.example.emojibrite.UploadImageScreenFragment"
-        android:label="UploadImageScrenFragment"
+        android:label="UploadImageScreenFragment"
         tools:layout="@layout/fragment_uplaod_image_screen">
         <action
             android:id="@+id/action_UploadImageScreen_to_PreviewScreen"

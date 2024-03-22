@@ -1,9 +1,14 @@
 package com.example.emojibrite;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,6 +73,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
         //setting the retrieved data
 
         eventTitle.setText(event.getEventTitle());
+//        Log.d(TAG, event.getEventTitle());
         eventDescription.setText(event.getDescription());
 
 
@@ -81,10 +87,18 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         eventTime.setText(event.getTime());
 
-        if (event.getImagePath() != null) {
-            Glide.with(getContext()).load(event.getImagePath()).into(eventImage);
+        if (event.getImageUri() != null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                 @Override
+                 public void run() {
+                     Glide.with(getContext()).load(event.getImageUri()).into(eventImage);
+                 }
+             });
+//            Glide.with(getContext()).load(event.getImageUri()).into(eventImage);
+            Log.d(TAG, "PICTURE LOOOOAAADDING");
         } else {
-            eventImage.setImageResource(R.drawable.placeholder); 
+            eventImage.setImageResource(R.drawable.placeholder);
+            Log.d(TAG, "PICTURE NOOOOOOOT LOOOOAAADDING");
         }
 
 
