@@ -28,12 +28,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * AddEventFragment is a DialogFragment used to create a new event or edit an existing one.
@@ -65,6 +69,8 @@ public class AddEventFragment extends DialogFragment{
     private String selectedImageUriStr;
 
     private String eventId, checkInID;
+
+    ImageUploader imageUploader = new ImageUploader("images");
 
 
 
@@ -103,23 +109,27 @@ public class AddEventFragment extends DialogFragment{
     /**
      * This is responsible for dealing with launching and retreiving a picture
      */
-    private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
+
+    private final ActivityResultLauncher<String> mediaGetContent = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
-                if (uri != null) {
-                    selectedImageUri = uri;// Save the selected image Uri.
-                    selectedImageUriStr = selectedImageUri.toString();
-                    try {
-                        // Use MediaStore to fetch the selected image as a Bitmap
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
-                        // Set the bitmap to the ImageView for display
-                        imageEventPoster.setImageBitmap(bitmap);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Toast.makeText(getActivity(), "Failed to load image", Toast.LENGTH_SHORT).show();
-                    }
+
+                if (uri!=null){
+                    imageUploader.uploadImage(uri, new ImageUploader.UploadCallback() {
+                        @Override
+                        public void onUploadSuccess(Uri downloadUri) {
+                            imageEventPoster.setImageURI(null);
+                            imageEventPoster.setImageURI(uri); // TO DISPLAY THE IMAGE INTO THE IMAGEVIEW
+                            selectedImageUri = downloadUri; // CHANGING THE SELECTED IMAGE URI TO THE DOWNLOADED URI RETREIVED AND THIS IS YOUR ANSWER
+                            Log.d(TAG,"DOWNLOADED URI STRING" + selectedImageUri.toString());
+                        }
+
+                        @Override
+                        public void onUploadFailure(Exception exception) {
+                            Toast.makeText(getContext(), "Upload failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
-                else{selectedImageUriStr = null;}
             }
     );
 
@@ -131,6 +141,20 @@ public class AddEventFragment extends DialogFragment{
                     if (data != null) {
                         String qrCodeUriString = data.getStringExtra("QR_CODE_URI");
                         qrCodeCheckinURI = Uri.parse(qrCodeUriString);
+
+
+                        //DOING THE CONVERSIONS:
+                        imageUploader.uploadImage(qrCodeCheckinURI, new ImageUploader.UploadCallback() {
+                            @Override
+                            public void onUploadSuccess(Uri downloadUri) {
+                                qrCodeCheckinURI = downloadUri;
+                            }
+
+                            @Override
+                            public void onUploadFailure(Exception exception) {
+                                Toast.makeText(getContext(), "Upload failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                         checkInID = data.getStringExtra("Check_In_ID");
 
                     }
@@ -148,6 +172,18 @@ public class AddEventFragment extends DialogFragment{
                         String qrCodeUriString = data.getStringExtra("QR_CODE_URI");
                         qrCodeEventURI = Uri.parse(qrCodeUriString);
                         eventId = data.getStringExtra("EventId");
+
+                        imageUploader.uploadImage(qrCodeEventURI, new ImageUploader.UploadCallback() {
+                            @Override
+                            public void onUploadSuccess(Uri downloadUri) {
+                                qrCodeEventURI = downloadUri;
+                            }
+
+                            @Override
+                            public void onUploadFailure(Exception exception) {
+                                Toast.makeText(getContext(), "Upload failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
                     }
                 }
@@ -211,7 +247,7 @@ public class AddEventFragment extends DialogFragment{
         imageEventPoster = view.findViewById(R.id.image_event_poster);
         buttonSelectPic = view.findViewById(R.id.button_select_picture);
 
-        buttonSelectPic.setOnClickListener(v -> openGallery());
+//        buttonSelectPic.setOnClickListener(v -> openGallery());
 
         buttonSelectPic = view.findViewById(R.id.button_select_picture);
 
@@ -306,7 +342,7 @@ public class AddEventFragment extends DialogFragment{
 //    @AfterPermissionGranted(PICK_FROM_GALLERY)
 private void openGallery() {
 
-    mGetContent.launch("image/*"); // "image/*" indicates that only image types are selectable
+    mediaGetContent.launch("image/*"); // "image/*" indicates that only image types are selectable
 }
 
 
