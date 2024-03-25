@@ -4,9 +4,7 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -29,7 +27,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +43,10 @@ public class Database {
     private final CollectionReference profileRef = db.collection("Users");
 
     private final CollectionReference eventRef = db.collection("Events");
+
+    private final CollectionReference signedUpRef = db.collection("SignedUp");
+
+
 
     private String firestoreDebugTag = "Firestore";
 
@@ -76,7 +77,6 @@ public class Database {
 
     /**
      * A constructor that is used to create a new instance of the database class
-     * @param context is the current state of the application or activity
      */
 
 
@@ -242,12 +242,12 @@ once created, u can call getuseruid to get the user id and use it to get user da
         // Create a map to hold the image URI
         Map<String, Object> imageUriMap = new HashMap<>();
         if (imageType.equals("uploadedImage")) {
-            imageUriMap.put("uploadedImageUri", imageUri);
+            docRef.update("uploadedImageUri", imageUri);
         } else if (imageType.equals("autoGenImage")) {
-            imageUriMap.put("autoGenImageUri", imageUri);
+            docRef.update("autoGenImageUri", imageUri);
         }
         // Store the image URI in the database
-        docRef.set(imageUriMap, SetOptions.merge());
+
     }
     /**
      * An interface that serves as a callback for image processing operations
@@ -289,18 +289,6 @@ once created, u can call getuseruid to get the user id and use it to get user da
         if (event.getImageUri()!=null){
             Log.d(TAG, event.getImageUri().toString()); //testing
         }
-
-        // Adding organizer to details
-//        if (event.getOrganizer() != null) {
-//            Map<String, Object> organizerMap = new HashMap<>();
-//            Users organizer = event.getOrganizer();
-//            organizerMap.put("organizerId", organizer.getProfileUid());
-////            organizerMap.put("organizerName", organizer.getName());
-////            organizerMap.put("organizerGenerated", organizer.getAutoGenImageUri());
-////            organizerMap.put("organizerUploaded", organizer.getProfileUid());
-////            // Add other relevant fields from the Users class
-//            eventMap.put("organizer", organizerMap);
-//        }
 
         if (event.getOrganizer() != null) {
             eventMap.put("organizer", event.getOrganizer());
@@ -402,6 +390,11 @@ once created, u can call getuseruid to get the user id and use it to get user da
         });
     }
 
+    /**
+     * This method retreives all the events available on the database
+     * @param listener
+     */
+
 
     public void fetchAllEventsDatabase(OnEventsRetrievedListener listener){
         eventRef.get()
@@ -420,6 +413,47 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     listener.onEventsRetrieved(events);
                 }).addOnFailureListener(e-> Log.e(TAG,"error fetching all the events", e));
     }
+
+    /**
+     * This method is mainly used while creating an event. When you create an event, it will create a new
+     * database where it has event ids and an array List of userIds who is a part of the event
+     * @param eventId
+     * @param signedAttendees
+     */
+
+    public void addSignin(String eventId, ArrayList<String> signedAttendees )
+    {
+        Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("id",eventId);
+        eventMap.put("signedAttendees",signedAttendees);
+        signedUpRef.document(eventId).set(eventMap)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Event successfully written!"))
+                .addOnFailureListener(e -> Log.w(TAG, "Error writing event", e));
+//                .addOnCompleteListener(onCompleteListener);
+
+    }
+
+    /**
+     * This method is to retrieve the array list once we pass the event id
+     * @param eventId
+     * @param listener
+     */
+
+    public void getSignedAttendees(String eventId, OnSignedAttendeesRetrievedListener listener) {
+        signedUpRef.document(eventId).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                List<String> attendees = (List<String>) documentSnapshot.get("signedAttendees");
+                listener.onSignedAttendeesRetrieved(attendees);
+            } else {
+                listener.onSignedAttendeesRetrieved(new ArrayList<>());
+            }
+        }).addOnFailureListener(e -> Log.e(TAG, "Error fetching signed attendees", e));
+    }
+
+    public interface OnSignedAttendeesRetrievedListener {
+        void onSignedAttendeesRetrieved(List<String> attendees);
+    }
+
 
 
 

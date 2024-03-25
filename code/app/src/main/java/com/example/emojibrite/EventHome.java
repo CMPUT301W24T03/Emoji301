@@ -76,15 +76,15 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
      * @param event The event object to be added. This should not be null.
      */
     @Override
-    public void onEventAdded(Event event){
-        if (event!=null){
-            //We call the addEvent method in database class
+    public void onEventAdded(Event event) {
+        if (event != null) {
+
+            // Add the event to the database
             database.addEvent(event, task -> {
-                if (task.isSuccessful()){
+                if (task.isSuccessful()) {
                     Log.d(TAG, "Event added successfully into database");
                     updateLocalEventList(event);
-                }
-                else {
+                } else {
                     Log.e(TAG, "ERROR IN ADDING TO THE DATABASE", task.getException());
                 }
             });
@@ -142,6 +142,9 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
+        //this allows the user to not be stuck on admin activity all the time
+        user.setEnableAdmin(false);
+
         Log.d(TAG, "PROFILE PIC EVENT HOME "+user.getUploadedImageUri());
         if(user!=null) {
             Log.d(TAG, "user name for EventHome: " + user.getName() + user.getProfileUid() + user.getUploadedImageUri() + user.getAutoGenImageUri() + user.getHomePage());
@@ -172,21 +175,13 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
             });
 
             fetchEventsForCurrentUser();
-
-
-
         }
-
-
         eventList.setOnItemClickListener(((parent, view, position, id) -> {
             Event selectedEvent = dataList.get(position);
 
             showEventDetails(selectedEvent, user);
 
         }));
-
-
-
         // When profile is clicked, go to profile activity
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -199,8 +194,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
                 intent.putExtra("userObject", user);
                 startActivity(intent);
-
-
             }
         });
 
@@ -214,10 +207,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                 startActivity(intent2);  // Use intent2 to start the activity
             }
         });
-
-
-
-
     }
 
     /**
@@ -239,5 +228,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
             });
         }
     }
+
+
 }
 

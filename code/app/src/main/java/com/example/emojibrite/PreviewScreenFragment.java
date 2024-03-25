@@ -14,11 +14,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 /**
  * PreviewScreenFragment is the fragment that displays the user's profile picture and name
@@ -78,6 +84,8 @@ public class PreviewScreenFragment extends Fragment {
         nextButtonText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
                 navigateToEventHomeNoReturn(view);
             }
         });
@@ -165,6 +173,9 @@ public class PreviewScreenFragment extends Fragment {
      * @param view The view that was clicked to trigger navigation
      */
     protected void navigateToEventHomeNoReturn(View view) {
+        user.setRole("1");
+        database.setUserObject(user);
+
         Log.d(TAG, "Next button clicked");
         // go to the EventHome Activity and finish the current activity which is the AccountCreationActivity
         // on which the fragments are hosted
