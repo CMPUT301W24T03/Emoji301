@@ -78,15 +78,11 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     @Override
     public void onEventAdded(Event event) {
         if (event != null) {
-            ArrayList<String> initialAttendees = new ArrayList<>();
-            initialAttendees.add(event.getOrganizer()); // Add the organizer's ID to the list
 
             // Add the event to the database
             database.addEvent(event, task -> {
                 if (task.isSuccessful()) {
                     Log.d(TAG, "Event added successfully into database");
-                    // Add the initial attendees (organizer) to the signedAttendees collection
-                    database.addSignin(event.getId(), initialAttendees);
                     updateLocalEventList(event);
                 } else {
                     Log.e(TAG, "ERROR IN ADDING TO THE DATABASE", task.getException());
