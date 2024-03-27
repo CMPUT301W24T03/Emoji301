@@ -10,13 +10,22 @@
         android:id="@+id/floatingActionButton_back_checkin_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
         android:clickable="true"
         app:background="@color/dark_green"
         app:backgroundTint="@color/dark_green"
         app:srcCompat="?attr/actionModeCloseDrawable"
-        app:tint="@color/white" />
+        app:tint="@color/white"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <include
+        layout="@layout/appbar"
+        android:id="@+id/toolbar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <fragment
         android:id="@+id/map"
