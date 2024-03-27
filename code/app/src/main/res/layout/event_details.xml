@@ -196,7 +196,8 @@
                 android:text="Notification"
                 android:textAllCaps="false"
                 android:textColor="@color/black"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:visibility="gone"/>
 
         </LinearLayout>
 

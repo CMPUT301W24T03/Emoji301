@@ -83,7 +83,9 @@
 
         <activity
             android:name=".ProfileActivity"
-            android:exported="false" /> <!-- Event related -->
+            android:exported="false" />
+
+        <!-- Event related -->
         <activity
             android:name=".EventHome"
             android:exported="false" />
@@ -110,6 +112,16 @@
             android:name = "AdminActivity"
             android:exported="false"
             />
+
+        <!--Notifications related-->
+        <service
+            android:name=".PushNotificationService"
+            android:exported="false">
+            <intent-filter>
+                <!--  This service will only listen to incoming messaging events-->
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

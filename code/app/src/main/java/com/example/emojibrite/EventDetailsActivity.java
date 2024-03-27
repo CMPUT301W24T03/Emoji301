@@ -26,7 +26,7 @@ import java.util.Locale;
  * of a selected event. It retrieves event data based on the passed event ID
  * and sets up the views to display this data.
  */
-public class EventDetailsActivity extends AppCompatActivity {
+public class EventDetailsActivity extends AppCompatActivity implements NotificationDialogFragment.NotificationDialogListener{
 
     String currentUser;
 
@@ -136,7 +136,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
-
+        // todo: make it so that only organizers can see the notification button. ask snehal
     }
 
     /**
@@ -294,5 +294,26 @@ public class EventDetailsActivity extends AppCompatActivity {
             // If text is null or empty, make the TextView disappear from the layout.
             textView.setVisibility(View.GONE);
         }
+    }
+
+    /**
+     * method to handle the positive click of the dialog
+     * @param message The message to be sent to the list of attendees
+     */
+    @Override
+    public void onDialogPositiveClick(String message) {
+        // send the notification to all attendees of in the signedAttendees arrayList
+        for (String attendee : signedAttendees) {
+            sendNotification(attendee, message);
+        }
+    }
+
+    /**
+     * This function is used to send a notification to the attendees of the event
+     * @param attendee The attendee to send the notification to
+     * @param message The message to be sent to the attendee
+     */
+    private void sendNotification(String attendee, String message) {
+        // send the notification to the attendee
     }
 }
