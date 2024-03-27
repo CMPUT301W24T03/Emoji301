@@ -2,7 +2,7 @@ name: Android CI
 
 on:
   push:
-    branches: [ "main", "development","QRcode" ]
+    branches: [ "main", "development","QRcode", "Aivan" ]
   pull_request:
     branches: [ "main" ]
 
@@ -20,6 +20,9 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
+    # might have to set up android sdk?
+    # like name: "" uses: android-actions/setup-android@v3
+    
     - name: Grant execute permission for gradlew
       working-directory: ./code
       run: chmod +x gradlew
