@@ -105,7 +105,7 @@ public class OtherEventHome extends AppCompatActivity {
             });
             fetchAllEvents();
 
-    }
+        }
 
         eventList.setOnItemClickListener(((parent, view, position, id) -> {
             Event selectedEvent = dataList1.get(position);
