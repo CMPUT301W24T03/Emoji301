@@ -1,3 +1,4 @@
+
 package com.example.emojibrite;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
@@ -49,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
         adminAccess = findViewById(R.id.adminAccessText);
         loggedIn = false;
         automaticSignIn();
-
 
 
         /* When Enter Button is clicked, go to the next activity.
@@ -113,8 +113,8 @@ public class MainActivity extends AppCompatActivity {
                             loggedIn = true;
                             Toast.makeText(MainActivity.this, "You are LOGGED in", Toast.LENGTH_SHORT).show();
 
-
                         }
+
                     }
                 });
             }
