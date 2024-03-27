@@ -86,7 +86,7 @@ public class QRScanningActivity extends AppCompatActivity {
         }
 
         // checking to see if we actually scanned something as the check in QR can be any QR
-        // and we did not find a corresponding event
+        // and if we did not find a corresponding event
         if (result.getContents() != null && !found){
 
         }
