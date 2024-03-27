@@ -21,4 +21,6 @@
     <string name="events">Events</string>
     <string name="accounts">Accounts</string>
     <string name="images">Images</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name ="my_map_API">AIzaSyC-jtA_nZ_AoRF_ejpu-3hFIFZ7GZZeyxE</string>
 </resources>

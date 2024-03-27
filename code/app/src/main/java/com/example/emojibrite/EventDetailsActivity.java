@@ -67,6 +67,16 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
 
 
+        Button attendeesButton = findViewById(R.id.attendees_button);
+        TextView showMap = findViewById(R.id.show_map);
+
+        showMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EventDetailsActivity.this, MapsActivity.class);
+                startActivity(intent);
+            }
+        });
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -290,18 +290,6 @@ once created, u can call getuseruid to get the user id and use it to get user da
             Log.d(TAG, event.getImageUri().toString()); //testing
         }
 
-        // Adding organizer to details
-//        if (event.getOrganizer() != null) {
-//            Map<String, Object> organizerMap = new HashMap<>();
-//            Users organizer = event.getOrganizer();
-//            organizerMap.put("organizerId", organizer.getProfileUid());
-////            organizerMap.put("organizerName", organizer.getName());
-////            organizerMap.put("organizerGenerated", organizer.getAutoGenImageUri());
-////            organizerMap.put("organizerUploaded", organizer.getProfileUid());
-////            // Add other relevant fields from the Users class
-//            eventMap.put("organizer", organizerMap);
-//        }
-
         if (event.getOrganizer() != null) {
             eventMap.put("organizer", event.getOrganizer());
         }
