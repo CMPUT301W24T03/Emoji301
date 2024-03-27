@@ -1,6 +1,8 @@
 package com.example.emojibrite;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,7 +23,11 @@ public class QRScanningActivity extends AppCompatActivity {
 
     private Button qrScanButton;
 
-    private TextView qr_result;
+    private Database database = new Database();
+
+    private String[] array;
+
+    private boolean found = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +36,11 @@ public class QRScanningActivity extends AppCompatActivity {
         setContentView(R.layout.activity_qrscanning);
 
         qrScanButton = findViewById(R.id.scan_qr_button);
-        qr_result = findViewById(R.id.qr_scan_result);
+
+        // need to pass in UID and geolocation bool
+        Bundle bundle = this.getIntent().getExtras();
+        // index 0 is uid, index 1 is geolocation bool
+        array = bundle.getStringArray("USER");
 
         qrScanButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,13 +67,44 @@ public class QRScanningActivity extends AppCompatActivity {
     }
 
     /**
-     * Launches QR scanner and sets the result to the textview.
+     * Launches QR scanner.
      */
     private ActivityResultLauncher<ScanOptions> scanLauncher = registerForActivityResult(new ScanContract(), result ->{
 
-        // checking to see if we actually scanned something
-        if (result.getContents() != null){
-            qr_result.setText(result.getContents());
+        // checking to see if we've scanned an event QR
+        if (result.getContents().length() == 12) {
+            database.getEventById(result.getContents(), new Database.EventCallBack() {
+                @Override
+                public void onEventFetched(Event event) {
+                    // if the event exists, we pass in the event and userid to go to the event details page
+                    if (event != null) {
+                        showEventDetails(event, array[0]);
+                        found = true;
+                    }
+                }
+            });
+        }
+
+        // checking to see if we actually scanned something as the check in QR can be any QR
+        // and we did not find a corresponding event
+        if (result.getContents() != null && !found){
+
         }
     });
+
+    /**
+     * Opens the EventDetailsActivity to show the details of the selected event.
+     *
+     * @param event
+     * The event to show details for.
+     *
+     * @param userID
+     * Current user.
+     */
+    private void showEventDetails(Event event, String userID) {
+        Intent intent = new Intent(this, EventDetailsActivity.class);
+        intent.putExtra("eventId", event.getId());
+        intent.putExtra("userlol",userID); //You send the current user profile id into the details section
+        startActivity(intent);
+    }
 }
