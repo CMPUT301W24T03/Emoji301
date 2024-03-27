@@ -62,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
                             public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot) {
                                 if (documentSnapshot.exists()) {
                                     Log.d(TAG,"inside the if statement" + documentSnapshot.getData());
-                                    Log.d(TAG, "Check username" + user.getName());
                                     user = documentSnapshot.toObject(Users.class);
+                                    Log.d(TAG, "Check username" + user.getName());
 
                                     if (user.getName() != null) {
                                         Log.d(TAG, "Enter button clicked" ); // for debugging
