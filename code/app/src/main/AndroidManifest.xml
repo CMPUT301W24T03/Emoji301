@@ -85,8 +85,11 @@
             android:exported="false" />
         <activity
             android:name = "AdminActivity"
-            android:exported="false"
-            />
+            android:exported="false" />
+
+        <activity
+            android:name = ".AdminProfileActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

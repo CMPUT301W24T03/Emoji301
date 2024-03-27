@@ -1,3 +1,4 @@
+
 package com.example.emojibrite;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
@@ -44,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         adminAccess = findViewById(R.id.adminAccessText);
 
 
-
         /* When Enter Button is clicked, go to the next activity.
          * But which one??
          *
@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
                             public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot) {
                                 if (documentSnapshot.exists()) {
                                     Log.d(TAG,"inside the if statement" + documentSnapshot.getData());
-                                    Log.d(TAG, "Check username" + user.getName());
                                     user = documentSnapshot.toObject(Users.class);
 
                                     if (user.getName() != null) {

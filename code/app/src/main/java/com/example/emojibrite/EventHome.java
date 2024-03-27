@@ -193,12 +193,10 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
                 // Go to the ProfileActivity page
                 Log.d(TAG, "Enter button clicked"); // for debugging
-                Log.d(TAG, "User Check" + user.getProfileUid());
 
                 Intent intent = new Intent(EventHome.this, ProfileActivity.class);
 
                 intent.putExtra("userObject", user);
-
                 startActivity(intent);
             }
         });
