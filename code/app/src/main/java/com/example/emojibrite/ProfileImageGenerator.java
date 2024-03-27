@@ -130,7 +130,3 @@ public class ProfileImageGenerator {
         });
     }
 }
-
-
-
-

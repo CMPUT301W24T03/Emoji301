@@ -30,8 +30,6 @@ import java.util.ArrayList;
  */
 public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnInputSelected {
 
-
-
     Users user;
     ImageView profilePictureImageView;
     SwitchCompat adminToggle;
@@ -40,7 +38,6 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     SwitchCompat notifToggle;
 
     TextView adminText;
-
 
     /**
      * Called when the activity is first created.
@@ -164,6 +161,8 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
             adminText.setVisibility(View.GONE);
         }
     }
+
+
     /**
      * Called when the user clicks the "Edit" button to edit their profile.
      */

@@ -54,7 +54,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         Intent intent = new Intent(this, EventDetailsActivity.class);
         intent.putExtra("eventId", event.getId());
         if (user!=null){
-        Log.d("TAG","CHECKING CHECKING CHECKING  "+ user.getProfileUid());}
+            Log.d("TAG","CHECKING CHECKING CHECKING  "+ user.getProfileUid());}
         intent.putExtra("userlol",user.getProfileUid()); //You send the current user profile id into the details section
         startActivity(intent);
     }
@@ -231,4 +231,3 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
 
 }
-
