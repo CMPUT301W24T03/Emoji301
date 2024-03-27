@@ -54,7 +54,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         Intent intent = new Intent(this, EventDetailsActivity.class);
         intent.putExtra("eventId", event.getId());
         if (user!=null){
-        Log.d("TAG","CHECKING CHECKING CHECKING  "+ user.getProfileUid());}
+            Log.d("TAG","CHECKING CHECKING CHECKING  "+ user.getProfileUid());}
         intent.putExtra("userlol",user.getProfileUid()); //You send the current user profile id into the details section
         startActivity(intent);
     }
@@ -78,15 +78,11 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     @Override
     public void onEventAdded(Event event) {
         if (event != null) {
-            ArrayList<String> initialAttendees = new ArrayList<>();
-            initialAttendees.add(event.getOrganizer()); // Add the organizer's ID to the list
 
             // Add the event to the database
             database.addEvent(event, task -> {
                 if (task.isSuccessful()) {
                     Log.d(TAG, "Event added successfully into database");
-                    // Add the initial attendees (organizer) to the signedAttendees collection
-                    database.addSignin(event.getId(), initialAttendees);
                     updateLocalEventList(event);
                 } else {
                     Log.e(TAG, "ERROR IN ADDING TO THE DATABASE", task.getException());
@@ -193,10 +189,12 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
                 // Go to the ProfileActivity page
                 Log.d(TAG, "Enter button clicked"); // for debugging
+                Log.d(TAG, "User Check" + user.getProfileUid());
 
                 Intent intent = new Intent(EventHome.this, ProfileActivity.class);
 
                 intent.putExtra("userObject", user);
+
                 startActivity(intent);
             }
         });
@@ -235,4 +233,3 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
 
 }
-

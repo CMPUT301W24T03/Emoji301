@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.emojibrite">
 
-    <!-- Devices running Android 12L (API level 32) or lower -->
+
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" /> <!-- Devices running Android 13 (API level 33) or higher -->
@@ -83,7 +83,9 @@
 
         <activity
             android:name=".ProfileActivity"
-            android:exported="false" /> <!-- Event related -->
+            android:exported="false" />
+
+        <!-- Event related -->
         <activity
             android:name=".EventHome"
             android:exported="false" />
@@ -110,6 +112,16 @@
             android:name = "AdminActivity"
             android:exported="false"
             />
+
+        <!--Notifications related-->
+        <service
+            android:name=".PushNotificationService"
+            android:exported="false">
+            <intent-filter>
+                <!--  This service will only listen to incoming messaging events-->
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

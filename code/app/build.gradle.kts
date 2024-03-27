@@ -72,7 +72,7 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-database")
-
+    implementation("com.karumi:dexter:6.2.2")
 
 
 
@@ -99,8 +99,9 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.0")
 
 
-
-
-
+    // Firebase Cloud Messaging : Notifications
+    implementation("com.google.firebase:firebase-messaging")
 }
+
+
 

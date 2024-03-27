@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         adminAccess = findViewById(R.id.adminAccessText);
 
 
+
         /* When Enter Button is clicked, go to the next activity.
          * But which one??
          *
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (documentSnapshot.exists()) {
                                     Log.d(TAG,"inside the if statement" + documentSnapshot.getData());
                                     user = documentSnapshot.toObject(Users.class);
+                                    Log.d(TAG, "Check username" + user.getName());
 
                                     if (user.getName() != null) {
                                         Log.d(TAG, "Enter button clicked" ); // for debugging

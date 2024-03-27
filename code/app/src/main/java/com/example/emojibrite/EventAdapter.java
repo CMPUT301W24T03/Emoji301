@@ -89,11 +89,11 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         if (event.getImageUri() != null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
-                 @Override
-                 public void run() {
-                     Glide.with(getContext()).load(event.getImageUri()).into(eventImage);
-                 }
-             });
+                @Override
+                public void run() {
+                    Glide.with(getContext()).load(event.getImageUri()).into(eventImage);
+                }
+            });
 //            Glide.with(getContext()).load(event.getImageUri()).into(eventImage);
             Log.d(TAG, "PICTURE LOOOOAAADDING");
         } else {
