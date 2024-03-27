@@ -72,7 +72,7 @@ public class AdminActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Go to the ImageActivity page
-                Intent intent = new Intent(AdminActivity.this, AdminImageActivity.class);
+                Intent intent = new Intent(AdminActivity.this, EventHome.class);
                 intent.putExtra("userObject", user);
                 startActivity(intent);
             }

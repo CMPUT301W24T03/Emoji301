@@ -18,27 +18,27 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImageAdapter extends ArrayAdapter<Users> {
+public class AdminImageAdapter extends ArrayAdapter<Users> {
 
 
     private Context context;
     private List<Users> userList;
 
 
-    */
+
 /**
      * Constructor for the EventAdapter.
      * @param context The current context.
      * @param userList An ArrayList of Event objects to be displayed.
-     *//*
-
-    public ImageAdapter(@NonNull Context context, @NonNull ArrayList<Image> userList) {
+     */
+/*
+    public AdminImageAdapter(@NonNull Context context, @NonNull ArrayList<Image> userList) {
         super(context, 0, userList);
         this.context = context;
         this.userList = userList;
     }
 
-    */
+
 /**
      * Provides a view for an AdapterView (ListView, GridView, etc.)
      *
@@ -46,8 +46,8 @@ public class ImageAdapter extends ArrayAdapter<Users> {
      * @param convertView The recycled view to populate.
      * @param parent The parent ViewGroup that is used for inflation.
      * @return The View for the position in the AdapterView.
-     *//*
-
+     */
+/*
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -76,3 +76,4 @@ public class ImageAdapter extends ArrayAdapter<Users> {
     }
 }
 */
+

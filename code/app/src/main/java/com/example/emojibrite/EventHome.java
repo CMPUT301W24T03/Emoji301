@@ -136,8 +136,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         eventAdapter = new EventAdapter(this, dataList);
         eventList.setAdapter(eventAdapter);
 
-
-
         Button otherEvent = findViewById(R.id.other_events_button);
 
         Intent intent = getIntent();

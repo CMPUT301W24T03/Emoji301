@@ -112,6 +112,10 @@
             android:name = "AdminActivity"
             android:exported="false"
             />
+        <activity
+            android:name = ".AdminProfileActivity"
+            android:exported="false"
+            />
 
         <!--Notifications related-->
         <service

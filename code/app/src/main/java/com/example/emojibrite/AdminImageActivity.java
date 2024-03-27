@@ -1,4 +1,6 @@
+/*
 package com.example.emojibrite;
+
 
 import android.content.DialogInterface;
 import android.media.Image;
@@ -16,7 +18,7 @@ import java.util.ArrayList;
 public class AdminImageActivity extends AppCompatActivity {
 
     private GridView gridView;
-    private ImageAdapter imageAdapter;
+    private AdminImageAdapter adminImageAdapter;
 
     ArrayList<Image> dataList;
 
@@ -26,8 +28,8 @@ public class AdminImageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_image_view);
 
         gridView = findViewById(R.id.gridView);
-        imageAdapter = new ImageAdapter(this, dataList); // Replace ImageAdapter with your custom adapter
-        gridView.setAdapter(imageAdapter);
+        adminImageAdapter = new AdminImageAdapter(this, dataList); // Replace AdminImageAdapter with your custom adapter
+        gridView.setAdapter(adminImageAdapter);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -44,7 +46,7 @@ public class AdminImageActivity extends AppCompatActivity {
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                imageAdapter.removeItem(position);
+                adminImageAdapter.removeItem(position);
                 Toast.makeText(AdminImageActivity.this, "Image deleted.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -52,3 +54,5 @@ public class AdminImageActivity extends AppCompatActivity {
         builder.create().show();
     }
 }
+
+ */
