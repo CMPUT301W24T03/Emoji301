@@ -1,3 +1,4 @@
+
 package com.example.emojibrite;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
@@ -42,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         enterButton = findViewById(R.id.enterButton);
         scanQRCode = findViewById(R.id.qrCodeText);
         adminAccess = findViewById(R.id.adminAccessText);
-
 
 
         /* When Enter Button is clicked, go to the next activity.
