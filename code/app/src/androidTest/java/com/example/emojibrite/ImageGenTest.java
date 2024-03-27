@@ -39,6 +39,7 @@ public class ImageGenTest {
 
     @Test
     public void testGetProfileImage(){
+        //requires changes to match the actual implementation
         ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator("testUid", "testName");
         profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Uri>() {
             @Override
