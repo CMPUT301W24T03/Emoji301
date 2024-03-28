@@ -1,5 +1,7 @@
 package com.example.emojibrite;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -17,6 +19,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
@@ -26,6 +29,9 @@ import androidx.fragment.app.DialogFragment;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
 
@@ -48,11 +54,14 @@ public class ProfileEditFragment extends DialogFragment {
     Database database = new Database();
     private Users user;
 
+    Uri selectedImageUri;
+
     private String nameAtStart;
 
     Uri imageUri;
 
     public OnInputSelected mOnInputSelected;
+    ImageUploader imageUploader = new ImageUploader("images");
 
 
 
@@ -61,7 +70,29 @@ public class ProfileEditFragment extends DialogFragment {
 
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
 
+    private void deletingStorageUpImage(){
+        if (user.getUploadedImageUri() != null) {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            Log.d(TAG, "Deleting image at: " + user.getUploadedImageUri());
+            StorageReference imageRef = storage.getReferenceFromUrl(user.getUploadedImageUri());
+            imageRef.delete();
+        }
+    }
 
+    private void addingMetaData(){
+        if (selectedImageUri != null) {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference imageRef = storage.getReferenceFromUrl(selectedImageUri.toString());
+
+            StorageMetadata metadata = new StorageMetadata.Builder()
+                    .setCustomMetadata("event_id", null)
+                    .setCustomMetadata("user_id", user.getProfileUid())
+                    .build();
+
+            imageRef.updateMetadata(metadata);
+        }
+
+    }
 
 
 
@@ -95,26 +126,26 @@ public class ProfileEditFragment extends DialogFragment {
 
 
         // Set initial values for the EditText fields
-        if (user.getEmail() == null){
+        if (user.getEmail() == null || user.getEmail().isEmpty()){
             EditEmail.setHint("Current Email: ");
         }
         else{
             EditEmail.setText(user.getEmail());
         }
-        if ( user.getNumber() == null){
+        if ( user.getNumber() == null|| user.getNumber().isEmpty()){
             EditPhoneNumber.setHint("Current Phone Number: ");
         }
         else{
             EditPhoneNumber.setText(user.getNumber());
         }
 
-        if(user.getName() == null){
+        if(user.getName() == null|| user.getName().isEmpty()){
             EditName.setHint("Current Name: ");
         }
         else{
             EditName.setText(user.getName());
         }
-        if(user.getHomePage() == null){
+        if(user.getHomePage() == null|| user.getHomePage().isEmpty()){
             EditHomePage.setHint("Current Home Page: ");
         }
         else{
@@ -146,6 +177,7 @@ public class ProfileEditFragment extends DialogFragment {
                             user.setAutoGenImageUri(result.toString());
                             database.setUserObject(user);
                             mOnInputSelected.sendInput(user);
+                            addingMetaData();
                             dismiss();
                         }
 
@@ -154,10 +186,9 @@ public class ProfileEditFragment extends DialogFragment {
                 else{
                     database.setUserObject(user);
                     mOnInputSelected.sendInput(user);
+                    addingMetaData();
                     dismiss();
                 }
-
-
             }
         });
 
@@ -167,9 +198,11 @@ public class ProfileEditFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
 // Remove the image from the user object
+                deletingStorageUpImage();
                 user.setUploadedImageUri(null);
 
                 settingPfp();
+
             }
         });
 
@@ -177,6 +210,7 @@ public class ProfileEditFragment extends DialogFragment {
         uploadImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                saveButton.setEnabled(false);
                 pickMedia.launch(new PickVisualMediaRequest.Builder()
                         .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                         .build());
@@ -198,17 +232,25 @@ public class ProfileEditFragment extends DialogFragment {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
+
                     Glide.with(getContext()).load(user.getUploadedImageUri()).into(profilePicture);
+
+
                 }
             });
+
         }
         else if (user.getUploadedImageUri() == null && user.getAutoGenImageUri() != null){
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
+
                     Glide.with(getContext()).load(user.getAutoGenImageUri()).into(profilePicture);
+
+
                 }
             });
+
         }
         else if (user.getUploadedImageUri() == null && user.getAutoGenImageUri() == null){
 
@@ -220,10 +262,14 @@ public class ProfileEditFragment extends DialogFragment {
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
+
                             profilePicture.setImageResource(R.drawable.profile_pic);
+
+
                         }
                     });
                     user.setAutoGenImageUri(result.toString());
+
                 }
             });
         }
@@ -250,17 +296,28 @@ public class ProfileEditFragment extends DialogFragment {
                 Log.d("PhotoPicker", "Selected URI: " + uri);
                 imageUri = uri;
                 // Store the URI of the selected image in the Users object and in the database
-                user.setUploadedImageUri(uri.toString());
+                //user.setUploadedImageUri(uri.toString());
 
-                //database.storeImageUri(user.getProfileUid(), uri.toString(), "uploadedImage");
-
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                imageUploader.uploadImage(uri, new ImageUploader.UploadCallback() {
                     @Override
-                    public void run() {
-                        Glide.with(getContext()).load(user.getUploadedImageUri()).into(profilePicture);
+                    public void onUploadSuccess(Uri downloadUri) {
+                        user.setUploadedImageUri(downloadUri.toString());
+
+                        selectedImageUri = downloadUri; // CHANGING THE SELECTED IMAGE URI TO THE DOWNLOADED URI RETREIVED AND THIS IS YOUR ANSWER
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Glide.with(getContext()).load(user.getUploadedImageUri()).into(profilePicture);
+                                saveButton.setEnabled(true);
+                            }
+                        });
+                        Log.d(TAG,"DOWNLOADED URI STRING" + selectedImageUri.toString());
+                    }
+                    @Override
+                    public void onUploadFailure(Exception exception) {
+                        Toast.makeText(getContext(), "Upload failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-
             } else {
                 Log.d("PhotoPicker", "No media selected");
             }
