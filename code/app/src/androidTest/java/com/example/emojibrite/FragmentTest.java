@@ -27,26 +27,26 @@ public class FragmentTest {
     Bundle bundle = new Bundle();
     // NOTE: The test works if you change the FloatingActionButton to the regular button.
 
-//    @Test
-//    public void navBehaviourTest() {
-//        // Create a TestNavHostController
-//        TestNavHostController navController = new TestNavHostController(ApplicationProvider.getApplicationContext());
-//        // put the user to into the bundle to becasue the NameScreenFragment has userObject in its arguments
-//        bundle.putParcelable("userObject", user);
-//        // Create a graphical FragmentScenario for the firs fragment
-//        FragmentScenario<NameScreenFragment> nameScreenScenario = FragmentScenario.launchInContainer(NameScreenFragment.class, bundle);
-//
-//        nameScreenScenario.onFragment(fragment -> {
-//            // set the graph on the TestNavController
-//            navController.setGraph(R.navigation.login_nav_graph);
-//
-//            // Make the NavController available via the findNavController() APIs
-//            Navigation.setViewNavController(fragment.requireView(), navController);
-//        });
-//        // set a name before performing the click action because of the check isEmpty() and close keyboard so that the test can actually click Next
-//        onView(withId(R.id.inputNameEditText)).perform(ViewActions.typeText("TestUser"), ViewActions.closeSoftKeyboard());
-//        // Verify that performing a click changes the NavController's state
-//        onView(withId(R.id.nameScreenBackNext)).perform(click());
-//        assertEquals(navController.getCurrentDestination().getId(), R.id.uploadImageScreen);
-//    }
+    @Test
+    public void navBehaviourTest() {
+        // Create a TestNavHostController
+        TestNavHostController navController = new TestNavHostController(ApplicationProvider.getApplicationContext());
+        // put the user to into the bundle to becasue the NameScreenFragment has userObject in its arguments
+        bundle.putParcelable("userObject", user);
+        // Create a graphical FragmentScenario for the firs fragment
+        FragmentScenario<NameScreenFragment> nameScreenScenario = FragmentScenario.launchInContainer(NameScreenFragment.class, bundle);
+
+        nameScreenScenario.onFragment(fragment -> {
+            // set the graph on the TestNavController
+            navController.setGraph(R.navigation.login_nav_graph);
+
+            // Make the NavController available via the findNavController() APIs
+            Navigation.setViewNavController(fragment.requireView(), navController);
+        });
+        // set a name before performing the click action because of the check isEmpty() and close keyboard so that the test can actually click Next
+        onView(withId(R.id.inputNameEditText)).perform(ViewActions.typeText("TestUser"), ViewActions.closeSoftKeyboard());
+        // Verify that performing a click changes the NavController's state
+        onView(withId(R.id.nameScreenBackNext)).perform(click());
+        assertEquals(navController.getCurrentDestination().getId(), R.id.uploadImageScreen);
+    }
 }
