@@ -24,5 +24,7 @@
     <string name="title_activity_maps">MapsActivity</string>
     <string name ="my_map_API">AIzaSyC-jtA_nZ_AoRF_ejpu-3hFIFZ7GZZeyxE</string>
     <string name="notification">Notification</string>
+    <string name="profiles">Profiles</string>
     <string name="nameScreenButton">nameScreenButton</string>
+
 </resources>
