@@ -26,6 +26,9 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 /**
  * PreviewScreenFragment is the fragment that displays the user's profile picture and name
  * before the user is taken to the EventHome Activity.
@@ -38,7 +41,7 @@ public class PreviewScreenFragment extends Fragment {
     TextView nameText;
 
     Database database = new Database();
-    Bitmap autoGenprofileImage;
+
     Users user;
 
     private static final String TAG = "PreviewScreenFragment";
@@ -69,6 +72,14 @@ public class PreviewScreenFragment extends Fragment {
 
         return previewScreenLayout;
     }
+    private void deletingStorageUpImage(){
+        if (user.getUploadedImageUri() != null) {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            Log.d(TAG, "Deleting image at: " + user.getUploadedImageUri());
+            StorageReference imageRef = storage.getReferenceFromUrl(user.getUploadedImageUri());
+            imageRef.delete();
+        }
+    }
 
     /**
      * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
@@ -93,6 +104,7 @@ public class PreviewScreenFragment extends Fragment {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                deletingStorageUpImage();
                 navigateBackToUploadImage(view);
             }
         });
