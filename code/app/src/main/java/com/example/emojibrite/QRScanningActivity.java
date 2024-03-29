@@ -86,9 +86,22 @@ public class QRScanningActivity extends AppCompatActivity {
         }
 
         // checking to see if we actually scanned something as the check in QR can be any QR
-        // and if we did not find a corresponding event
+        // and if we did not find a corresponding event for an event QR code
         if (result.getContents() != null && !found){
+            database.getEventByCheckInID(result.getContents(), new Database.EventCallBack() {
+                @Override
+                public void onEventFetched(Event event) {
+                    // if the event exists
+                    if (event != null){
+                        found = true;
 
+                        // if the user has geolocation enabled
+                        if (Boolean.parseBoolean(array[1])){
+
+                        }
+                    }
+                }
+            });
         }
     });
 
