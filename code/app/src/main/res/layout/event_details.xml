@@ -23,6 +23,7 @@
             android:layout_width="27dp"
             android:layout_height="29dp"
             android:src="@drawable/back_arrow" />
+
         <ImageView
             android:id="@+id/image_event_poster"
             android:layout_width="match_parent"
@@ -88,15 +89,7 @@
                 android:textColor="@color/black"
                 android:textSize="13.78sp" />
 
-            <Switch
-                android:id="@+id/switch_checkin_qr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="110dp"
-                android:layout_marginTop="20dp"
-                android:checked="true"
-                android:fontFamily="@font/source_sans_pro_semibold"
-                android:text="Signup" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -183,21 +176,27 @@
                     android:text="Milestone"
                     android:textColor="@color/black"
                     android:textSize="11sp" />
-            </LinearLayout>
 
-            <Button
-                android:id="@+id/Notification_button"
-                android:layout_width="102dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:layout_weight="1"
-                android:background="@drawable/eventdetails_button"
-                android:text="Notification"
-                android:textAllCaps="false"
-                android:textColor="@color/black"
-                android:textSize="12sp"
-                />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/ivory"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/sign_up_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/eventdetails_button"
+                    android:paddingEnd="0dp"
+                    android:text="Sign Up"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -224,20 +223,6 @@
                 android:text="Capacity"
                 android:textColor="@color/black"
                 android:textSize="11sp" />
-
-            <Button
-                android:id="@+id/sign_up_button"
-                android:layout_width="102dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:layout_weight="1"
-                android:background="@drawable/eventdetails_button"
-                android:text="Sign Up"
-                android:textAllCaps="false"
-                android:textColor="@color/black"
-                android:textSize="12sp" />
-
 
         </LinearLayout>
 
