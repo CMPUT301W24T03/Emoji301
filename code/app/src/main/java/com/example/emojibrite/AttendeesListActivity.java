@@ -9,6 +9,7 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -21,6 +22,8 @@ public class AttendeesListActivity extends AppCompatActivity {
     Button checkInBtn;
     Button signedUpBtn;
     FloatingActionButton backBtn;
+
+    String eventId;
 
     /**
      * Called when the activity is starting.
@@ -41,28 +44,32 @@ public class AttendeesListActivity extends AppCompatActivity {
 
         // todo: get the data passed from EventDetailsActivity
         Intent intent = getIntent();
+        eventId = intent.getStringExtra("eventId");
         // then do Data somedata = intent.getfunction("somekey");
 
+        Log.d("TAG","AttendeesListActivity "+eventId);
+
+        Bundle bundle = new Bundle();
+        bundle.putString("eventID",eventId);
+
+        openSignedUpFragment(); // BY DEFAULT, OPENS UP THE SIGNED UP FRAGMENT PART
+
+
+
+        //YOU HAVE TO CHANGE THIS PART OF THE CODE
+        // I JUST WROTE RANDOM STUFF
+        // TODO FIX AND INTEGRATE THE LOGIC OF THE CHECKINBUTTON
         checkInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // fragment to display the list of attendees who have checked in
                 // to pass data, we cna just add a parameter to the replaceFragment function
-                replaceFragment(new CheckedInFragment());
-
-                // update the button style
+                CheckedInFragment checkedInFragment = new CheckedInFragment();
+                replaceFragment(checkedInFragment, bundle);
                 updateButtonStyle(checkInBtn);
             }
         });
-        signedUpBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // fragment to display the list of attendees who have signed up
-                replaceFragment(new SignedUpFragment());
-                // update the button style
-                updateButtonStyle(signedUpBtn);
-            }
-        });
+        signedUpBtn.setOnClickListener(view -> {openSignedUpFragment();});
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,13 +79,31 @@ public class AttendeesListActivity extends AppCompatActivity {
         });
     }
 
-    private void replaceFragment(Fragment activeFragment) {
-        // replace the current fragment with the activeFragment
+    /**
+     * This opens up the fragment for signed up and it deals with passing the information in a bundle
+     */
+    private void openSignedUpFragment(){
+        SignedUpFragment signedUpFragment = new SignedUpFragment();
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+        Bundle data = new Bundle();
+        Log.d("TAG","TEST FOR COLLECTED EVENTID "+eventId);
+        data.putString("eventId",eventId); //adds the evnt Id
+        signedUpFragment.setArguments(data);
+        fragmentTransaction.replace(R.id.attendee_view_list_fragment_container, signedUpFragment).commit();
+        updateButtonStyle(signedUpBtn); //styles the button
+
+    }
+
+    private void replaceFragment(Fragment fragment, Bundle bundle) {
+        fragment.setArguments(bundle);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.attendee_view_list_fragment_container, activeFragment)
+                .replace(R.id.attendee_view_list_fragment_container, fragment)
                 .commit();
     }
+
 
     /**
      * changes the look of the active button
@@ -105,4 +130,6 @@ public class AttendeesListActivity extends AppCompatActivity {
             signedUpBtn.setTextColor(Color.parseColor("#000000"));
         }
     }
+
+
 }

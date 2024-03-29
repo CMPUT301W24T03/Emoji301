@@ -64,6 +64,7 @@ public class NotificationDialogFragment extends DialogFragment {
                 .setTitle("Send Notification")
                 .setPositiveButton("Send", (dialog, which) -> {
                     listener.onDialogPositiveClick(message.getText().toString());
+                    // logic
                 })
                 .setNegativeButton("Cancel", (dialog, which) -> {NotificationDialogFragment.this.getDialog().cancel();})
                 .create();
