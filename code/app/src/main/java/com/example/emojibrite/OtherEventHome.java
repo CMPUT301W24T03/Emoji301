@@ -121,6 +121,9 @@ public class OtherEventHome extends AppCompatActivity {
             dataList1.clear();
             dataList1.addAll(events); // Add all the retrieved events to the local list.
             eventAdapter.notifyDataSetChanged();
+
+
+
         });
 
     }

@@ -46,6 +46,7 @@
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:theme="@style/Theme.MaterialComponents.Light"
         android:id="@+id/nameScreenBackButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -55,7 +56,8 @@
         android:layout_margin="10dp"
         app:fabSize="mini"
         app:maxImageSize="38dp"
-        app:srcCompat="@drawable/back_button" />
+        app:srcCompat="@drawable/back_button"
+        android:contentDescription="@string/nameScreenButton" />
 
 <!--    <Button-->
 <!--        android:id="@+id/nameScreenBackButton"-->

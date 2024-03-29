@@ -15,7 +15,7 @@
 
     <Button
         android:id="@+id/eventAdminButton"
-        android:layout_width="186dp"
+        android:layout_width="250dp"
         android:layout_height="43dp"
         android:background="@drawable/admin_buttons"
         android:clickable="true"
@@ -31,7 +31,7 @@
 
     <Button
         android:id="@+id/accountAdminButton"
-        android:layout_width="187dp"
+        android:layout_width="250dp"
         android:layout_height="50dp"
         android:background="@drawable/admin_buttons"
         android:clickable="true"
@@ -47,7 +47,7 @@
 
     <Button
         android:id="@+id/imagesAdminButton"
-        android:layout_width="187dp"
+        android:layout_width="250dp"
         android:layout_height="45dp"
         android:background="@drawable/admin_buttons"
         android:clickable="true"

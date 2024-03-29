@@ -32,7 +32,7 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
 
     ArrayList<String> signedAttendees;
 
-    Button signingup, attendeesButton;
+    Button signingup, attendeesButton, notificationButton;
 
     Database database;
 
@@ -55,9 +55,13 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
         ImageView backButton = findViewById(R.id.imageView); //back button
         attendeesButton = findViewById(R.id.attendees_button);
         signingup=findViewById(R.id.sign_up_button);
+//        notificationButton = findViewById(R.id.Notification_button);
 
         Intent intent = getIntent();
         currentUser = intent.getStringExtra("userlol"); // get the user
+
+        // Retrieving the event ID passed from the previous activity.
+        String eventId = getIntent().getStringExtra("eventId");
 
         if (currentUser!=null){
             Log.d(TAG,"YEPPIEEEE "+currentUser);
@@ -92,6 +96,7 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
             public void onClick(View v) {
                 Intent intent = new Intent(EventDetailsActivity.this, AttendeesListActivity.class);
                 // todo: give attendees list activity something like the event id or list of attendees, etc.
+                intent.putExtra("eventId",eventId);
                 // intent.putExtra("attendees", signedAttendees); for example
                 Log.d("Aivan" , "Attendees button clicked");
                 startActivity(intent);
@@ -107,17 +112,18 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
             }
         });
 
-        // Retrieving the event ID passed from the previous activity.
-        String eventId = getIntent().getStringExtra("eventId");
+
 
         signedAttendees=new ArrayList<>();
 
-        signingup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //
-            }
-        });
+//        signingup.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                signingup.setText("You have signed up"); // Set the text to indicate the user has signed up
+//                signingup.setBackgroundColor(Color.GREEN); // Change the background color to green
+//                signingup.setEnabled(false);
+//            }
+//        });
 
 
         database = new Database();
@@ -133,6 +139,12 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
                 } else {
                     // Handle the case where event is null
                 }
+            }
+        });
+        notificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new NotificationDialogFragment().show(getSupportFragmentManager(), "NotificationDialogFragment");
             }
         });
 
@@ -173,6 +185,9 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
     private void signUpForEvent(String eventId) {
         signedAttendees.add(currentUser);
         database.addSignin(eventId, signedAttendees);
+        signingup.setText("You have signed up"); // Set the text to indicate the user has signed up
+        signingup.setBackgroundColor(Color.GREEN); // Change the background color to green
+        signingup.setEnabled(false);
     }
 
 
@@ -220,6 +235,7 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
             //if both their ids match, that means they are the organizer itslf
             //so they do not have to sign up aka, we can remove it
             signingup.setVisibility(View.GONE);
+
             Log.d(TAG,"SIGNINGUP BUTTON IS GOOONE");
 
         }
@@ -230,6 +246,7 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
             Log.d(TAG,("ORGANIZER:")+event.getOrganizer());
             Log.d(TAG,"Current User"+currentUser);
             attendeesButton.setVisibility(View.GONE);
+            notificationButton.setVisibility(View.GONE);
 
         }
 
