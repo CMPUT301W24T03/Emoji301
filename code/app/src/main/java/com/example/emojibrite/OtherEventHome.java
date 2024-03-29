@@ -118,13 +118,11 @@ public class OtherEventHome extends AppCompatActivity {
 
         database.fetchAllEventsDatabase(events -> {
             // Clear the current list of events to prepare for updated data.
-            dataList1.clear(); //
+            dataList1.clear();
             dataList1.addAll(events); // Add all the retrieved events to the local list.
             eventAdapter.notifyDataSetChanged();
 
-            //dataListImagge.clear();
-            //dataList.addAll(events.geturi());
-            //imageposterAdapter.notifyDataSetChanged();
+
 
         });
 

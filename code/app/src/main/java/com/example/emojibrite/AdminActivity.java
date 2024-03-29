@@ -68,16 +68,16 @@ public class AdminActivity extends AppCompatActivity {
             }
         });
 
-//        imageBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // Go to the ImageActivity page
-//                Intent intent = new Intent(AdminActivity.this, AdminImageActivity.class);
-//                intent.putExtra("userObject", user);
-//                startActivity(intent);
-//            }
-//        });
-//    }
+        imageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Go to the ImageActivity page
+                Intent intent = new Intent(AdminActivity.this, AdminImageActivity.class);
+                intent.putExtra("userObject", user);
+                startActivity(intent);
+            }
+        });
+    }
 
 //    private void displayProfileIcon() {
 //        if (user.getUploadedImageUri() != null) {
@@ -100,4 +100,4 @@ public class AdminActivity extends AppCompatActivity {
 //            Log.e("AdminActivity ", "User object is null");
 //        }
 //    }
-    }}
+}
