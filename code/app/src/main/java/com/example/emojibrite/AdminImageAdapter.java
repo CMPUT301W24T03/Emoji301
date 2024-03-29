@@ -1,4 +1,3 @@
-/*
 package com.example.emojibrite;
 
 import android.content.Context;
@@ -18,27 +17,83 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImageAdapter extends ArrayAdapter<Users> {
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
+
+public class AdminImageAdapter extends BaseAdapter {
+
+    private ArrayList<ImageClass> dataList;
+    private Context context;
+    LayoutInflater layoutInflater;
+
+    public AdminImageAdapter(Context context, ArrayList<ImageClass> dataList) {
+        this.context = context;
+        this.dataList = dataList;
+    }
+
+    @Override
+    public int getCount() {
+        return dataList.size();
+    }
+
+    @Override
+    public Object getItem(int i) {
+        return null;
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return 0;
+    }
+
+    @Override
+    public View getView(int i, View view, ViewGroup viewGroup) {
+        if (layoutInflater == null){
+            layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+        if (view == null){
+            view = layoutInflater.inflate(R.layout.admin_images_profiles, null);
+        }
+
+        ImageView gridImage = view.findViewById(R.id.postersImage);
+
+        Glide.with(context).load(dataList.get(i).getImageURL()).into(gridImage);
+
+        return view;
+    }
+}
+
+/*
+public class AdminImageAdapter extends ArrayAdapter<Users> {
 
 
     private Context context;
     private List<Users> userList;
 
 
-    */
+
 /**
      * Constructor for the EventAdapter.
      * @param context The current context.
      * @param userList An ArrayList of Event objects to be displayed.
-     *//*
-
-    public ImageAdapter(@NonNull Context context, @NonNull ArrayList<Image> userList) {
+     */
+/*
+    public AdminImageAdapter(@NonNull Context context, @NonNull ArrayList<Image> userList) {
         super(context, 0, userList);
         this.context = context;
         this.userList = userList;
     }
 
-    */
+
 /**
      * Provides a view for an AdapterView (ListView, GridView, etc.)
      *
@@ -46,8 +101,8 @@ public class ImageAdapter extends ArrayAdapter<Users> {
      * @param convertView The recycled view to populate.
      * @param parent The parent ViewGroup that is used for inflation.
      * @return The View for the position in the AdapterView.
-     *//*
-
+     */
+/*
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -76,3 +131,4 @@ public class ImageAdapter extends ArrayAdapter<Users> {
     }
 }
 */
+

@@ -51,7 +51,7 @@ public class ProfileAdapter extends ArrayAdapter<Users> {
 
         Users currentUser = userList.get(position);
 
-        ImageView userImage = convertView.findViewById(R.id.user_image);
+        ImageView userImage = convertView.findViewById(R.id.all_image);
         TextView nameTextView = convertView.findViewById(R.id.user_name);
         TextView emailTextView = convertView.findViewById(R.id.user_email);
         TextView numberTextView = convertView.findViewById(R.id.user_phone_number);

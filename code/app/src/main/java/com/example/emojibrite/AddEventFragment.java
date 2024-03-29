@@ -28,7 +28,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.firebase.Firebase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
@@ -66,7 +68,7 @@ public class AddEventFragment extends DialogFragment{
     private Users user;
 
     private Uri qrCodeCheckinURI, qrCodeEventURI;
-    private String selectedImageUriStr;
+
 
     private String eventId, checkInID;
 
@@ -310,6 +312,22 @@ public class AddEventFragment extends DialogFragment{
 //            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
             Event newEvent = new Event(eventId,imageUriString, title, eventDate, timeString, description, milestone, location, checkInUriString, eventUriString, capacity, user.getProfileUid(),checkInID); //ADDING USER WHICH WE GET AS AN ARGUMENT
             listener.onEventAdded(newEvent);
+
+            /*
+            creating meta data aka adding information to storage of the image so that I can use it for admin stuff later
+            essentially adding new fields for me to trace back to
+             */
+            if (selectedImageUri != null) {
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference imageRef = storage.getReferenceFromUrl(imageUriString);
+
+                StorageMetadata metadata = new StorageMetadata.Builder()
+                        .setCustomMetadata("event_id", newEvent.getId())
+                        .setCustomMetadata("user_id", null)
+                        .build();
+
+                imageRef.updateMetadata(metadata);
+            }
 
             dismiss();
         });

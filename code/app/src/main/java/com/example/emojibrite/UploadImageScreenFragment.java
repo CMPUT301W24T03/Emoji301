@@ -1,5 +1,7 @@
 package com.example.emojibrite;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -23,6 +25,9 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
 
@@ -43,6 +48,9 @@ public class UploadImageScreenFragment extends Fragment {
     private static final String TAG = "UploadImageScreenFragment";
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     private Uri imageUri;
+
+    Uri selectedImageUri;
+    ImageUploader imageUploader = new ImageUploader("images");
 
     private Bitmap  imageBitMap;
     private Database database = new Database();
@@ -72,6 +80,29 @@ public class UploadImageScreenFragment extends Fragment {
 
         return uploadImageScreenLayout;
     }
+
+    private void addingMetaData(){
+        if (selectedImageUri != null) {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference imageRef = storage.getReferenceFromUrl(selectedImageUri.toString());
+
+            StorageMetadata metadata = new StorageMetadata.Builder()
+                    .setCustomMetadata("event_id", null)
+                    .setCustomMetadata("user_id", user.getProfileUid())
+                    .build();
+
+            imageRef.updateMetadata(metadata);
+        }
+    }
+    private void deletingStorageUpImage(){
+        if (user.getUploadedImageUri() != null) {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            Log.d(TAG, "Deleting image at: " + user.getUploadedImageUri());
+            StorageReference imageRef = storage.getReferenceFromUrl(user.getUploadedImageUri());
+            imageRef.delete();
+        }
+    }
+
     /**
      * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
      * @param context If non-null, this fragment is being re-constructed
@@ -83,11 +114,27 @@ public class UploadImageScreenFragment extends Fragment {
         // Initialize the ActivityResultLauncher in onAttach()
         pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
             if (uri != null) {
+                imageUri = uri;
                 Log.d("PhotoPicker", "Selected URI: " + uri);
+                imageUploader.uploadImage(uri, new ImageUploader.UploadCallback() {
+                    @Override
+                    public void onUploadSuccess(Uri downloadUri) {
+                        Log.d("PhotoPicker", "Upload success: " + downloadUri);
+                        selectedImageUri = downloadUri;
+                        user.setUploadedImageUri(downloadUri.toString());
+                        addingMetaData();
+                        nextButtonText.setClickable(true);
+                        //database.storeImageUri(user.getProfileUid(), uri.toString(), "uploadedImage");
 
-                // Store the URI of the selected image in the Users object and in the database
-                user.setUploadedImageUri(uri.toString());
-                database.storeImageUri(user.getProfileUid(), uri.toString(), "uploadedImage");
+                    }
+
+                    @Override
+                    public void onUploadFailure(Exception exception) {
+
+                    }
+                });
+
+                //database.storeImageUri(user.getProfileUid(), uri.toString(), "uploadedImage");
 
                 // Retrieve the image from the URI
 
@@ -117,12 +164,14 @@ public class UploadImageScreenFragment extends Fragment {
         BackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                deletingStorageUpImage();
                 navigateBackToNameScreen(v);
             }
         });
         uploadImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                nextButtonText.setClickable(false);
                 launchMediaPicker(v);
             }
         });
