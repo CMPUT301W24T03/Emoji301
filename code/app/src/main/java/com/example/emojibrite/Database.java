@@ -287,6 +287,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
         eventMap.put("checkInQRCode", event.getCheckInQRCode() != null ? event.getCheckInQRCode().toString() : null);
         eventMap.put("eventQRCode", event.getEventQRCode() != null ? event.getEventQRCode().toString() : null);
 
+        //2D arrays for attendees and geolocations
+        eventMap.put("attendeeList", event.getAttendeesList());
+        eventMap.put("geolocationsList", event.getGeolocationList());
+
         if (event.getImageUri()!=null){
             Log.d(TAG, event.getImageUri().toString()); //testing
         }
@@ -486,13 +490,38 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
 
 
+    /**
+     * Method to update an event's attendee's list.
+     * @param eventID
+     * The event that's meant to be updated.
+     * @param attendees
+     * A 2D ArrayList containing the attendees and the number of times they have checked in.
+     */
+    public void updateEventAttendees(String eventID, ArrayList<ArrayList<String>> attendees){
+        eventRef.document(eventID).update("attendeeList",attendees).addOnSuccessListener( onSuccessListener -> {
+            Log.d(TAG, "Event successfully updated!");
 
+            // exception for if the task for some reason failed
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Error updating event attendees", e);
+        });
+    }
 
+    /**
+     * Method to update an event's list of where attendees are checking in from.
+     * @param eventID
+     * The event that's meant to be updated.
+     * @param checkInLocations
+     * A 2D ArrayList containing the locations that attendees checked in from.
+     */
+    public void updateEventCheckInLocations(String eventID, ArrayList<ArrayList<String>> checkInLocations){
+        eventRef.document(eventID).update("geolocationsList", checkInLocations).addOnSuccessListener( onSuccessListener -> {
+            Log.d(TAG, "Event successfully updated!");
 
-
-
-
-
-
+            // exception for if the task for some reason failed
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Error updating event attendees", e);
+        });
+    }
 
 }

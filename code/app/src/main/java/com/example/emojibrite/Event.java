@@ -3,6 +3,7 @@ package com.example.emojibrite;
 import android.net.Uri;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
@@ -31,6 +32,10 @@ public class Event implements Serializable {
     private String organizer;
 
     private String checkInID;
+
+    private ArrayList<ArrayList<String>> attendeesList = new ArrayList<ArrayList<String>>();
+
+    private ArrayList<ArrayList<String>> geolocationList = new ArrayList<ArrayList<String>>();
 
 
     /**
@@ -264,5 +269,21 @@ public class Event implements Serializable {
     public String getOrganizer(){return organizer;}
 
     public String getCheckInID(){return checkInID;}
+
+    public ArrayList<ArrayList<String>> getAttendeesList() {
+        return attendeesList;
+    }
+
+    public void setAttendeesList(ArrayList<ArrayList<String>> attendesList) {
+        this.attendeesList = attendesList;
+    }
+
+    public ArrayList<ArrayList<String>> getGeolocationList() {
+        return geolocationList;
+    }
+
+    public void setGeolocationList(ArrayList<ArrayList<String>> geolocationList) {
+        this.geolocationList = geolocationList;
+    }
 
 }
