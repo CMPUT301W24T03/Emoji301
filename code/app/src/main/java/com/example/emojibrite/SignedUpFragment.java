@@ -6,13 +6,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class SignedUpFragment extends Fragment {
     // put your uninitialized attributes here
     ListView attendeesListView;
+    AttendeesArrayAdapter attendeesArrayAdapter;
+
+    ArrayList<Users> attendeesList;
+
+    private String eventId;
+
+
+
+
     // TODO: Create a custom adapter for the list view and use it here. ASK Snehal
     // custom adapter along with contentxml. You can reuse the same adapter for
     // both signedUp fragment and CheckedInFragment.
@@ -34,10 +49,29 @@ public class SignedUpFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View signedUpLayout = inflater.inflate(R.layout.fragment_signed_up, container, false);
         Log.d("Aivan", "SignedUpFragmnetonCreateView: called");
+
+
         // init your attributes here
         attendeesListView = signedUpLayout.findViewById(R.id.attendee_view_list);
-        // if the data is passed via a bundle, do the following
-        // Bundle bundle = getArguments();
+
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            eventId = bundle.getString("eventId");
+            Log.d("SignedUpFragment", "Received Event ID: " + eventId);
+        } else {
+            Log.d("SignedUpFragment", "No bundle passed");
+        }
+
+
+
+        attendeesList = new ArrayList<>();
+        attendeesArrayAdapter = new AttendeesArrayAdapter(getContext(), attendeesList);
+        attendeesListView.setAdapter(attendeesArrayAdapter);
+        loadAttendees(eventId);
+
+
+
+
 
 
         return signedUpLayout;
@@ -57,4 +91,37 @@ public class SignedUpFragment extends Fragment {
 
         // button logics
     }
+
+    /**
+     * It deals with retreiving all the users and setting it up by also passing it through the array adapted
+     * @param eventId It retreives all the signed up participants from the events.
+     *
+     */
+
+    private void loadAttendees(String eventId) {
+        Database db = new Database();
+        db.getSignedAttendees(eventId, new Database.OnSignedAttendeesRetrievedListener() {
+            @Override
+            public void onSignedAttendeesRetrieved(List<String> attendeeIds) {
+                attendeesList.clear(); // Clear existing items
+                for (String userId : attendeeIds) {
+                    db.getUserDocument(userId, new Database.OnUserDocumentRetrievedListener() {
+                        @Override
+                        public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
+                                Users user = documentSnapshot.toObject(Users.class);
+                                if (user != null) {
+                                    attendeesList.add(user);
+                                    if (getActivity() != null) {
+                                        getActivity().runOnUiThread(() -> attendeesArrayAdapter.notifyDataSetChanged());
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
 }
