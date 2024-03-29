@@ -197,7 +197,7 @@
                 android:textAllCaps="false"
                 android:textColor="@color/black"
                 android:textSize="12sp"
-                android:visibility="gone"/>
+                />
 
         </LinearLayout>
 
