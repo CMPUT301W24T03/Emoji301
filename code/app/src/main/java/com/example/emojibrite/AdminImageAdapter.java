@@ -29,48 +29,6 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
-public class AdminImageAdapter extends BaseAdapter {
-
-    private ArrayList<ImageClass> dataList;
-    private Context context;
-    LayoutInflater layoutInflater;
-
-    public AdminImageAdapter(Context context, ArrayList<ImageClass> dataList) {
-        this.context = context;
-        this.dataList = dataList;
-    }
-
-    @Override
-    public int getCount() {
-        return dataList.size();
-    }
-
-    @Override
-    public Object getItem(int i) {
-        return null;
-    }
-
-    @Override
-    public long getItemId(int i) {
-        return 0;
-    }
-
-    @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        if (layoutInflater == null){
-            layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
-        if (view == null){
-            view = layoutInflater.inflate(R.layout.admin_images_profiles, null);
-        }
-
-        ImageView gridImage = view.findViewById(R.id.postersImage);
-
-        Glide.with(context).load(dataList.get(i).getImageURL()).into(gridImage);
-
-        return view;
-    }
-}
 
 /*
 public class AdminImageAdapter extends ArrayAdapter<Users> {
