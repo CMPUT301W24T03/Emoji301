@@ -55,7 +55,7 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
         ImageView backButton = findViewById(R.id.imageView); //back button
         attendeesButton = findViewById(R.id.attendees_button);
         signingup=findViewById(R.id.sign_up_button);
-//        notificationButton = findViewById(R.id.Notification_button);
+        notificationButton = findViewById(R.id.Notification_button);
 
         Intent intent = getIntent();
         currentUser = intent.getStringExtra("userlol"); // get the user
@@ -235,7 +235,7 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
             //if both their ids match, that means they are the organizer itslf
             //so they do not have to sign up aka, we can remove it
             signingup.setVisibility(View.GONE);
-
+            notificationButton.setVisibility(View.VISIBLE);
             Log.d(TAG,"SIGNINGUP BUTTON IS GOOONE");
 
         }
