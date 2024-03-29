@@ -78,6 +78,9 @@
             android:name=".MainActivity"
             android:exported="true" /> <!-- Account Creation Activity -->
         <activity
+            android:name=".AdminPostersActivity"
+            android:exported="false"/>
+        <activity
             android:name=".AccountCreationActivity"
             android:exported="false" /> <!-- Fragments dont belong here. Also, the Continuous Integration(CI) flagged this, thus "x" beside your branch -->
 

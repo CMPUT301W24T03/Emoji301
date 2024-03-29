@@ -36,7 +36,6 @@ public class AdminImagesHome extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AdminImagesHome.this, AdminPostersActivity.class);
-                intent.putExtra("userObject", user);
                 startActivity(intent);
             }
 

@@ -15,7 +15,6 @@ public class AdminPostersActivity extends AppCompatActivity {
         setContentView(R.layout.admin_images_list);
 
         ImageView backArrow = findViewById(R.id.back_arrow_listImg); //back button
-        Log.d("AdminPostersActivity", "Check this");
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
