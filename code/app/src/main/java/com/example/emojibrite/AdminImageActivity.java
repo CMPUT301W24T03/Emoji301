@@ -85,4 +85,3 @@ public class AdminImageActivity extends AppCompatActivity {
     }
 }
 */
-
