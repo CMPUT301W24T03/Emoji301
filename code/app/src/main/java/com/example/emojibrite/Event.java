@@ -153,6 +153,9 @@ public class Event implements Serializable {
     }
 
     public Event(){}
+    public Event(String imageUri) {
+        this.imageUri = imageUri;
+    }
 
     private String generateRandomId(){
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
