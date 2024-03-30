@@ -19,6 +19,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+// this test is implemented using the following resources as reference:
+// https://developer.android.com/guide/fragments/test
+// https://stackoverflow.com/questions/30908969/android-writing-test-cases-for-fragments
+// https://developer.android.com/guide/navigation/testing
 @RunWith(AndroidJUnit4.class)
 public class FragmentTest {
     // attributes

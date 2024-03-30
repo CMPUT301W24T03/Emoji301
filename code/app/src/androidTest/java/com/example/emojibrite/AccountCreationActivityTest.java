@@ -14,6 +14,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+// This test is implemented using the following resources as reference:
+// https://developer.android.com/guide/navigation/navigation-testing
+// https://developer.android.com/guide/fragments/communicate
+// https://developer.android.com/reference/androidx/test/ext/junit/rules/ActivityScenarioRule
+
 /**
  * Test class for the AccountCreationActivity
  */
