@@ -24,9 +24,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -41,8 +39,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     ArrayList<Event> dataList;
     private Users user;
     private Database database = new Database();
-
-    private Map<Event, Boolean> eventMap = new HashMap<>();
 
 //    Button otherEvent = findViewById(R.id.other_events_button);
 
@@ -139,7 +135,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         eventList = findViewById(R.id.event_organizer_list);
         dataList = new ArrayList<>();
 
-        eventAdapter = new EventAdapter(this, dataList, eventMap);
+        eventAdapter = new EventAdapter(this, dataList);
         eventList.setAdapter(eventAdapter);
 
         Button otherEvent = findViewById(R.id.other_events_button);
@@ -160,6 +156,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         ImageView profileButton = findViewById(R.id.profile_pic);
 
+
+
         if (user.getUploadedImageUri() != null) {
             // User uploaded a picture, use that as the ImageView
             //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
@@ -169,7 +167,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                     Glide.with(EventHome.this).load(user.getUploadedImageUri()).into(profileButton);
                 }
             });
-//            fetchEventsForCurrentUser();
+
         } else if (user.getUploadedImageUri() == null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
@@ -180,7 +178,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
 //            fetchEventsForCurrentUser();
 //            fetchSignedUpEvents();
-            fetchMyEventsPage();
         }
         eventList.setOnItemClickListener(((parent, view, position, id) -> {
             Event selectedEvent = dataList.get(position);
@@ -213,6 +210,14 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                 startActivity(intent2);  // Use intent2 to start the activity
             }
         });
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchMyEventsPage(); // Refresh the events list every time the activity resumes
     }
 
     /**
@@ -249,31 +254,38 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     private void fetchMyEventsPage() {
         if (user != null) {
             String currentUserId = user.getProfileUid();
+
+            // This counter will track the completion of both asynchronous operations.
             AtomicInteger pendingQueries = new AtomicInteger(2);
 
+            // Temporary lists to store events from both queries.
+            List<Event> signedUpEvents = new ArrayList<>();
+            List<Event> organizedEvents = new ArrayList<>();
+
+            // Fetch events user has signed up for.
             database.getSignedUpEvents(currentUserId, events -> {
-                for (Event event : events) {
-                    eventMap.put(event, false); // False for events signed up for
-                }
+                signedUpEvents.addAll(events);
+                // Decrement the counter and call updateDataList if it's zero.
                 if (pendingQueries.decrementAndGet() == 0) {
-                    updateAdapter();
+                    updateDataList(signedUpEvents, organizedEvents);
                 }
             });
 
+            // Fetch events organized by the user.
             database.getEventsByOrganizer(currentUserId, events -> {
-                for (Event event : events) {
-                    eventMap.put(event, true); // True for events organized by the user
-                }
+                organizedEvents.addAll(events);
+                // Decrement the counter and call updateDataList if it's zero.
                 if (pendingQueries.decrementAndGet() == 0) {
-                    updateAdapter();
+                    updateDataList(signedUpEvents, organizedEvents);
                 }
             });
         }
     }
 
-    private void updateAdapter() {
+    private void updateDataList(List<Event> signedUpEvents, List<Event> organizedEvents) {
         dataList.clear();
-        dataList.addAll(eventMap.keySet()); // Add all the events from the map
+        dataList.addAll(signedUpEvents);
+        dataList.addAll(organizedEvents);
         eventAdapter.notifyDataSetChanged();
     }
 
