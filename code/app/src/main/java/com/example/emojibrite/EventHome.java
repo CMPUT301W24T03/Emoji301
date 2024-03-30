@@ -24,6 +24,8 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * EventHome is an AppCompatActivity that serves as the main page for displaying a list of events.
@@ -154,6 +156,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         ImageView profileButton = findViewById(R.id.profile_pic);
 
+
+
         if (user.getUploadedImageUri() != null) {
             // User uploaded a picture, use that as the ImageView
             //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
@@ -163,7 +167,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                     Glide.with(EventHome.this).load(user.getUploadedImageUri()).into(profileButton);
                 }
             });
-            fetchEventsForCurrentUser();
+
         } else if (user.getUploadedImageUri() == null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
@@ -172,7 +176,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                 }
             });
 
-            fetchEventsForCurrentUser();
+//            fetchEventsForCurrentUser();
+//            fetchSignedUpEvents();
         }
         eventList.setOnItemClickListener(((parent, view, position, id) -> {
             Event selectedEvent = dataList.get(position);
@@ -205,6 +210,14 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                 startActivity(intent2);  // Use intent2 to start the activity
             }
         });
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchMyEventsPage(); // Refresh the events list every time the activity resumes
     }
 
     /**
@@ -226,6 +239,56 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
             });
         }
     }
+
+    private void fetchSignedUpEvents(){
+        if (user!=null){
+            String currentUserId = user.getProfileUid();
+            database.getSignedUpEvents(currentUserId, events -> {
+                dataList.clear();
+                dataList.addAll(events);
+                eventAdapter.notifyDataSetChanged();
+            });
+        }
+    }
+
+    private void fetchMyEventsPage() {
+        if (user != null) {
+            String currentUserId = user.getProfileUid();
+
+            // This counter will track the completion of both asynchronous operations.
+            AtomicInteger pendingQueries = new AtomicInteger(2);
+
+            // Temporary lists to store events from both queries.
+            List<Event> signedUpEvents = new ArrayList<>();
+            List<Event> organizedEvents = new ArrayList<>();
+
+            // Fetch events user has signed up for.
+            database.getSignedUpEvents(currentUserId, events -> {
+                signedUpEvents.addAll(events);
+                // Decrement the counter and call updateDataList if it's zero.
+                if (pendingQueries.decrementAndGet() == 0) {
+                    updateDataList(signedUpEvents, organizedEvents);
+                }
+            });
+
+            // Fetch events organized by the user.
+            database.getEventsByOrganizer(currentUserId, events -> {
+                organizedEvents.addAll(events);
+                // Decrement the counter and call updateDataList if it's zero.
+                if (pendingQueries.decrementAndGet() == 0) {
+                    updateDataList(signedUpEvents, organizedEvents);
+                }
+            });
+        }
+    }
+
+    private void updateDataList(List<Event> signedUpEvents, List<Event> organizedEvents) {
+        dataList.clear();
+        dataList.addAll(signedUpEvents);
+        dataList.addAll(organizedEvents);
+        eventAdapter.notifyDataSetChanged();
+    }
+
 
 
 }
