@@ -72,7 +72,8 @@ public class AddEventFragment extends DialogFragment{
 
     private String eventId, checkInID;
 
-    ImageUploader imageUploader = new ImageUploader("images");
+    ImageUploader imageUploader = new ImageUploader("eventPoster");
+    ImageUploader imageUploaderQR = new ImageUploader("QRCode");
 
 
 
@@ -146,7 +147,7 @@ public class AddEventFragment extends DialogFragment{
 
 
                         //DOING THE CONVERSIONS:
-                        imageUploader.uploadImage(qrCodeCheckinURI, new ImageUploader.UploadCallback() {
+                        imageUploaderQR.uploadImage(qrCodeCheckinURI, new ImageUploader.UploadCallback() {
                             @Override
                             public void onUploadSuccess(Uri downloadUri) {
                                 qrCodeCheckinURI = downloadUri;
@@ -175,7 +176,7 @@ public class AddEventFragment extends DialogFragment{
                         qrCodeEventURI = Uri.parse(qrCodeUriString);
                         eventId = data.getStringExtra("EventId");
 
-                        imageUploader.uploadImage(qrCodeEventURI, new ImageUploader.UploadCallback() {
+                        imageUploaderQR.uploadImage(qrCodeEventURI, new ImageUploader.UploadCallback() {
                             @Override
                             public void onUploadSuccess(Uri downloadUri) {
                                 qrCodeEventURI = downloadUri;

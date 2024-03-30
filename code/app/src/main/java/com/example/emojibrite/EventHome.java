@@ -24,6 +24,10 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * EventHome is an AppCompatActivity that serves as the main page for displaying a list of events.
@@ -37,6 +41,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     ArrayList<Event> dataList;
     private Users user;
     private Database database = new Database();
+
+    private Map<Event, Boolean> eventMap = new HashMap<>();
 
 //    Button otherEvent = findViewById(R.id.other_events_button);
 
@@ -133,7 +139,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         eventList = findViewById(R.id.event_organizer_list);
         dataList = new ArrayList<>();
 
-        eventAdapter = new EventAdapter(this, dataList);
+        eventAdapter = new EventAdapter(this, dataList, eventMap);
         eventList.setAdapter(eventAdapter);
 
         Button otherEvent = findViewById(R.id.other_events_button);
@@ -163,7 +169,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                     Glide.with(EventHome.this).load(user.getUploadedImageUri()).into(profileButton);
                 }
             });
-            fetchEventsForCurrentUser();
+//            fetchEventsForCurrentUser();
         } else if (user.getUploadedImageUri() == null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
@@ -172,7 +178,9 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
                 }
             });
 
-            fetchEventsForCurrentUser();
+//            fetchEventsForCurrentUser();
+//            fetchSignedUpEvents();
+            fetchMyEventsPage();
         }
         eventList.setOnItemClickListener(((parent, view, position, id) -> {
             Event selectedEvent = dataList.get(position);
@@ -226,6 +234,49 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
             });
         }
     }
+
+    private void fetchSignedUpEvents(){
+        if (user!=null){
+            String currentUserId = user.getProfileUid();
+            database.getSignedUpEvents(currentUserId, events -> {
+                dataList.clear();
+                dataList.addAll(events);
+                eventAdapter.notifyDataSetChanged();
+            });
+        }
+    }
+
+    private void fetchMyEventsPage() {
+        if (user != null) {
+            String currentUserId = user.getProfileUid();
+            AtomicInteger pendingQueries = new AtomicInteger(2);
+
+            database.getSignedUpEvents(currentUserId, events -> {
+                for (Event event : events) {
+                    eventMap.put(event, false); // False for events signed up for
+                }
+                if (pendingQueries.decrementAndGet() == 0) {
+                    updateAdapter();
+                }
+            });
+
+            database.getEventsByOrganizer(currentUserId, events -> {
+                for (Event event : events) {
+                    eventMap.put(event, true); // True for events organized by the user
+                }
+                if (pendingQueries.decrementAndGet() == 0) {
+                    updateAdapter();
+                }
+            });
+        }
+    }
+
+    private void updateAdapter() {
+        dataList.clear();
+        dataList.addAll(eventMap.keySet()); // Add all the events from the map
+        eventAdapter.notifyDataSetChanged();
+    }
+
 
 
 }
