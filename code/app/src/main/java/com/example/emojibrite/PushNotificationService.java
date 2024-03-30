@@ -11,6 +11,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 
+// This class is implemted using the following website(s) as reference(s):
+// https://firebase.google.com/docs/cloud-messaging/android/first-message#java
+// https://firebase.google.com/docs/cloud-messaging/android/topic-messaging?utm_source=studio#java_4
+
 /**
  * This class is used to send notifications to the list of attendees of an event
  * A {@link FirebaseMessagingService} subclass
