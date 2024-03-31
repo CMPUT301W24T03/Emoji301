@@ -34,7 +34,7 @@ import java.util.ArrayList;
  * through the {@link ProfileEditFragment}. It also handles the update callbacks from the fragment
  * to reflect changes in the user's profile.
  */
-public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnInputSelected {
+public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnInputSelected, PushNotificationPermDialogFragment.PushNotificationDialogListener{
 
     Users user;
     ImageView profilePictureImageView;
@@ -121,8 +121,9 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                 // create a popup to ask user if they want to enable notifications
                 // if yes, enable notifications attribute to true, get the token, and store it in the database. Update the toggle button to true.
                 // if no, disable notifications and set the attribute to false. update the toggle button to false.
-                Log.d("ProfileActivity", "Notification toggle clicked");
-                notificationPopUp();
+                Log.d(TAG, "Notification toggle clicked");
+                PushNotificationPermDialogFragment dialogFragment = new PushNotificationPermDialogFragment();
+                dialogFragment.show(getSupportFragmentManager(), "PushNotificationPermDialogFragment");
             }
         });
 
@@ -207,84 +208,39 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     }
 
 
-    // NOTIFICATION STUFF AREA
+    /**
+     * This method is called when the user accepts the notification permission dialog.
+     * It sets the notification attribute of the user to true and updates the user in the database
+     * @param token The token used for sending messages to this application instance
+     */
+    @Override
+    public void onNotifPermDialogPositiveClick(String token) {
+        Log.d("ProfileActivity", "User: " + user.getProfileUid() +" accepted notifications");
+        // set the notification attribute of the user to true
+        user.setEnableNotification(true);
+        // set the token of the user
+        user.setFcmToken(token);
+        // update the user in the database
+        database.setUserObject(user);
+        // update the toggle button to true
+        notifToggle.setChecked(true);
+    }
 
     /**
-     * This interface is used to ensure that the token is received before it is used
-     * This is because the @link{FirebaseMessaging.getInstance().getToken()} method is asynchronous
-     * and the token is not guaranteed to be received before it is used
+     * This method is called when the user declines the notification permission dialog
+     * and sets the notification attribute of the user to false
      */
-    public interface TokenCallback {
-        void onTokenReceived(String token);
+    @Override
+    public void onNotifPermDialogNegativeClick() {
+        Log.d("ProfileActivity", "User: " + user.getProfileUid() + " declined notifications");
+        // set the notification attribute of the user to false
+        user.setEnableNotification(false);
+        // set the token of the user to null
+        user.setFcmToken(null);
+        // update the user in the database
+        database.setUserObject(user);
+        // update the toggle button to false
+        notifToggle.setChecked(false);
     }
-    /**
-     * This method creates a popup to ask the user if they want to enable notifications
-     */
-    private void notificationPopUp() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
-        builder.setTitle("Enable Notifications");
-        builder.setMessage("Would you like to enable notifications?");
 
-        // positive button
-        builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Log.d("ProfileActivity", "User: " + user.getProfileUid() +" accepted notifications");
-                // update user's attribute for notifications
-                user.setEnableNotification(true);
-                // get the fcm token and update user's fcm token.
-                // Use the interface to ensure the token is received before it is used
-                getToken(new TokenCallback() {
-                    /**
-                     * This method is called when the token is received
-                     * @param token : the fcm token
-                     */
-                    @Override
-                    public void onTokenReceived(String token) {
-                        Log.d("ProfileActivity", "FCM token after callback: " + token);
-                        user.setFcmToken(token);
-                        // update the user's document in the database
-                        database.setUserObject(user);
-                        notifToggle.setChecked(true);
-                    }
-                });
-            }
-        });
-        // negative button
-        builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Log.d("ProfileActivity", "User: " + user.getProfileUid() + " declined notifications");
-                // update user's attribute for notifications
-                user.setEnableNotification(false);
-                // update the user's fcmToken in the database
-                database.setUserObject(user);
-                notifToggle.setChecked(false);
-            }
-        });
-
-        // Create the dialog and make it appear
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-    /**
-     * This method retrieves the FCM token for the user
-     */
-    private String getToken(TokenCallback callback) {
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if(!task.isSuccessful()) {
-                            Log.w("ProfileActivity", "Fetching FCM registration token failed", task.getException());
-                            return;
-                        }
-                        // Get new FCM registration token
-                        token = task.getResult();
-                        Log.d("ProfileActivity", "FCM token before callback: " + token);
-                        callback.onTokenReceived(token);
-                    }
-                });
-        return token;
-    }
 }
