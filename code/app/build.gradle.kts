@@ -104,6 +104,7 @@ dependencies {
 
     // Firebase Cloud Messaging : Notifications
     implementation("com.google.firebase:firebase-messaging")
+    implementation("com.google.firebase:firebase-analytics:21.6.1")
 }
 
 

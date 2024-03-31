@@ -13,10 +13,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 /**
- * NotificationDialogFragment is a DialogFragment used to create
+ * PushNotificationDialogFragment is a DialogFragment used to create
  * a dialog box for the message of the notification
  */
-public class NotificationDialogFragment extends DialogFragment {
+public class PushNotificationDialogFragment extends DialogFragment {
     /**
      * NotificationDialogListener interface to communicate with the activity
      */
@@ -66,7 +66,8 @@ public class NotificationDialogFragment extends DialogFragment {
                     listener.onDialogPositiveClick(message.getText().toString());
                     // logic
                 })
-                .setNegativeButton("Cancel", (dialog, which) -> {NotificationDialogFragment.this.getDialog().cancel();})
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    PushNotificationDialogFragment.this.getDialog().cancel();})
                 .create();
     }
 }

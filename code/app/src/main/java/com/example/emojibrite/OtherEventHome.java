@@ -25,6 +25,9 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class OtherEventHome extends AppCompatActivity {
 
     ListView eventList;
@@ -32,6 +35,8 @@ public class OtherEventHome extends AppCompatActivity {
     ArrayList<Event> dataList1;
     private Users user;
     private Database database = new Database();
+
+    private Map<Event, Boolean> eventMap = new HashMap<>();
 
     Context context = this;
 
