@@ -141,12 +141,15 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorPrimary"/>
         <!--FCM provides default notification channel with basic settings. Use below to create your own channel by setting the default_notification_channel_id to ID of the notification channel object-->
-<!--        <meta-data-->
-<!--            android:name="com.google.firebase.messaging.default_notification_channel_id"-->
-<!--            android:value="@string/default_notification_channel_id"/>-->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id"/>
         <!--Prevent auto initialization of FCM registration token-->
         <meta-data
             android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
             android:value="false" />
     </application>
 

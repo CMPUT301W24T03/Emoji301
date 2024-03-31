@@ -1,40 +1,35 @@
 package com.example.emojibrite;
 
-import androidx.annotation.NonNull;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.ContextCompat;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.media.Image;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.messaging.FirebaseMessaging;
+import android.Manifest;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 /**
  * The main activity for displaying and editing user profiles.
  * This activity allows users to view their profile information and initiate the editing process
  * through the {@link ProfileEditFragment}. It also handles the update callbacks from the fragment
  * to reflect changes in the user's profile.
  */
-public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnInputSelected, PushNotificationPermDialogFragment.PushNotificationDialogListener{
+public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnInputSelected {
 
     Users user;
     ImageView profilePictureImageView;
@@ -46,8 +41,10 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     TextView adminText;
     PushNotificationService pushNotificationService = new PushNotificationService();
     Database database = new Database();
-    String token = null;
+    private boolean permissionNotificationDenied = false;
+
     String TAG = "ProfileActivity";
+
     /**
      * Called when the activity is first created.
      *
@@ -75,7 +72,6 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
 
         FloatingActionButton back = findViewById(R.id.backButton);
         FloatingActionButton editButton = findViewById(R.id.editButton);
-
 
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -115,19 +111,21 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
             }
         });
 
+
         notifToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // create a popup to ask user if they want to enable notifications
-                // if yes, enable notifications attribute to true, get the token, and store it in the database. Update the toggle button to true.
-                // if no, disable notifications and set the attribute to false. update the toggle button to false.
-                Log.d(TAG, "Notification toggle clicked");
-                PushNotificationPermDialogFragment dialogFragment = new PushNotificationPermDialogFragment();
-                dialogFragment.show(getSupportFragmentManager(), "PushNotificationPermDialogFragment");
+                if (notifToggle.isChecked()) {
+                    requestNotificationPermission();
+                } else {
+                    if (ContextCompat.checkSelfPermission(ProfileActivity.this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                        showPermissionRationaleDialog();
+                    } else {
+                        updateNotificationPermission(false);
+                    }
+                }
             }
         });
-
-
         emailTextView.setText(user.getEmail());
         phoneNumberTextView.setText(user.getNumber());
         nameTextView.setText(user.getName());
@@ -142,6 +140,86 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
 
         settingPfp();
     }
+
+    private void requestNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED) {
+            updateNotificationPermission(true);
+        } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+            showPermissionRationaleDialog();
+        } else {
+            if (permissionNotificationDenied) {
+                showPermissionNeededDialog();
+            } else {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
+    }
+    private void showPermissionNeededDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Permission needed")
+                .setMessage("Please enable the notification permission from the system settings.")
+                .setPositiveButton("OK", null)
+                .show();
+        notifToggle.setChecked(user.getEnableNotification());
+    }
+    private void showPermissionRationaleDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
+        builder.setTitle("System Notification")
+                .setMessage("You must visit system settings to change notifications.")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+                    }
+                })
+                .setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        updateNotificationPermission(user.getEnableNotification());
+                    }
+                })
+                .show();
+    }
+
+    private void updateNotificationPermission(boolean isGranted) {
+        user.setEnableNotification(isGranted);
+        notifToggle.setChecked(isGranted);
+        if (isGranted) {
+            pushNotificationService.getToken(new PushNotificationService.TokenCallback() {
+                @Override
+                public void onTokenReceived(String token) {
+                    user.setFcmToken(token);
+                    database.setUserObject(user);
+                }
+            });
+        } else {
+            pushNotificationService.deleteToken();
+            user.setFcmToken(null);
+            database.setUserObject(user);
+        }
+    }
+
+    /**
+     * Called when the activity is resumed.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("Resume", "User has resumed");
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            if (!user.getEnableNotification()) {
+                updateNotificationPermission(true);
+            }
+        } else {
+            if (user.getEnableNotification()) {
+                updateNotificationPermission(false);
+            } else if (!permissionNotificationDenied) {
+                requestNotificationPermission();
+            }
+        }
+    }
+
     /**
      * Called when the user clicks the "Edit" button to edit their profile.
      */
@@ -167,16 +245,15 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         settingPfp();
     }
 
-    private void checkRole(){
+    private void checkRole() {
 
-        if (user.getRole().equals("3") || user.getRole().equals("2")){
+        if (user.getRole().equals("3") || user.getRole().equals("2")) {
             //meaning they are the MAIN admin or moderator
             adminToggle.setVisibility(View.VISIBLE);
             adminText.setVisibility(View.VISIBLE);
             Log.d("ProfileActivity", "User is an admin");
 
-        }
-        else {
+        } else {
             Log.d("ProfileActivity", "User is not an admin321");
             adminToggle.setVisibility(View.GONE);
             adminText.setVisibility(View.GONE);
@@ -187,7 +264,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     /**
      * Called when the user clicks the "Edit" button to edit their profile.
      */
-    public void settingPfp(){
+    public void settingPfp() {
         if (user.getUploadedImageUri() != null) {
             // User uploaded a picture, use that as the ImageView
             //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
@@ -197,7 +274,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                     Glide.with(ProfileActivity.this).load(user.getUploadedImageUri()).into(profilePictureImageView);
                 }
             });
-        } else if (user.getUploadedImageUri() ==null) {
+        } else if (user.getUploadedImageUri() == null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
@@ -207,40 +284,29 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         }
     }
 
-
-    /**
-     * This method is called when the user accepts the notification permission dialog.
-     * It sets the notification attribute of the user to true and updates the user in the database
-     * @param token The token used for sending messages to this application instance
-     */
-    @Override
-    public void onNotifPermDialogPositiveClick(String token) {
-        Log.d("ProfileActivity", "User: " + user.getProfileUid() +" accepted notifications");
-        // set the notification attribute of the user to true
-        user.setEnableNotification(true);
-        // set the token of the user
-        user.setFcmToken(token);
-        // update the user in the database
-        database.setUserObject(user);
-        // update the toggle button to true
-        notifToggle.setChecked(true);
-    }
-
-    /**
-     * This method is called when the user declines the notification permission dialog
-     * and sets the notification attribute of the user to false
-     */
-    @Override
-    public void onNotifPermDialogNegativeClick() {
-        Log.d("ProfileActivity", "User: " + user.getProfileUid() + " declined notifications");
-        // set the notification attribute of the user to false
-        user.setEnableNotification(false);
-        // set the token of the user to null
-        user.setFcmToken(null);
-        // update the user in the database
-        database.setUserObject(user);
-        // update the toggle button to false
-        notifToggle.setChecked(false);
-    }
-
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    // FCM SDK (and your app) can post notifications.
+                    Log.d("notif", "User accepted notification");
+                    user.setEnableNotification(true);
+                    pushNotificationService.getToken(new PushNotificationService.TokenCallback() {
+                        @Override
+                        public void onTokenReceived(String token) {
+                            user.setFcmToken(token);
+                            // Update the user in the database
+                            database.setUserObject(user);
+                            // Update the toggle button
+                            notifToggle.setChecked(user.getEnableNotification());
+                        }
+                    });
+                } else {
+                    // TODO: Inform user that that your app will not show notifications.
+                    permissionNotificationDenied = true;
+                    notifToggle.setChecked(false);
+                    pushNotificationService.deleteToken();
+                    user.setFcmToken(null);
+                    database.setUserObject(user);
+                }
+            });
 }
