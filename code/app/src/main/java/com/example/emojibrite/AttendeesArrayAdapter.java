@@ -39,7 +39,6 @@ public class AttendeesArrayAdapter extends ArrayAdapter<Users> {
         if (convertView  == null)
         {
             convertView= LayoutInflater.from(getContext()).inflate(R.layout.profile_attendees,parent,false);
-
         }
 
         ImageView userProfilePic = convertView.findViewById(R.id.image_event);
@@ -68,6 +67,7 @@ public class AttendeesArrayAdapter extends ArrayAdapter<Users> {
         }
 
         userName.setText(users.getName());
+        //do the stuff here
 
         userNumberCheckedIn.setText("Heloooooo");
 

@@ -62,7 +62,7 @@ public class AdminActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Go to the AccountActivity page
-                Intent intent = new Intent(AdminActivity.this, AdminProfileActivity.class);
+                Intent intent = new Intent(AdminActivity.this, AdminAccountActivity.class);
                 intent.putExtra("userObject", user);
                 startActivity(intent);
             }
