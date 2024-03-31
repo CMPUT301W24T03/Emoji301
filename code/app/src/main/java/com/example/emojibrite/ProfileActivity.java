@@ -1,33 +1,28 @@
 package com.example.emojibrite;
 
-import androidx.annotation.NonNull;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.ContextCompat;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.media.Image;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.messaging.FirebaseMessaging;
+import android.Manifest;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 /**
  * The main activity for displaying and editing user profiles.
  * This activity allows users to view their profile information and initiate the editing process
@@ -46,8 +41,10 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     TextView adminText;
     PushNotificationService pushNotificationService = new PushNotificationService();
     Database database = new Database();
-    String token = null;
+    private boolean permissionNotificationDenied = false;    // flag
+
     String TAG = "ProfileActivity";
+
     /**
      * Called when the activity is first created.
      *
@@ -75,7 +72,6 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
 
         FloatingActionButton back = findViewById(R.id.backButton);
         FloatingActionButton editButton = findViewById(R.id.editButton);
-
 
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -115,18 +111,21 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
             }
         });
 
+
         notifToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // create a popup to ask user if they want to enable notifications
-                // if yes, enable notifications attribute to true, get the token, and store it in the database. Update the toggle button to true.
-                // if no, disable notifications and set the attribute to false. update the toggle button to false.
-                Log.d("ProfileActivity", "Notification toggle clicked");
-                notificationPopUp();
+                if (notifToggle.isChecked()) {
+                    requestNotificationPermission();
+                } else {
+                    if (ContextCompat.checkSelfPermission(ProfileActivity.this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                        showPermissionRationaleDialog();
+                    } else {
+                        updateNotificationPermission(false);
+                    }
+                }
             }
         });
-
-
         emailTextView.setText(user.getEmail());
         phoneNumberTextView.setText(user.getNumber());
         nameTextView.setText(user.getName());
@@ -141,6 +140,17 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
 
         settingPfp();
     }
+
+    /**
+     * Called when the activity is resumed.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("Resume", "User has resumed");
+        checkNotificationOnResume();
+    }
+
     /**
      * Called when the user clicks the "Edit" button to edit their profile.
      */
@@ -166,16 +176,15 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         settingPfp();
     }
 
-    private void checkRole(){
+    private void checkRole() {
 
-        if (user.getRole().equals("3") || user.getRole().equals("2")){
+        if (user.getRole().equals("3") || user.getRole().equals("2")) {
             //meaning they are the MAIN admin or moderator
             adminToggle.setVisibility(View.VISIBLE);
             adminText.setVisibility(View.VISIBLE);
             Log.d("ProfileActivity", "User is an admin");
 
-        }
-        else {
+        } else {
             Log.d("ProfileActivity", "User is not an admin321");
             adminToggle.setVisibility(View.GONE);
             adminText.setVisibility(View.GONE);
@@ -185,7 +194,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     /**
      * Called when the user clicks the "Edit" button to edit their profile.
      */
-    public void settingPfp(){
+    public void settingPfp() {
         if (user.getUploadedImageUri() != null) {
             // User uploaded a picture, use that as the ImageView
             //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
@@ -195,7 +204,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                     Glide.with(ProfileActivity.this).load(user.getUploadedImageUri()).into(profilePictureImageView);
                 }
             });
-        } else if (user.getUploadedImageUri() ==null) {
+        } else if (user.getUploadedImageUri() == null) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
@@ -205,85 +214,134 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         }
     }
 
-
-    // NOTIFICATION STUFF AREA
+    // Notification area //
+    // implemented using https://firebase.google.com/docs/cloud-messaging/android/client?_gl=1*ttt67n*_up*MQ..*_ga*NTU3NDA1OTAxLjE3MTE5MTY5NTc.*_ga_CW55HF8NVT*MTcxMTkxNjk1Ny4xLjAuMTcxMTkxNjk1Ny4wLjAuMA..
 
     /**
-     * This interface is used to ensure that the token is received before it is used
-     * This is because the @link{FirebaseMessaging.getInstance().getToken()} method is asynchronous
-     * and the token is not guaranteed to be received before it is used
+     * Request runtime notification permission
      */
-    public interface TokenCallback {
-        void onTokenReceived(String token);
-    }
-    /**
-     * This method creates a popup to ask the user if they want to enable notifications
-     */
-    private void notificationPopUp() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
-        builder.setTitle("Enable Notifications");
-        builder.setMessage("Would you like to enable notifications?");
-
-        // positive button
-        builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Log.d("ProfileActivity", "User: " + user.getProfileUid() +" accepted notifications");
-                // update user's attribute for notifications
-                user.setEnableNotification(true);
-                // get the fcm token and update user's fcm token.
-                // Use the interface to ensure the token is received before it is used
-                getToken(new TokenCallback() {
-                    /**
-                     * This method is called when the token is received
-                     * @param token : the fcm token
-                     */
-                    @Override
-                    public void onTokenReceived(String token) {
-                        Log.d("ProfileActivity", "FCM token after callback: " + token);
-                        user.setFcmToken(token);
-                        // update the user's document in the database
-                        database.setUserObject(user);
-                        notifToggle.setChecked(true);
-                    }
-                });
-            }
-        });
-        // negative button
-        builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Log.d("ProfileActivity", "User: " + user.getProfileUid() + " declined notifications");
-                // update user's attribute for notifications
-                user.setEnableNotification(false);
-                // update the user's fcmToken in the database
-                database.setUserObject(user);
-                notifToggle.setChecked(false);
-            }
-        });
-
-        // Create the dialog and make it appear
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-    /**
-     * This method retrieves the FCM token for the user
-     */
-    private String getToken(TokenCallback callback) {
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if(!task.isSuccessful()) {
-                            Log.w("ProfileActivity", "Fetching FCM registration token failed", task.getException());
-                            return;
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    // FCM SDK (and your app) can post notifications.
+                    Log.d("notif", "User accepted notification");
+                    user.setEnableNotification(true);
+                    pushNotificationService.getToken(new PushNotificationService.TokenCallback() {
+                        @Override
+                        public void onTokenReceived(String token) {
+                            user.setFcmToken(token);
+                            // Update the user in the database
+                            database.setUserObject(user);
+                            // Update the toggle button
+                            notifToggle.setChecked(user.getEnableNotification());
                         }
-                        // Get new FCM registration token
-                        token = task.getResult();
-                        Log.d("ProfileActivity", "FCM token before callback: " + token);
-                        callback.onTokenReceived(token);
-                    }
-                });
-        return token;
+                    });
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
+                    builder.setTitle("Notification Permission")
+                            .setMessage("You have denied the notification permission. You can enable it in the settings.")
+                            .setPositiveButton("OK", null)
+                            .show();
+
+                    permissionNotificationDenied = true;
+                    notifToggle.setChecked(false);
+                    pushNotificationService.deleteToken();
+                    user.setFcmToken(null);
+                    database.setUserObject(user);
+                }
+            });
+
+    /**
+     * Check if the user has the notification permission when the activity is resumed.
+     */
+    private void checkNotificationOnResume() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            if (!user.getEnableNotification()) {
+                updateNotificationPermission(true);
+            }
+        } else {
+            if (user.getEnableNotification()) {
+                updateNotificationPermission(false);
+            } else if (!permissionNotificationDenied) {
+                requestNotificationPermission();
+            }
+        }
     }
+
+    /**
+     * Request notification permission from the user.
+     */
+    private void requestNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED) {
+            updateNotificationPermission(true);
+        } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+            showPermissionRationaleDialog();
+        } else {
+            if (permissionNotificationDenied) {
+                showPermissionNeededDialog();
+            } else {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
+    }
+
+    /**
+     * Show a dialog to the user that they need to enable the notification permission.
+     */
+    private void showPermissionNeededDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Permission needed")
+                .setMessage("Please enable the notification permission from the system settings.")
+                .setPositiveButton("OK", null)
+                .show();
+        notifToggle.setChecked(user.getEnableNotification());
+    }
+
+    /**
+     * Show the permission rationale dialog to the user. This dialog explains why the app needs the
+     * notification permission.
+     */
+    private void showPermissionRationaleDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
+        builder.setTitle("System Notification")
+                .setMessage("You must visit system settings to change notifications.")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+                    }
+                })
+                .setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        updateNotificationPermission(user.getEnableNotification());
+                    }
+                })
+                .show();
+    }
+
+    /**
+     * Update the notification permission for the user.
+     * @param isGranted : true if the permission is granted, false otherwise
+     */
+    private void updateNotificationPermission(boolean isGranted) {
+        user.setEnableNotification(isGranted);
+        notifToggle.setChecked(isGranted);
+        if (isGranted) {
+            pushNotificationService.getToken(new PushNotificationService.TokenCallback() {
+                @Override
+                public void onTokenReceived(String token) {
+                    user.setFcmToken(token);
+                    database.setUserObject(user);
+                }
+            });
+        } else {
+            pushNotificationService.deleteToken();
+            user.setFcmToken(null);
+            database.setUserObject(user);
+        }
+    }
+
+    // End of Notification area //
 }
