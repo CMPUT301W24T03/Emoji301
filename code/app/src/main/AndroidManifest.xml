@@ -14,7 +14,6 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" /> <!-- To handle the reselection within the app on Android 14 (API level 34) -->
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.INTERNET" />
 
 
 
@@ -67,12 +66,12 @@
         </provider> <!-- SplashLogoActivity + Main -->
         <activity
             android:name=".SplashLogoActivity"
-            android:exported="false">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
@@ -113,12 +112,7 @@
             android:exported="false" />
         <activity
             android:name = "AdminActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:exported="false">
         </activity>
         <activity
             android:name = ".AdminProfileActivity"
@@ -138,6 +132,22 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <!--Set custom default icon, This is used when no icon is set for incoming notification messages-->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/emoji_logo"/>
+        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming-->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorPrimary"/>
+        <!--FCM provides default notification channel with basic settings. Use below to create your own channel by setting the default_notification_channel_id to ID of the notification channel object-->
+<!--        <meta-data-->
+<!--            android:name="com.google.firebase.messaging.default_notification_channel_id"-->
+<!--            android:value="@string/default_notification_channel_id"/>-->
+        <!--Prevent auto initialization of FCM registration token-->
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
     </application>
 
 </manifest>

@@ -1,8 +1,11 @@
 package com.example.emojibrite;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Image;
@@ -17,7 +20,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.w3c.dom.Text;
 
@@ -38,7 +44,10 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     SwitchCompat notifToggle;
 
     TextView adminText;
-
+    PushNotificationService pushNotificationService = new PushNotificationService();
+    Database database = new Database();
+    String token = null;
+    String TAG = "ProfileActivity";
     /**
      * Called when the activity is first created.
      *
@@ -103,6 +112,17 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                 profileEditFragment.setArguments(bundle);
                 profileEditFragment.show(getSupportFragmentManager(), "ProfileEditFragment");
                 // Show the ProfileEditFragment
+            }
+        });
+
+        notifToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // create a popup to ask user if they want to enable notifications
+                // if yes, enable notifications attribute to true, get the token, and store it in the database. Update the toggle button to true.
+                // if no, disable notifications and set the attribute to false. update the toggle button to false.
+                Log.d("ProfileActivity", "Notification toggle clicked");
+                notificationPopUp();
             }
         });
 
@@ -183,5 +203,87 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                 }
             });
         }
+    }
+
+
+    // NOTIFICATION STUFF AREA
+
+    /**
+     * This interface is used to ensure that the token is received before it is used
+     * This is because the @link{FirebaseMessaging.getInstance().getToken()} method is asynchronous
+     * and the token is not guaranteed to be received before it is used
+     */
+    public interface TokenCallback {
+        void onTokenReceived(String token);
+    }
+    /**
+     * This method creates a popup to ask the user if they want to enable notifications
+     */
+    private void notificationPopUp() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
+        builder.setTitle("Enable Notifications");
+        builder.setMessage("Would you like to enable notifications?");
+
+        // positive button
+        builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d("ProfileActivity", "User: " + user.getProfileUid() +" accepted notifications");
+                // update user's attribute for notifications
+                user.setEnableNotification(true);
+                // get the fcm token and update user's fcm token.
+                // Use the interface to ensure the token is received before it is used
+                getToken(new TokenCallback() {
+                    /**
+                     * This method is called when the token is received
+                     * @param token : the fcm token
+                     */
+                    @Override
+                    public void onTokenReceived(String token) {
+                        Log.d("ProfileActivity", "FCM token after callback: " + token);
+                        user.setFcmToken(token);
+                        // update the user's document in the database
+                        database.setUserObject(user);
+                        notifToggle.setChecked(true);
+                    }
+                });
+            }
+        });
+        // negative button
+        builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d("ProfileActivity", "User: " + user.getProfileUid() + " declined notifications");
+                // update user's attribute for notifications
+                user.setEnableNotification(false);
+                // update the user's fcmToken in the database
+                database.setUserObject(user);
+                notifToggle.setChecked(false);
+            }
+        });
+
+        // Create the dialog and make it appear
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+    /**
+     * This method retrieves the FCM token for the user
+     */
+    private String getToken(TokenCallback callback) {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if(!task.isSuccessful()) {
+                            Log.w("ProfileActivity", "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+                        // Get new FCM registration token
+                        token = task.getResult();
+                        Log.d("ProfileActivity", "FCM token before callback: " + token);
+                        callback.onTokenReceived(token);
+                    }
+                });
+        return token;
     }
 }
