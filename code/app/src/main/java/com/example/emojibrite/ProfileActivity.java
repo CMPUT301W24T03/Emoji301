@@ -41,7 +41,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     TextView adminText;
     PushNotificationService pushNotificationService = new PushNotificationService();
     Database database = new Database();
-    private boolean permissionNotificationDenied = false;
+    private boolean permissionNotificationDenied = false;    // flag
 
     String TAG = "ProfileActivity";
 
@@ -141,65 +141,6 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         settingPfp();
     }
 
-    private void requestNotificationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
-                PackageManager.PERMISSION_GRANTED) {
-            updateNotificationPermission(true);
-        } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-            showPermissionRationaleDialog();
-        } else {
-            if (permissionNotificationDenied) {
-                showPermissionNeededDialog();
-            } else {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-            }
-        }
-    }
-    private void showPermissionNeededDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Permission needed")
-                .setMessage("Please enable the notification permission from the system settings.")
-                .setPositiveButton("OK", null)
-                .show();
-        notifToggle.setChecked(user.getEnableNotification());
-    }
-    private void showPermissionRationaleDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
-        builder.setTitle("System Notification")
-                .setMessage("You must visit system settings to change notifications.")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-                    }
-                })
-                .setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        updateNotificationPermission(user.getEnableNotification());
-                    }
-                })
-                .show();
-    }
-
-    private void updateNotificationPermission(boolean isGranted) {
-        user.setEnableNotification(isGranted);
-        notifToggle.setChecked(isGranted);
-        if (isGranted) {
-            pushNotificationService.getToken(new PushNotificationService.TokenCallback() {
-                @Override
-                public void onTokenReceived(String token) {
-                    user.setFcmToken(token);
-                    database.setUserObject(user);
-                }
-            });
-        } else {
-            pushNotificationService.deleteToken();
-            user.setFcmToken(null);
-            database.setUserObject(user);
-        }
-    }
-
     /**
      * Called when the activity is resumed.
      */
@@ -207,17 +148,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     protected void onResume() {
         super.onResume();
         Log.d("Resume", "User has resumed");
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-            if (!user.getEnableNotification()) {
-                updateNotificationPermission(true);
-            }
-        } else {
-            if (user.getEnableNotification()) {
-                updateNotificationPermission(false);
-            } else if (!permissionNotificationDenied) {
-                requestNotificationPermission();
-            }
-        }
+        checkNotificationOnResume();
     }
 
     /**
@@ -284,6 +215,12 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         }
     }
 
+    // Notification area //
+    // implemented using https://firebase.google.com/docs/cloud-messaging/android/client?_gl=1*ttt67n*_up*MQ..*_ga*NTU3NDA1OTAxLjE3MTE5MTY5NTc.*_ga_CW55HF8NVT*MTcxMTkxNjk1Ny4xLjAuMTcxMTkxNjk1Ny4wLjAuMA..
+
+    /**
+     * Request runtime notification permission
+     */
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
@@ -301,7 +238,12 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                         }
                     });
                 } else {
-                    // TODO: Inform user that that your app will not show notifications.
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
+                    builder.setTitle("Notification Permission")
+                            .setMessage("You have denied the notification permission. You can enable it in the settings.")
+                            .setPositiveButton("OK", null)
+                            .show();
+
                     permissionNotificationDenied = true;
                     notifToggle.setChecked(false);
                     pushNotificationService.deleteToken();
@@ -309,4 +251,98 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                     database.setUserObject(user);
                 }
             });
+
+    /**
+     * Check if the user has the notification permission when the activity is resumed.
+     */
+    private void checkNotificationOnResume() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            if (!user.getEnableNotification()) {
+                updateNotificationPermission(true);
+            }
+        } else {
+            if (user.getEnableNotification()) {
+                updateNotificationPermission(false);
+            } else if (!permissionNotificationDenied) {
+                requestNotificationPermission();
+            }
+        }
+    }
+
+    /**
+     * Request notification permission from the user.
+     */
+    private void requestNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED) {
+            updateNotificationPermission(true);
+        } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+            showPermissionRationaleDialog();
+        } else {
+            if (permissionNotificationDenied) {
+                showPermissionNeededDialog();
+            } else {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
+    }
+
+    /**
+     * Show a dialog to the user that they need to enable the notification permission.
+     */
+    private void showPermissionNeededDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Permission needed")
+                .setMessage("Please enable the notification permission from the system settings.")
+                .setPositiveButton("OK", null)
+                .show();
+        notifToggle.setChecked(user.getEnableNotification());
+    }
+
+    /**
+     * Show the permission rationale dialog to the user. This dialog explains why the app needs the
+     * notification permission.
+     */
+    private void showPermissionRationaleDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
+        builder.setTitle("System Notification")
+                .setMessage("You must visit system settings to change notifications.")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+                    }
+                })
+                .setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        updateNotificationPermission(user.getEnableNotification());
+                    }
+                })
+                .show();
+    }
+
+    /**
+     * Update the notification permission for the user.
+     * @param isGranted : true if the permission is granted, false otherwise
+     */
+    private void updateNotificationPermission(boolean isGranted) {
+        user.setEnableNotification(isGranted);
+        notifToggle.setChecked(isGranted);
+        if (isGranted) {
+            pushNotificationService.getToken(new PushNotificationService.TokenCallback() {
+                @Override
+                public void onTokenReceived(String token) {
+                    user.setFcmToken(token);
+                    database.setUserObject(user);
+                }
+            });
+        } else {
+            pushNotificationService.deleteToken();
+            user.setFcmToken(null);
+            database.setUserObject(user);
+        }
+    }
+
+    // End of Notification area //
 }
