@@ -189,6 +189,43 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 });
     }
 
+    public void getAllUsers(OnUsersRetrievedListener listener) {
+        // Get all the users from the database
+        profileRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Users> users = new ArrayList<>();
+                for (DocumentSnapshot document : task.getResult()) {
+                    Users user = document.toObject(Users.class);
+                    users.add(user);
+                }
+                listener.onUsersRetrieved(users);
+            } else {
+                Log.d(firestoreDebugTag, "Error getting documents: ", task.getException());
+            }
+        });
+    }
+
+    public interface OnUsersRetrievedListener {
+        void onUsersRetrieved(List<Users> users);
+    }
+
+    public void deleteUser(String userId){
+        profileRef.document(userId).delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(firestoreDebugTag, "DocumentSnapshot successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(firestoreDebugTag, "Error deleting document", e);
+                    }
+                });
+    }
+
+
 
 
 
