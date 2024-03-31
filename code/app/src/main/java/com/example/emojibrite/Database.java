@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Database class to handle the database
@@ -53,6 +54,8 @@ public class Database {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String userUid ;
+
+    private ArrayList<Event> eventsList;
     /**
      * An interface that serves as a callback for user name retrieval
      *
@@ -488,6 +491,41 @@ once created, u can call getuseruid to get the user id and use it to get user da
             Log.e(TAG, "Error fetching event", e);
         });
     }
+
+    public void getSignedUpEvents(String userId, OnEventsRetrievedListener listener){
+        fetchAllEventsDatabase(events -> {
+            List<Event> signedUpEvents = new ArrayList<>();
+            AtomicInteger callbackCount = new AtomicInteger(events.size());
+
+            for (Event event : events) {
+                checkUserInEvent(userId, event.getId(), isUserSignedUp -> {
+                    if (isUserSignedUp) {
+                        signedUpEvents.add(event);
+                    }
+                    if (callbackCount.decrementAndGet() == 0) {
+                        // All callbacks have returned, we can now call the listener
+                        listener.onEventsRetrieved(signedUpEvents);
+                    }
+                });
+            }
+        });
+    }
+
+
+    public void checkUserInEvent(String userUid, String eventId, CheckUserInEventCallback callback) {
+
+        getSignedAttendees(eventId, attendees -> {
+            boolean isUserSignedUp = attendees.contains(userUid);
+            callback.onResult(isUserSignedUp);
+
+    });
+    }
+
+    public interface CheckUserInEventCallback {
+            void onResult(boolean isSignedUp);
+        }
+
+
 
 
     /**

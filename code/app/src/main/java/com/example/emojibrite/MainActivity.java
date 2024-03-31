@@ -3,7 +3,10 @@ package com.example.emojibrite;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 // for going to a new activity
 import android.content.Intent;
@@ -43,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        // create notification channel
+        createNotificationChannel();
 
         // Initialize the button and text view
         enterButton = findViewById(R.id.enterButton);
@@ -101,6 +106,25 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    /**
+     * This method creates a notification channel for the app which can be used to send notifications
+     * to the user. You can customize the channel name and description as needed.
+     * you can find this in settings -> apps -> your app -> notifications
+     */
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.default_notification_channel_name);
+            String description = "Your channel description"; // Replace with your actual description
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(getString(R.string.default_notification_channel_id), name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     private void automaticSignIn(){
