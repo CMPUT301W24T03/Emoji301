@@ -32,7 +32,7 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
 
     ArrayList<String> signedAttendees;
 
-    Button signingup, attendeesButton, notificationButton;
+    Button signingup, attendeesButton, notificationButton, qrCodeEventDetails;
 
     Database database;
 
@@ -56,6 +56,7 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
         attendeesButton = findViewById(R.id.attendees_button);
         signingup=findViewById(R.id.sign_up_button);
         notificationButton = findViewById(R.id.Notification_button);
+        qrCodeEventDetails = findViewById(R.id.qr_code);
 
         Intent intent = getIntent();
         currentUser = intent.getStringExtra("userlol"); // get the user
@@ -90,6 +91,17 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
 
 
         });
+
+        qrCodeEventDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EventDetailsActivity.this, QRCodeEventActivity.class);
+                intent.putExtra("eventId", eventId);
+                intent.putExtra("isFromEventDetails", true); // Indicates this is opened from EventDetailsActivity
+                startActivity(intent);
+            }
+        });
+
 
         attendeesButton.setOnClickListener(new View.OnClickListener() {
             @Override
