@@ -18,7 +18,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-// This class is implemted using the following website(s) as reference(s):
+// This class is implemented using the following website(s) as reference(s):
 // https://firebase.google.com/docs/cloud-messaging/android/first-message#java
 // https://firebase.google.com/docs/cloud-messaging/android/topic-messaging?utm_source=studio#java_4
 
@@ -39,11 +39,6 @@ public class PushNotificationService extends FirebaseMessagingService {
         void onTokenReceived(String token);
     }
 
-    /**
-     * This callback is called when the new token is made.
-     * @param token The token used for sending messages to this application instance. This token is
-     *     the same as the one retrieved by {@link FirebaseMessaging#getToken()}.
-     */
     @Override
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
@@ -55,6 +50,44 @@ public class PushNotificationService extends FirebaseMessagingService {
         before the user document is created cuz u cant send a token to a document that doesn't exist.
          */
 //        sendRegistrationToServer(token);
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
+        super.onMessageReceived(remoteMessage);
+        Log.d(TAG, "onMessageReceived - app in foreground just got a notification");
+
+        // Handle FCM messages here
+        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
+        Log.d(TAG, "From: " + remoteMessage.getFrom());
+
+        // Check if message contains a data payload
+        if (!remoteMessage.getData().isEmpty()) {
+            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+
+            if (/* Check if data needs to be processed by long running job*/ true) {
+                // for long-running task (10 seconds or more) use WorkManager.
+                scheduleJob();
+            } else {
+                // Handle message within 10 seconds
+                handleNow();
+            }
+        }
+
+        // Check if message contains a notification payload.
+        if (remoteMessage.getNotification() != null) {
+            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+        }
+
+        // Also if you intend on generating your own notifications as a result of a received FCM
+        // message, here is where that should be initiated. see sendNotification method below
+    }
+
+
+    @Override
+    public void onDeletedMessages() {
+        super.onDeletedMessages();
     }
 
     /**
@@ -105,8 +138,8 @@ public class PushNotificationService extends FirebaseMessagingService {
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             DocumentReference userRef = FirebaseFirestore.getInstance()
-                                        .collection("Users")
-                                        .document(user.getUid());
+                    .collection("Users")
+                    .document(user.getUid());
             // update the fcmToken field in the user's document
             userRef.update("fcmToken", token)
                     .addOnSuccessListener(aVoid -> {
@@ -120,28 +153,10 @@ public class PushNotificationService extends FirebaseMessagingService {
         }
     }
 
-    @SuppressLint("MissingPermission")
-    @Override
-    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
-        super.onMessageReceived(remoteMessage);
+    private void scheduleJob() {
 
-        Log.d("FirebaseMessaging", "onMessageReceived - app in foreground just got a notification");
-        // Get the notification title and body
-        String title = remoteMessage.getNotification().getTitle();
-        String body = remoteMessage.getNotification().getBody();
+    }
+    private void handleNow() {
 
-        // Create a notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "your_channel_id")
-                .setSmallIcon(R.drawable.emoji_brite_logo)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setDefaults(NotificationCompat.DEFAULT_ALL); // This will make a sound and vibrate
-        Log.d("FirebaseMessaging", "title: " + title);
-        Log.d("FirebaseMessaging", "text: " + body);
-        Log.d("FirebaseMessaging", "id" + remoteMessage);
-        // Show the notification
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(0, builder.build());
     }
 }

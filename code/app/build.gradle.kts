@@ -103,6 +103,7 @@ dependencies {
 
 
     // Firebase Cloud Messaging : Notifications
+    // todo check this for sending message: implementation("com.google.firebase:firebase-admin:9.2.0")
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-analytics:21.6.1")
 }

@@ -12,9 +12,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,6 +40,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     Database database;
 
+    String eventId;
 
 
     /**
@@ -61,7 +66,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         currentUser = intent.getStringExtra("userlol"); // get the user
 
         // Retrieving the event ID passed from the previous activity.
-        String eventId = getIntent().getStringExtra("eventId");
+        eventId = getIntent().getStringExtra("eventId");
 
         if (currentUser!=null){
             Log.d(TAG,"YEPPIEEEE "+currentUser);
@@ -183,6 +188,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
     private void signUpForEvent(String eventId) {
         signedAttendees.add(currentUser);
         database.addSignin(eventId, signedAttendees);
+        subscribeToEvent(eventId);
         signingup.setText("You have signed up"); // Set the text to indicate the user has signed up
         signingup.setBackgroundColor(Color.GREEN); // Change the background color to green
         signingup.setEnabled(false);
@@ -311,24 +317,73 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         }
     }
 
+    // Start of Notification stuff
+
     /**
      * method to handle the positive click of the dialog
      * @param message The message to be sent to the list of attendees
      */
     @Override
     public void onDialogPositiveClick(String message) {
-        // send the notification to all attendees of in the signedAttendees arrayList
-        for (String attendee : signedAttendees) {
-            sendNotification(attendee, message);
-        }
+       sendNotification(message);
     }
 
     /**
      * This function is used to send a notification to the attendees of the event
-     * @param attendee The attendee to send the notification to
      * @param message The message to be sent to the attendee
+     * reference: <a href="https://firebase.google.com/docs/cloud-messaging/android/send-multiple#build_send_requests">Here</a>
      */
-    private void sendNotification(String attendee, String message) {
-        // send the notification to the attendee
+    private void sendNotification(String message) {
+        // todo: might want ot put this in PushNotificationService. Also send() is deprecated
+        // send the notification to the attendees signed up for the event (eventId)
+        // The topic name can be optionally prefixed with "/topics/"
+        String topic = eventId;
+
+//        // See documentation on defining a message payload
+//        Message messageNotif = Message.builder()
+//                .putData("title", "EmojiBrite")
+//                .putData("body", message.toString())
+//                .setTopic(topic)
+//                .build();
+//
+//        // Send a message to the devices subscribed to the provided topic:
+//        String response = FirebaseMessaging.getInstance().send(messageNotif);
+//        // Response is a message ID string.
+//        Log.d(TAG, "Successfully sent message: " + response);
     }
+
+    /**
+     * This function is used to subscribe the user to the event via the event ID.
+     * Uses the Firebase Cloud Messaging (FCM) token to subscribe the user to the event.
+     * @param eventId The event ID to subscribe to
+     */
+    private void subscribeToEvent(String eventId) {
+        FirebaseMessaging.getInstance().subscribeToTopic(eventId)
+                .addOnCompleteListener(task -> {
+                   String msg = "User "+ currentUser +" is now subscribed to event: " + eventId;
+                   if (!task.isSuccessful()) {
+                       msg = "Failed to subscribe user " + currentUser + "to event: " + eventId;
+                   }
+                   Log.d(TAG, msg);
+                   Toast.makeText(EventDetailsActivity.this, msg, Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    /**
+     * This function is used to unsubscribe the user from the event via the event ID.
+     * Uses the Firebase Cloud Messaging (FCM) token to unsubscribe the user from the event.
+     * @param eventId The event ID to unsubscribe from
+     */
+    private void unsubscribeFromEvent(String eventId) {
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(eventId)
+                .addOnCompleteListener(task -> {
+                    String msg = "User "+ currentUser +" is now unsubscribed from event: " + eventId;
+                    if (!task.isSuccessful()) {
+                        msg = "Failed to unsubscribe user " + currentUser + "from event: " + eventId;
+                    }
+                    Log.d(TAG, msg);
+                    Toast.makeText(EventDetailsActivity.this, msg, Toast.LENGTH_SHORT).show();
+                });
+    }
+    // End of Notification stuff
 }

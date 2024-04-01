@@ -112,11 +112,12 @@ public class MainActivity extends AppCompatActivity {
      * This method creates a notification channel for the app which can be used to send notifications
      * to the user. You can customize the channel name and description as needed.
      * you can find this in settings -> apps -> your app -> notifications
+     * <a href="https://developer.android.com/develop/ui/views/notifications/channels">...</a>
      */
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.default_notification_channel_name);
-            String description = "Your channel description"; // Replace with your actual description
+            String description = "Default notification channel for EmojiBrite";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(getString(R.string.default_notification_channel_id), name, importance);
             channel.setDescription(description);
