@@ -1,6 +1,9 @@
 package com.example.emojibrite;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -75,9 +78,14 @@ public class PushNotificationService extends FirebaseMessagingService {
             }
         }
 
+        // Implemented using https://github.com/firebase/quickstart-android/blob/6c602cceec27ef137539390d1691846cfdb9ac21/messaging/app/src/main/java/com/google/firebase/quickstart/fcm/java/MyFirebaseMessagingService.java#L165
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            String notificationBody = remoteMessage.getNotification().getBody();
+            if (remoteMessage.getNotification().getBody() != null) {
+                foregroundNotification(notificationBody);
+            }
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -159,4 +167,30 @@ public class PushNotificationService extends FirebaseMessagingService {
     private void handleNow() {
 
     }
+
+    /**
+     * This method creates a notification that is displayed when the app is in the foreground
+     * @param notificationBody The body of the notification to be displayed
+     */
+    private void foregroundNotification(String notificationBody) {
+        String channelId = getString(R.string.default_notification_channel_id);
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, channelId)
+                        .setSmallIcon(R.drawable.emoji_brite_logo)
+                        .setContentTitle("EmojiBrite")  // change to event name in the future.
+                        .setContentText(notificationBody)
+                        .setAutoCancel(true)
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        // Since android Oreo, notification channel is needed.
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, "Events", NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+            Log.d(TAG, "Notification channel created: " + channel.toString());
+        }
+        notificationManager.notify(0/*ID of notification*/, notificationBuilder.build());
+    }
+
 }
