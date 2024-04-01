@@ -38,8 +38,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     ArrayList<String> signedAttendees;
 
-    Button signingup, attendeesButton, notificationButton, deleteBtn, qrBtn;
-
+    Button signingup, attendeesButton, notificationButton,  deleteBtn, qrBtn, qrCodeEventDetails;
     TextView showMap;
 
     Database database;
@@ -48,6 +47,8 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     String eventId;
     Users user;
+
+
 
     /**
      * Called when the activity is starting. This is where most initialization should go:
@@ -71,6 +72,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         showMap = findViewById(R.id.show_map);
         qrBtn = findViewById(R.id.qr_code);
 
+        qrCodeEventDetails = findViewById(R.id.qr_code);
 
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
@@ -137,6 +139,17 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
         });
 
+        qrCodeEventDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String var = "true";
+                Intent intent = new Intent(EventDetailsActivity.this, DisplayEventQRCode.class);
+                intent.putExtra("eventId", eventId);
+                startActivity(intent);
+            }
+        });
+
+
         attendeesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,7 +173,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
 
 
-        signedAttendees=new ArrayList<>();
+        signedAttendees=new ArrayList<>();  //TODO: CREATE A NEW ARRAYLIST CALLED NOTIFICATION?
 
 //        signingup.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -176,7 +189,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         database.getEventById(eventId, new Database.EventCallBack() {
             @Override
             public void onEventFetched(Event event) {
-                if(event != null) {
+                if (event != null) {
                     setupViews(event);
                     database.getSignedAttendees(eventId, attendees -> {
                         signedAttendees = new ArrayList<>(attendees);
@@ -187,6 +200,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
                 }
             }
         });
+
         notificationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -228,15 +242,13 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     private void signUpForEvent(String eventId) {
         signedAttendees.add(currentUser);
-        database.addSignin(eventId, signedAttendees);
+        database.addSignin(eventId, currentUser);
         signingup.setText("You have signed up"); // Set the text to indicate the user has signed up
         signingup.setBackgroundColor(Color.GREEN); // Change the background color to green
         signingup.setEnabled(false);
     }
 
 
-
-    private void signUpForEvent(){}
 
     /**
      * Sets up the views in the layout with the details of the event.
