@@ -423,32 +423,42 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
 
     /**
-     * This method is mainly used while creating an event. When you create an event, it will create a new
-     * database where it has event ids and an array List of userIds who is a part of the event
-     * @param eventId
-     * @param newAttendeeId
+     * Registers a new attendee for a specific event. If the event already has a list of attendees, the new attendee
+     * is added to this list. If the attendee is already registered, no changes are made. If the event does not
+     * have any attendees yet, a new list is created with the attendee in it.
+     *
+     * @param eventId       The unique identifier of the event for which to register the attendee.
+     * @param newAttendeeId The unique identifier of the attendee to register.
      */
 
     public void addSignin(String eventId, String newAttendeeId) {
+        // Reference to the document for the specific event in the 'SignedUp' collection
         DocumentReference eventDocRef = signedUpRef.document(eventId);
+        // Attempt to retrieve the event document
         eventDocRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
+                // Retrieves the current list of attendees for the event
                 List<String> attendees = (List<String>) documentSnapshot.get("signedAttendees");
                 if (attendees == null) {
+                    // If there's no list, create a new one
                     attendees = new ArrayList<>();
                 }
+                // Add the attendee if they're not already registered
                 if (!attendees.contains(newAttendeeId)) {
                     attendees.add(newAttendeeId);
                 }
+                // Update the document with the new list of attendees
                 eventDocRef.update("signedAttendees", attendees)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Attendee successfully added"))
                         .addOnFailureListener(e -> Log.e(TAG, "Error adding attendee", e));
             } else {
+                // No document exists for the event, create a new event with the attendee
                 List<String> attendees = new ArrayList<>();
                 attendees.add(newAttendeeId);
                 Map<String, Object> newEventMap = new HashMap<>();
                 newEventMap.put("id", eventId);
                 newEventMap.put("signedAttendees", attendees);
+                // Set the new event in the database
                 eventDocRef.set(newEventMap)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "New event created with attendee"))
                         .addOnFailureListener(e -> Log.e(TAG, "Error creating new event", e));
