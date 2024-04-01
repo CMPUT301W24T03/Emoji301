@@ -22,7 +22,7 @@
 
 
     <ListView
-        android:id="@+id/event_posters"
+        android:id="@+id/admin_image_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:divider="@android:color/transparent"
@@ -30,7 +30,7 @@
         android:paddingStart="15dp"
         android:layout_marginTop="10dp"
         android:paddingEnd="15dp"
-        tools:listitem="@layout/poster_image_adapter" />
+        tools:listitem="@layout/admin_image_adapter" />
 
 
 </LinearLayout>
