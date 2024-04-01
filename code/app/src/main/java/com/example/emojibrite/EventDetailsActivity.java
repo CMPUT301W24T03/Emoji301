@@ -38,6 +38,8 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
 
 
 
+
+
     /**
      * Called when the activity is starting. This is where most initialization should go:
      * calling setContentView(int) to inflate the activity's UI, using findViewById(int)
@@ -95,9 +97,9 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
         qrCodeEventDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EventDetailsActivity.this, QRCodeEventActivity.class);
+                String var = "true";
+                Intent intent = new Intent(EventDetailsActivity.this, DisplayEventQRCode.class);
                 intent.putExtra("eventId", eventId);
-                intent.putExtra("isFromEventDetails", true); // Indicates this is opened from EventDetailsActivity
                 startActivity(intent);
             }
         });
@@ -126,7 +128,7 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
 
 
 
-        signedAttendees=new ArrayList<>();
+        signedAttendees=new ArrayList<>();  //TODO: CREATE A NEW ARRAYLIST CALLED NOTIFICATION?
 
 //        signingup.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -142,7 +144,7 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
         database.getEventById(eventId, new Database.EventCallBack() {
             @Override
             public void onEventFetched(Event event) {
-                if(event != null) {
+                if (event != null) {
                     setupViews(event);
                     database.getSignedAttendees(eventId, attendees -> {
                         signedAttendees = new ArrayList<>(attendees);
@@ -153,6 +155,7 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
                 }
             }
         });
+
         notificationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -196,15 +199,13 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
 
     private void signUpForEvent(String eventId) {
         signedAttendees.add(currentUser);
-        database.addSignin(eventId, signedAttendees);
+        database.addSignin(eventId, currentUser);
         signingup.setText("You have signed up"); // Set the text to indicate the user has signed up
         signingup.setBackgroundColor(Color.GREEN); // Change the background color to green
         signingup.setEnabled(false);
     }
 
 
-
-    private void signUpForEvent(){}
 
     /**
      * Sets up the views in the layout with the details of the event.

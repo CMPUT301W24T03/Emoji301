@@ -421,20 +421,36 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * This method is mainly used while creating an event. When you create an event, it will create a new
      * database where it has event ids and an array List of userIds who is a part of the event
      * @param eventId
-     * @param signedAttendees
+     * @param newAttendeeId
      */
 
-    public void addSignin(String eventId, ArrayList<String> signedAttendees )
-    {
-        Map<String, Object> eventMap = new HashMap<>();
-        eventMap.put("id",eventId);
-        eventMap.put("signedAttendees",signedAttendees);
-        signedUpRef.document(eventId).set(eventMap)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Event successfully written!"))
-                .addOnFailureListener(e -> Log.w(TAG, "Error writing event", e));
-//                .addOnCompleteListener(onCompleteListener);
-
+    public void addSignin(String eventId, String newAttendeeId) {
+        DocumentReference eventDocRef = signedUpRef.document(eventId);
+        eventDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                List<String> attendees = (List<String>) documentSnapshot.get("signedAttendees");
+                if (attendees == null) {
+                    attendees = new ArrayList<>();
+                }
+                if (!attendees.contains(newAttendeeId)) {
+                    attendees.add(newAttendeeId);
+                }
+                eventDocRef.update("signedAttendees", attendees)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Attendee successfully added"))
+                        .addOnFailureListener(e -> Log.e(TAG, "Error adding attendee", e));
+            } else {
+                List<String> attendees = new ArrayList<>();
+                attendees.add(newAttendeeId);
+                Map<String, Object> newEventMap = new HashMap<>();
+                newEventMap.put("id", eventId);
+                newEventMap.put("signedAttendees", attendees);
+                eventDocRef.set(newEventMap)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "New event created with attendee"))
+                        .addOnFailureListener(e -> Log.e(TAG, "Error creating new event", e));
+            }
+        }).addOnFailureListener(e -> Log.e(TAG, "Error fetching event document", e));
     }
+
 
     /**
      * This method is to retrieve the array list once we pass the event id
