@@ -5,6 +5,7 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -28,6 +29,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
@@ -280,6 +283,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
     public void storeImageUri(String uid, String imageUri, String imageType) {
         //need testing
         // Get a reference to the user document
+        //needs to be gone. not used or needed
         DocumentReference docRef = db.collection("Users").document(uid);
 
         // Create a map to hold the image URI
@@ -348,18 +352,23 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 .addOnCompleteListener(onCompleteListener);
     }
 
-    public void deleteEvent(String eventId){
+    public void deleteEvent(String eventId, OnCompleteListener<Void> onCompleteListener){
         eventRef.document(eventId).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 String qrCheckUri = documentSnapshot.getString("checkInQRCode");
                 String qrEventUri = documentSnapshot.getString("eventQRCode");
                 String imageUri = documentSnapshot.getString("imageUri");
 
+                Log.d(TAG, "Deleting QR Check-In URI: " + qrCheckUri);
+                Log.d(TAG, "Deleting QR Event URI: " + qrEventUri);
+                Log.d(TAG, "Deleting Image URI: " + imageUri);
+
                 deleteQrEventPoster(qrCheckUri, qrEventUri, imageUri);
 
                 eventRef.document(eventId).delete()
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Event successfully deleted!"))
-                        .addOnFailureListener(e -> Log.w(TAG, "Error deleting event", e));
+                        .addOnFailureListener(e -> Log.w(TAG, "Error deleting event", e))
+                        .addOnCompleteListener(onCompleteListener);
             }
         }).addOnFailureListener(e -> Log.e(TAG, "Error fetching event", e));
     }
@@ -384,6 +393,45 @@ once created, u can call getuseruid to get the user id and use it to get user da
             imageRef.delete();
         }
 
+    }
+
+    public void deleteImageFromStorage(Image image, OnImageDeletedListener listener){
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference imageRef = storage.getReferenceFromUrl(image.getImageURL().toString());
+        imageRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    // Image deleted successfully
+                    if (image.getEventId() != null) {
+                        eventRef.document(image.getEventId()).get().addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists()) {
+                                String imageUri = documentSnapshot.getString("imageUri");
+                                if (imageUri != null && imageUri.equals(image.getImageURL().toString())) {
+                                    eventRef.document(image.getEventId()).update("imageUri", null);
+                                }
+                            }
+                        });
+                    } else if ( image.getUserId() != null) {
+                        profileRef.document(image.getUserId()).get().addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists()) {
+                                String imageUri = documentSnapshot.getString("uploadedImageUri");
+                                if (imageUri != null && imageUri.equals(image.getImageURL().toString())) {
+                                    profileRef.document(image.getUserId()).update("uploadedImageUri", null);
+                                }
+                            }
+                        });
+                    }
+                    listener.onImageDeleted();
+                }
+
+            }
+        });
+
+
+    }
+    public interface OnImageDeletedListener {
+        void onImageDeleted();
     }
 
     /**
@@ -497,6 +545,63 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     // Calling the listener method with the list of retrieved events
                     listener.onEventsRetrieved(events);
                 }).addOnFailureListener(e-> Log.e(TAG,"error fetching all the events", e));
+    }
+
+    public void fetchImages( @Nullable String pageToken,OnImageRetrievedListener listener) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference imageRef = storage.getReference().child("images/");
+        Task<ListResult> listPageTask = pageToken != null
+                ? imageRef.list(100, pageToken)
+                : imageRef.list(100);
+
+        listPageTask
+                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                    @Override
+                    public void onSuccess(ListResult listResult) {
+                        List<StorageReference> prefixes = listResult.getPrefixes();
+                        List<StorageReference> items = listResult.getItems();
+
+                        // Process page of results
+                        List<Image> images = new ArrayList<>();
+                        for (StorageReference item : items) {
+                            item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    item.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+                                        @Override
+                                        public void onSuccess(StorageMetadata storageMetadata) {
+                                            Image image = new Image();
+                                            image.setImageURL(uri);
+                                            image.setEventId(storageMetadata.getCustomMetadata("event_id"));
+                                            image.setUserId(storageMetadata.getCustomMetadata("user_id"));
+                                            images.add(image);
+
+                                            // If all images have been fetched, return them through the listener
+                                            if (images.size() == items.size()) {
+                                                listener.onImageRetrieved(images);
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        // Recurse onto next page
+                        if (listResult.getPageToken() != null) {
+                            fetchImages(listResult.getPageToken(), listener);
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Uh-oh, an error occurred.
+                    }
+                });
+    }
+
+
+
+    public interface OnImageRetrievedListener {
+        void onImageRetrieved(List<Image> images);
     }
 
     /**

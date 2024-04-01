@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,8 +22,9 @@ public class AdminEventActivity extends AppCompatActivity {
     Users user;
     ArrayList<Event> dataList;
     Event event;
-    Database database = new Database();
+
     EventAdapter eventAdapter;
+    FloatingActionButton backBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,37 +39,40 @@ public class AdminEventActivity extends AppCompatActivity {
         notifbell.setVisibility(View.GONE);
         profileButton.setVisibility(View.GONE);
 
-        Intent intent1 = getIntent();
-        user = intent1.getParcelableExtra("userObject");
+        Intent intent = getIntent();
+        user = intent.getParcelableExtra("userObject");
 
         eventList = findViewById(R.id.admin_event_list);
         dataList = new ArrayList<>();
         eventAdapter = new EventAdapter(this, dataList);
         eventList.setAdapter(eventAdapter);
-        FloatingActionButton backBtn = findViewById(R.id.backButton);
+        backBtn = findViewById(R.id.backButton);
 
-        backBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminEventActivity.this, AdminActivity.class);
-            intent.putExtra("userObject", user);
-            startActivity(intent);
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AdminEventActivity.this, AdminActivity.class);
+                intent.putExtra("userObject", user);
+                startActivity(intent);
+            }
         });
 
-
-        eventList.setOnItemClickListener((parent, view, position, id) -> {
-            Event event = dataList.get(position);
-            Intent intent = new Intent(AdminEventActivity.this, EventDetailsActivity.class);
-            intent.putExtra("eventId", event.getId());
-            intent.putExtra("userlol", user.getProfileUid());
-            intent.putExtra("priviledge", "2");
-            startActivity(intent);
+        eventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Event event = dataList.get(position);
+                Intent intent = new Intent(AdminEventActivity.this, EventDetailsActivity.class);
+                intent.putExtra("eventId", event.getId());
+                intent.putExtra("userObject", user);
+                intent.putExtra("privilege", "2");
+                startActivity(intent);
+            }
         });
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
         fetchEvents();
     }
+
+
     private void fetchEvents(){
         Database database = new Database();
         database.fetchAllEventsDatabase(new Database.OnEventsRetrievedListener() {

@@ -35,7 +35,7 @@
 //
 //    FloatingActionButton fab;
 //    private RecyclerView recyclerView;
-//    private ArrayList<ImageClass> dataList;
+//    private ArrayList<Image> dataList;
 //    private AdminImageAdapter adapter;
 //    final private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Images");
 //

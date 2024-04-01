@@ -55,7 +55,7 @@ public class AdminActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Go to the EventHome page
-                Intent intent = new Intent(AdminActivity.this, EventHome.class);
+                Intent intent = new Intent(AdminActivity.this, AdminEventActivity.class);
                 intent.putExtra("userObject", user);
                 startActivity(intent);
             }

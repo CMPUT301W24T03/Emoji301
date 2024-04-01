@@ -97,7 +97,9 @@
         <activity
             android:name=".EventDetailsActivity"
             android:exported="false" />
-        <activity android:name=".AttendeesListActivity"
+
+        <activity
+            android:name=".AttendeesListActivity"
             android:exported="false" />
         <activity
             android:name=".QRCodeEventActivity"
@@ -118,12 +120,17 @@
             android:exported="false">
         </activity>
         <activity
-            android:name = ".AdminProfileActivity"
+            android:name = "AdminProfileActivity"
             android:exported="false"
             />
+        <activity
+            android:name= "AdminEventActivity"
+            android:exported="false" />
 
         <!--Admin images related-->
-        <activity android:name=".AdminImagesHome"/>
+        <activity
+            android:name=".AdminImagesHome"
+            android:exported="false"/>
 
 
         <!--Notifications related-->
