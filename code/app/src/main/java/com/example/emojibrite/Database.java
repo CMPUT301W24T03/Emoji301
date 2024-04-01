@@ -25,6 +25,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -328,6 +329,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
         eventMap.put("checkInQRCode", event.getCheckInQRCode() != null ? event.getCheckInQRCode().toString() : null);
         eventMap.put("eventQRCode", event.getEventQRCode() != null ? event.getEventQRCode().toString() : null);
 
+        //2D arrays for attendees and geolocations
+        eventMap.put("attendeeList", event.getAttendeesList());
+        eventMap.put("geolocationsList", event.getGeolocationList());
+
         if (event.getImageUri()!=null){
             Log.d(TAG, event.getImageUri().toString()); //testing
         }
@@ -534,6 +539,35 @@ once created, u can call getuseruid to get the user id and use it to get user da
         void onSignedAttendeesRetrieved(List<String> attendees);
     }
 
+    /**
+     * Fetches a single event from the Firestore database using the check-in QR ID.
+     * If the event is found, the provided {@link EventCallBack} is invoked with the retrieved event.
+     *
+     * @param QRCheckinID
+     * The ID of the check-in QR code.
+     * @param callBack
+     * The callback that will handle the event once it is fetched.
+     */
+
+    public void getEventByCheckInID(String QRCheckinID, EventCallBack callBack){
+        eventRef.whereEqualTo("checkInID",QRCheckinID).get().addOnSuccessListener(querySnapshot -> {
+            // if our query is not empty and we only have a single document returned
+            if(!querySnapshot.isEmpty() && querySnapshot.size() == 1){
+                // get the event and make it an event class.
+                DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+                Event event = document.toObject(Event.class);
+                callBack.onEventFetched(event);
+            }
+            // else we found multiple events with the same QR check in.
+            else{
+                callBack.onEventFetched(null);
+            }
+
+            // exception for if the task for some reason failed
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Error fetching event", e);
+        });
+    }
 
     public void getSignedUpEvents(String userId, OnEventsRetrievedListener listener){
         fetchAllEventsDatabase(events -> {
@@ -571,17 +605,38 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
 
 
+    /**
+     * Method to update an event's attendee's list.
+     * @param eventID
+     * The event that's meant to be updated.
+     * @param attendees
+     * A 2D ArrayList containing the attendees and the number of times they have checked in.
+     */
+    public void updateEventAttendees(String eventID, ArrayList<ArrayList<String>> attendees){
+        eventRef.document(eventID).update("attendeeList",attendees).addOnSuccessListener( onSuccessListener -> {
+            Log.d(TAG, "Event successfully updated!");
 
+            // exception for if the task for some reason failed
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Error updating event attendees", e);
+        });
+    }
 
+    /**
+     * Method to update an event's list of where attendees are checking in from.
+     * @param eventID
+     * The event that's meant to be updated.
+     * @param checkInLocations
+     * A 2D ArrayList containing the locations that attendees checked in from.
+     */
+    public void updateEventCheckInLocations(String eventID, ArrayList<ArrayList<String>> checkInLocations){
+        eventRef.document(eventID).update("geolocationsList", checkInLocations).addOnSuccessListener( onSuccessListener -> {
+            Log.d(TAG, "Event successfully updated!");
 
-
-
-
-
-
-
-
-
-
+            // exception for if the task for some reason failed
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Error updating event attendees", e);
+        });
+    }
 
 }
