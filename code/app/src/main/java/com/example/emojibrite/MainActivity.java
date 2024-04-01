@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private Users user;
     private Database database = new Database();
 
-    private boolean loggedIn ;
+    private boolean loggedIn;
 
     private boolean userDocExist;
 
@@ -56,6 +56,22 @@ public class MainActivity extends AppCompatActivity {
         loggedIn = false;
         automaticSignIn();
 
+        // making the textview clickable
+        // we go to QR scanning activity
+        scanQRCode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // checking if the user is logged in (as in there is an account associated with the device)
+                if (loggedIn) {
+                    Bundle bundle = new Bundle();
+                    // we put in the user ID and geolocation enabled bool
+                    bundle.putStringArray("USER", new String[]{user.getProfileUid(), Boolean.toString(user.getEnableGeolocation())});
+                    Intent intent = new Intent(MainActivity.this, QRScanningActivity.class);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
+            }
+        });
 
         /* When Enter Button is clicked, go to the next activity.
          * But which one??
