@@ -32,9 +32,11 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     ArrayList<String> signedAttendees;
 
-    Button signingup, attendeesButton, notificationButton;
+    Button signingup, attendeesButton, notificationButton, qrCodeEventDetails;
 
     Database database;
+
+
 
 
 
@@ -56,6 +58,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         attendeesButton = findViewById(R.id.attendees_button);
         signingup=findViewById(R.id.sign_up_button);
         notificationButton = findViewById(R.id.Notification_button);
+        qrCodeEventDetails = findViewById(R.id.qr_code);
 
         Intent intent = getIntent();
         currentUser = intent.getStringExtra("userlol"); // get the user
@@ -91,6 +94,17 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
         });
 
+        qrCodeEventDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String var = "true";
+                Intent intent = new Intent(EventDetailsActivity.this, DisplayEventQRCode.class);
+                intent.putExtra("eventId", eventId);
+                startActivity(intent);
+            }
+        });
+
+
         attendeesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,7 +128,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
 
 
-        signedAttendees=new ArrayList<>();
+        signedAttendees=new ArrayList<>();  //TODO: CREATE A NEW ARRAYLIST CALLED NOTIFICATION?
 
 //        signingup.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -130,7 +144,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         database.getEventById(eventId, new Database.EventCallBack() {
             @Override
             public void onEventFetched(Event event) {
-                if(event != null) {
+                if (event != null) {
                     setupViews(event);
                     database.getSignedAttendees(eventId, attendees -> {
                         signedAttendees = new ArrayList<>(attendees);
@@ -141,6 +155,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
                 }
             }
         });
+
         notificationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -182,15 +197,13 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     private void signUpForEvent(String eventId) {
         signedAttendees.add(currentUser);
-        database.addSignin(eventId, signedAttendees);
+        database.addSignin(eventId, currentUser);
         signingup.setText("You have signed up"); // Set the text to indicate the user has signed up
         signingup.setBackgroundColor(Color.GREEN); // Change the background color to green
         signingup.setEnabled(false);
     }
 
 
-
-    private void signUpForEvent(){}
 
     /**
      * Sets up the views in the layout with the details of the event.
