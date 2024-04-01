@@ -25,7 +25,10 @@ public class AdminActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.admin_home_page);
 
         Intent intent = getIntent();

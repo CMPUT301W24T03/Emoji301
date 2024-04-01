@@ -26,6 +26,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -339,6 +341,44 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Event successfully written!"))
                 .addOnFailureListener(e -> Log.w(TAG, "Error writing event", e))
                 .addOnCompleteListener(onCompleteListener);
+    }
+
+    public void deleteEvent(String eventId){
+        eventRef.document(eventId).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String qrCheckUri = documentSnapshot.getString("checkInQRCode");
+                String qrEventUri = documentSnapshot.getString("eventQRCode");
+                String imageUri = documentSnapshot.getString("imageUri");
+
+                deleteQrEventPoster(qrCheckUri, qrEventUri, imageUri);
+
+                eventRef.document(eventId).delete()
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Event successfully deleted!"))
+                        .addOnFailureListener(e -> Log.w(TAG, "Error deleting event", e));
+            }
+        }).addOnFailureListener(e -> Log.e(TAG, "Error fetching event", e));
+    }
+
+    public void deleteQrEventPoster(String checkInUri, String eventUri, String eventPoster){
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+        //delete the qr code
+        if (checkInUri != null) {
+            StorageReference imageRef = storage.getReferenceFromUrl(checkInUri);
+            imageRef.delete();
+
+
+        }
+        if (eventUri != null) {
+            StorageReference imageRef = storage.getReferenceFromUrl(eventUri);
+            imageRef.delete();
+
+        }
+        if (eventPoster != null) {
+            StorageReference imageRef = storage.getReferenceFromUrl(eventPoster);
+            imageRef.delete();
+        }
+
     }
 
     /**

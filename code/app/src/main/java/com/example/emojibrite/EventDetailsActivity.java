@@ -2,6 +2,8 @@ package com.example.emojibrite;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -32,10 +34,15 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     ArrayList<String> signedAttendees;
 
-    Button signingup, attendeesButton, notificationButton;
+    Button signingup, attendeesButton, notificationButton, deleteBtn;
+
+    TextView showMap;
 
     Database database;
 
+    String privilege;
+
+    String eventId;
 
 
     /**
@@ -56,12 +63,45 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         attendeesButton = findViewById(R.id.attendees_button);
         signingup=findViewById(R.id.sign_up_button);
         notificationButton = findViewById(R.id.Notification_button);
+        deleteBtn = findViewById(R.id.delete_event);
+        showMap = findViewById(R.id.show_map);
 
         Intent intent = getIntent();
         currentUser = intent.getStringExtra("userlol"); // get the user
 
         // Retrieving the event ID passed from the previous activity.
-        String eventId = getIntent().getStringExtra("eventId");
+        eventId = getIntent().getStringExtra("eventId");
+
+        privilege = intent.getStringExtra("priviledge");
+        if (privilege.equals("2")){
+            ImageView notifbell = findViewById(R.id.notif_bell);
+            ImageView profileButton = findViewById(R.id.profile_pic);
+
+            notifbell.setVisibility(View.GONE);
+            profileButton.setVisibility(View.GONE);
+            attendeesButton.setVisibility(View.GONE);
+
+            signingup.setVisibility(View.GONE);
+            showMap.setVisibility(View.GONE);
+            deleteBtn.setVisibility(View.VISIBLE);
+
+        }
+        else{
+            deleteBtn.setVisibility(View.GONE);
+            attendeesButton.setVisibility(View.VISIBLE);
+            signingup.setVisibility(View.VISIBLE);
+            showMap.setVisibility(View.VISIBLE);
+
+        }
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteAlertBuilder();
+                finish();
+            }
+        });
+
+
 
         if (currentUser!=null){
             Log.d(TAG,"YEPPIEEEE "+currentUser);
@@ -70,9 +110,6 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             Log.d(TAG, "SAAAAAAD IT IS NULL");
         }
 
-
-        Button attendeesButton = findViewById(R.id.attendees_button);
-        TextView showMap = findViewById(R.id.show_map);
 
         showMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -247,10 +284,6 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             notificationButton.setVisibility(View.GONE);
 
         }
-
-
-
-
         // Formatting and displaying the event date and time.
         String dateTime = "";
         if (event.getDate() != null) {
@@ -330,5 +363,32 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
      */
     private void sendNotification(String attendee, String message) {
         // send the notification to the attendee
+    }
+
+
+    private void deleteAlertBuilder(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // Set the message and the title of the dialog
+        builder.setTitle("Confirm Delete");
+        builder.setMessage("Are you sure you want to delete this user?");
+        // Set the positive (Yes) button and its click listener
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                database.deleteEvent(eventId);
+            }
+        });
+        // Set the negative (No) button and its click listener
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Dismiss the dialog
+                dialog.dismiss();
+            }
+        });
+        // Create and show the dialog
+        builder.create().show();
     }
 }
