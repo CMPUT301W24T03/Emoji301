@@ -26,7 +26,7 @@ import java.util.Locale;
  * of a selected event. It retrieves event data based on the passed event ID
  * and sets up the views to display this data.
  */
-public class EventDetailsActivity extends AppCompatActivity implements NotificationDialogFragment.NotificationDialogListener{
+public class EventDetailsActivity extends AppCompatActivity implements PushNotificationDialogFragment.NotificationDialogListener{
 
     String currentUser;
 
@@ -159,11 +159,9 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
         notificationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new NotificationDialogFragment().show(getSupportFragmentManager(), "NotificationDialogFragment");
+                new PushNotificationDialogFragment().show(getSupportFragmentManager(), "PushNotificationDialogFragment");
             }
         });
-
-        // todo: make it so that only organizers can see the notification button. ask snehal
     }
 
     /**
@@ -248,7 +246,7 @@ public class EventDetailsActivity extends AppCompatActivity implements Notificat
             //if both their ids match, that means they are the organizer itslf
             //so they do not have to sign up aka, we can remove it
             signingup.setVisibility(View.GONE);
-
+            notificationButton.setVisibility(View.VISIBLE);
             Log.d(TAG,"SIGNINGUP BUTTON IS GOOONE");
 
         }

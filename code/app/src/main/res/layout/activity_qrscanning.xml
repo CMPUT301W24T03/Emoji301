@@ -25,13 +25,6 @@
             android:textColor="@color/white"
             android:textSize="12sp" />
 
-        <TextView
-            android:id="@+id/qr_scan_result"
-            android:layout_width="match_parent"
-            android:layout_height="144dp"
-            android:textSize="40dp"
-            android:text="TextView" />
-
     </LinearLayout>
 
 </LinearLayout>

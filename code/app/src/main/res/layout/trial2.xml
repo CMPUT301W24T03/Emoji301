@@ -1,0 +1,9 @@
+<!-- list_item_event.xml -->
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/event_title_text_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="18sp"
+    android:text= "Hey"
+    android:padding="10dp"/>
