@@ -13,17 +13,29 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
-//import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.MediaType.Companion.*;
 
 /**
  * EventDetailsActivity is responsible for displaying the detailed information
@@ -325,15 +337,19 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
      */
     @Override
     public void onDialogPositiveClick(String message) {
-       sendNotification(message);
+        sendNotification(message);
     }
 
     /**
      * This function is used to send a notification to the attendees of the event
-     * @param message The message to be sent to the attendee
+     * @param notifBody The message to be sent to the attendee
      * reference: <a href="https://firebase.google.com/docs/cloud-messaging/android/send-multiple#build_send_requests">Here</a>
+     *                  <a href="https://www.youtube.com/watch?v=G9TO6J_i3LU&list=WL&index=6">here2</a>
+     *                  <a href="https://www.youtube.com/watch?v=6_t87WW6_Gc&list=WL&index=7">here3</a>
+     *                  <a href="https://www.youtube.com/watch?v=oNoRw69ro2k&list=WL&index=8">here4</a>
      */
-    private void sendNotification(String message) {
+    private void sendNotification(String notifBody) {
+        Log.d("Notify", "SendNotification is called");
         // todo: might want ot put this in PushNotificationService. Also send() is deprecated
         // send the notification to the attendees signed up for the event (eventId)
         // The topic name can be optionally prefixed with "/topics/"
@@ -350,6 +366,55 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 //        String response = FirebaseMessaging.getInstance().send(messageNotif);
 //        // Response is a message ID string.
 //        Log.d(TAG, "Successfully sent message: " + response);
+
+        String host = "https://fcm.googleapis.com/v1/projects/emojibrite/messages:send";
+        String token = "0b50cc51aa0d6c280549701f8f5149ae003f5580"; // todo: replace with your server key
+
+        OkHttpClient client = new OkHttpClient();
+        MediaType mediaType = MediaType.parse("application/json");
+
+        // Message creation
+        JSONObject message = new JSONObject();
+        JSONObject notification = new JSONObject();
+
+        try{
+            notification.put("title", "EmojiBrite");
+            notification.put("body", notifBody);
+            JSONObject msg = new JSONObject();
+            msg.put("topic", topic);
+            msg.put("notification", notification);
+            message.put("message", msg);
+            Log.d("Notify", message.toString());
+        } catch (JSONException e){
+            Log.d("Notify", "JSONException error: " + e);
+        }
+
+        // send message to firebase API
+        RequestBody rBody = RequestBody.create(message.toString(), mediaType);
+        Log.d("Notify", "rBody: "+ rBody);
+        Request request = new Request.Builder()
+                .url(host)
+                .post(rBody)
+                .addHeader("Authorization", "Bearer " + token)
+                .addHeader("Content-Type", "application/json")
+                .build();
+        Log.d("Notify", "Request " +  request);
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                // This is where you would handle a request failure
+                Log.d("Notify", "IOException error: " + e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                // This is where you would handle the response
+                Log.d("Notify", "Response: " + response);
+                response.close();
+            }
+        });
+
     }
 
     /**
@@ -360,12 +425,12 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
     private void subscribeToEvent(String eventId) {
         FirebaseMessaging.getInstance().subscribeToTopic(eventId)
                 .addOnCompleteListener(task -> {
-                   String msg = "User "+ currentUser +" is now subscribed to event: " + eventId;
-                   if (!task.isSuccessful()) {
-                       msg = "Failed to subscribe user " + currentUser + "to event: " + eventId;
-                   }
-                   Log.d(TAG, msg);
-                   Toast.makeText(EventDetailsActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    String msg = "User "+ currentUser +" is now subscribed to event: " + eventId;
+                    if (!task.isSuccessful()) {
+                        msg = "Failed to subscribe user " + currentUser + "to event: " + eventId;
+                    }
+                    Log.d(TAG, msg);
+                    Toast.makeText(EventDetailsActivity.this, msg, Toast.LENGTH_SHORT).show();
                 });
     }
 

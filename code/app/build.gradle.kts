@@ -102,8 +102,10 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.0")
 
 
-    // Firebase Cloud Messaging : Notifications
+    // Firebase Cloud Messaging : Notifications + OKHTTP
     // todo check this for sending message: implementation("com.google.firebase:firebase-admin:9.2.0")
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
+    implementation("com.squareup.okhttp3:okhttp")
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-analytics:21.6.1")
 }
