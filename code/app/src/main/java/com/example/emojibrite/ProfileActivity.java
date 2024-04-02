@@ -191,7 +191,6 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         }
     }
 
-
     /**
      * Called when the user clicks the "Edit" button to edit their profile.
      */

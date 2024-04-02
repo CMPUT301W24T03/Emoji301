@@ -72,7 +72,7 @@ public class AddEventFragment extends DialogFragment{
 
     private String eventId, checkInID;
 
-    ImageUploader imageUploader = new ImageUploader("eventPoster");
+    ImageUploader imageUploader = new ImageUploader("images");
     ImageUploader imageUploaderQR = new ImageUploader("QRCode");
 
 

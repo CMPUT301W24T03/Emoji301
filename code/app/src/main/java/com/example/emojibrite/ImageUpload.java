@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class ImageUpload {
+    //most likely useless
     private Bitmap selectedImageBitmap = null;
 
     public Bitmap getSelectedImageBitmap() {
