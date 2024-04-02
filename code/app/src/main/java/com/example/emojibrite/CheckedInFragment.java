@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CheckedInFragment extends Fragment {
@@ -21,6 +22,8 @@ public class CheckedInFragment extends Fragment {
     AttendeesArrayAdapter attendeesArrayAdapter;
 
     ArrayList<Users> attendeesList;
+
+    HashMap<String, Integer> checkInCounts = new HashMap<>();
 
     private String eventId;
     /**
@@ -54,7 +57,8 @@ public class CheckedInFragment extends Fragment {
         }
 
         attendeesList = new ArrayList<>();
-        attendeesArrayAdapter = new AttendeesArrayAdapter(getContext(), attendeesList);
+        ArrayList<Users> uniqueUidArray = new ArrayList<>();
+        attendeesArrayAdapter = new AttendeesArrayAdapter(getContext(), uniqueUidArray, "1", checkInCounts);
         attendeesListView.setAdapter(attendeesArrayAdapter);
         loadAttendees(eventId);
 
@@ -67,30 +71,38 @@ public class CheckedInFragment extends Fragment {
 
     private void loadAttendees(String eventId) {
         Database db = new Database();
+        ArrayList<Users> uniqueUidArray = new ArrayList<>();
+
         db.getEventById(eventId, new Database.EventCallBack() {
             @Override
             public void onEventFetched(Event event) {
-                ArrayList<String> ListAttendees = event.getAttendeesList();
-                for (String userId : ListAttendees){
-                    db.getUserDocument(userId, new Database.OnUserDocumentRetrievedListener() {
-                        @Override
-                        public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot) {
-                            if (documentSnapshot.exists()) {
-                                Users user = documentSnapshot.toObject(Users.class);
-                                if (user != null) {
-                                    attendeesList.add(user);
-                                    if (getActivity() != null) {
-                                        getActivity().runOnUiThread(() -> attendeesArrayAdapter.notifyDataSetChanged());
+                ArrayList<String> listAttendees = event.getAttendeesList();
+                for (String userId : listAttendees) {
+                    // Update check-in count
+                    checkInCounts.put(userId, checkInCounts.getOrDefault(userId, 0) + 1);
+
+                    // Load user details only if not already in the unique list
+                    if (!uniqueUidArray.stream().anyMatch(u -> u.getProfileUid().equals(userId))) {
+                        db.getUserDocument(userId, new Database.OnUserDocumentRetrievedListener() {
+                            @Override
+                            public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot) {
+                                if (documentSnapshot.exists()) {
+                                    Users user = documentSnapshot.toObject(Users.class);
+                                    if (user != null) {
+                                        uniqueUidArray.add(user);
+                                        if (getActivity() != null) {
+                                            getActivity().runOnUiThread(() -> attendeesArrayAdapter.notifyDataSetChanged());
+                                        }
                                     }
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
-
             }
         });
     }
+
 
     /**
      * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
