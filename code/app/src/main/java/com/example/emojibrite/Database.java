@@ -757,13 +757,13 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * @param checkInLocations
      * A 2D ArrayList containing the locations that attendees checked in from.
      */
-    public void updateEventCheckInLocations(String eventID, ArrayList<ArrayList<String>> checkInLocations){
+    public void updateEventCheckInLocations(String eventID, ArrayList<String> checkInLocations){
         eventRef.document(eventID).update("geolocationsList", checkInLocations).addOnSuccessListener( onSuccessListener -> {
-            Log.d(TAG, "Event successfully updated!");
+            Log.d(TAG, "Event geolocation check-ins successfully updated!");
 
             // exception for if the task for some reason failed
         }).addOnFailureListener(e -> {
-            Log.e(TAG, "Error updating event attendees", e);
+            Log.e(TAG, "Error updating event geolocation check-ins", e);
         });
     }
 
