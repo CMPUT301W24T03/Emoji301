@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.PickerActions;
@@ -20,6 +21,7 @@ import androidx.test.espresso.contrib.PickerActions;
 
 import static java.util.regex.Pattern.matches;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ImageView;
@@ -56,6 +58,9 @@ public class EventActivityTest {
     @Rule
     public ActivityScenarioRule<EventHome> activityRule = new ActivityScenarioRule<>(EventHome.class);
     // Test if the dialog is displayed when the Add Event button is clicked
+
+
+
     @Test
     public void testAddDialog(){
         onView(withId(R.id.event_add_btn)).perform(click());
@@ -83,13 +88,6 @@ public class EventActivityTest {
         onView(withClassName(Matchers.equalTo(TimePicker.class.getName()))).perform(PickerActions.setTime(12, 0));
         onView(withId(android.R.id.button1)).perform(click());
 
-        // Select an event poster image
-        // Note: This assumes that you have an ActivityResultLauncher in the activity or fragment
-        // that will handle the image selection. Espresso does not directly support
-        // launching activities for results, so this would need to be mocked or
-        // handled in a different manner in your production code.
-        // For the purposes of this test, we'll simulate selecting an image by directly
-        // setting an image on the ImageView.
         onView(withId(R.id.image_event_poster)).perform(setDrawableResource(R.drawable.ic_launcher_background));
 
         // Click the Next button to add the event
