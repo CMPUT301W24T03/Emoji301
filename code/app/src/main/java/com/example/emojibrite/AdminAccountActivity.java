@@ -34,7 +34,7 @@ public class AdminAccountActivity extends AppCompatActivity {
 
         profileList = findViewById(R.id.profile_list);
         dataList = new ArrayList<>();
-        profileAdapter = new AttendeesArrayAdapter(this, dataList, user.getRole());
+        profileAdapter = new AttendeesArrayAdapter(this, dataList, user.getRole(), null);
         profileList.setAdapter(profileAdapter);
         FloatingActionButton backBtn = findViewById(R.id.backButton);
 
