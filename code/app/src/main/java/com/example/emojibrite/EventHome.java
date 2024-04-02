@@ -141,9 +141,26 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         Button otherEvent = findViewById(R.id.other_events_button);
 
         Intent intent = getIntent();
-        user = intent.getParcelableExtra("userObject");
-        //this allows the user to not be stuck on admin activity all the time
-        user.setEnableAdmin(false);
+//        user = intent.getParcelableExtra("userObject");
+//        //this allows the user to not be stuck on admin activity all the time
+//        user.setEnableAdmin(false);
+        if (intent.hasExtra("userObject"))
+        {
+            user = intent.getParcelableExtra("userObject");
+            if (user != null) {
+                user.setEnableAdmin(false);
+            } else {
+                Log.e("EVENTHOME: PROFILE", "User object is null");
+            }
+        }
+        else {
+            Log.e(TAG, "No userObject passed in intent");
+
+        }
+
+
+
+
 
         Log.d(TAG, "PROFILE PIC EVENT HOME "+user.getUploadedImageUri());
         if(user!=null) {
