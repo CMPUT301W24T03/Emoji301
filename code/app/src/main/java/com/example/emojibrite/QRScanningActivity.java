@@ -107,30 +107,15 @@ public class QRScanningActivity extends AppCompatActivity {
                 public void onEventFetched(Event event) {
                     // if the event exists
                     if (event != null) {
-                        ArrayList<ArrayList<String>> attendees = event.getAttendeesList();
-                        boolean match = false;
-                        found = true;
+                        ArrayList<String> attendees = event.getAttendeesList();
+                        Log.d("QRScanningActivity", "Attendees List: " + attendees.toString());
 
-                        // we now iterate through the list
-                        // array[i][0] is the uid
-                        // array[i][1] is the number of times that uid has checked in
-                        for (int i = 0; i < attendees.size(); i++) {
-                            if (attendees.get(i).get(0).equals(uid)) {
-                                int a = Integer.parseInt(attendees.get(i).get(1));
-                                attendees.get(i).set(1, Integer.toString(a + 1));
-                                database.updateEventAttendees(event.getId(), attendees);
-                                break;
-                            }
-                        }
+                        // Check if the current user is already in the attendees list
 
-                        // if the uid did not exist in the attendees list
-                        if (!match) {
-                            ArrayList<String> attendee = new ArrayList<String>();
-                            attendee.add(uid);
-                            attendee.add("0");
-                            attendees.add(attendee);
+                        attendees.add(uid);
+                        Log.d("QRScanningActivity", "Attendees List: " + attendees.toString());
                             database.updateEventAttendees(event.getId(), attendees);
-                        }
+
 
                         // if the user has geolocation enabled
                         if (geolocationBool) {
@@ -144,6 +129,10 @@ public class QRScanningActivity extends AppCompatActivity {
             Toast.makeText(this,"The scanned QR is not associated with any events.", Toast.LENGTH_LONG);
         }
     });
+
+
+
+
 
     /**
      * Opens the EventDetailsActivity to show the details of the selected event.
@@ -182,11 +171,10 @@ public class QRScanningActivity extends AppCompatActivity {
             double latitude = location.getLatitude();
 
             // adding things to the list
-            ArrayList<String> geolocation = new ArrayList<String>();
-            geolocation.add(Double.toString(longitude));
-            geolocation.add(Double.toString(latitude));
+            String geolocation;
+            geolocation = longitude + "," + latitude;
 
-            ArrayList<ArrayList<String>> geolocationList = event.getGeolocationList();
+            ArrayList<String> geolocationList = event.getGeolocationList();
             geolocationList.add(geolocation);
 
             database.updateEventCheckInLocations(event.getId(), geolocationList);
