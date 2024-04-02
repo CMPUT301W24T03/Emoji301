@@ -19,7 +19,7 @@ import java.util.List;
 public class AdminEventActivity extends AppCompatActivity {
 
     ListView eventList;
-    Users user;
+    static Users user;
     ArrayList<Event> dataList;
     Event event;
 

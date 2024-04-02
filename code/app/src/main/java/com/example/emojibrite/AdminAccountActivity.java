@@ -18,7 +18,7 @@ import java.util.List;
 public class AdminAccountActivity extends AppCompatActivity {
     ListView profileList;
     ArrayList<Users> dataList;
-    Users user;
+    static Users user;
     Database database = new Database();
     AttendeesArrayAdapter profileAdapter;
 
