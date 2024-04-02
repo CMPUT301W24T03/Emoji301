@@ -25,7 +25,10 @@ public class AdminActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.admin_home_page);
 
         Intent intent = getIntent();
@@ -35,7 +38,7 @@ public class AdminActivity extends AppCompatActivity {
         accountBtn = findViewById(R.id.accountAdminButton);
         imageBtn = findViewById(R.id.imagesAdminButton);
         profileButton = findViewById(R.id.profile_pic);
-        //displayProfileIcon();
+        displayProfileIcon();
 
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +55,7 @@ public class AdminActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Go to the EventHome page
-                Intent intent = new Intent(AdminActivity.this, EventHome.class);
+                Intent intent = new Intent(AdminActivity.this, AdminEventActivity.class);
                 intent.putExtra("userObject", user);
                 startActivity(intent);
             }
@@ -62,7 +65,7 @@ public class AdminActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Go to the AccountActivity page
-                Intent intent = new Intent(AdminActivity.this, AdminProfileActivity.class);
+                Intent intent = new Intent(AdminActivity.this, AdminAccountActivity.class);
                 intent.putExtra("userObject", user);
                 startActivity(intent);
             }
@@ -79,25 +82,25 @@ public class AdminActivity extends AppCompatActivity {
         });
     }
 
-//    private void displayProfileIcon() {
-//        if (user.getUploadedImageUri() != null) {
-//            // User uploaded a picture, use that as the ImageView
-//            //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
-//            new Handler(Looper.getMainLooper()).post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Glide.with(AdminActivity.this).load(user.getUploadedImageUri()).into(profileButton);
-//                }
-//            });
-//        } else if (user.getUploadedImageUri() == null) {
-//            new Handler(Looper.getMainLooper()).post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Glide.with(AdminActivity.this).load(user.getAutoGenImageUri()).into(profileButton);
-//                }
-//            });
-//        } else {
-//            Log.e("AdminActivity ", "User object is null");
-//        }
-//    }
+    private void displayProfileIcon() {
+        if (user.getUploadedImageUri() != null) {
+            // User uploaded a picture, use that as the ImageView
+            //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(AdminActivity.this).load(user.getUploadedImageUri()).into(profileButton);
+                }
+            });
+        } else if (user.getUploadedImageUri() == null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(AdminActivity.this).load(user.getAutoGenImageUri()).into(profileButton);
+                }
+            });
+        } else {
+            Log.e("AdminActivity ", "User object is null");
+        }
+    }
 }

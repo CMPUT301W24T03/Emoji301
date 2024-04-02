@@ -33,7 +33,6 @@ public class Users implements Parcelable{
 
     public Users() {}
 
-
     /**
      * Users constructor with uid
      *
