@@ -19,13 +19,16 @@ import androidx.appcompat.widget.SwitchCompat;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AttendeesArrayAdapter extends ArrayAdapter<Users> {
     String privilege;
-    public AttendeesArrayAdapter(Context context, ArrayList<Users> users, String privilege) {
-        super(context,0,users);
-        this.privilege = privilege;
+    private HashMap<String, Integer> checkInCounts;
 
+    public AttendeesArrayAdapter(Context context, ArrayList<Users> users, String privilege, HashMap<String, Integer> checkInCounts) {
+        super(context, 0, users);
+        this.privilege = privilege;
+        this.checkInCounts = checkInCounts;
     }
 
 
@@ -75,7 +78,12 @@ public class AttendeesArrayAdapter extends ArrayAdapter<Users> {
         {
             deleteButton.setVisibility(View.GONE);
             adminAccess.setVisibility(View.GONE);
-            userNumberCheckedIn.setText("Heloooooo");
+            if (checkInCounts!=null){
+            String countText = checkInCounts.getOrDefault(users.getProfileUid(), 0) + " Checked In";
+            userNumberCheckedIn.setText(countText);}
+            else{
+                userNumberCheckedIn.setText("Signed up");
+            }
             userName.setText(users.getName());
         }
 

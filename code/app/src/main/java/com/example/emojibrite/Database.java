@@ -334,7 +334,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
         eventMap.put("eventQRCode", event.getEventQRCode() != null ? event.getEventQRCode().toString() : null);
 
         //2D arrays for attendees and geolocations
-        eventMap.put("attendeeList", event.getAttendeesList());
+        eventMap.put("attendeesList", event.getAttendeesList());
         eventMap.put("geolocationsList", event.getGeolocationList());
 
         if (event.getImageUri()!=null){
@@ -516,6 +516,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
 //                }
                 Log.d(TAG,"URI IMAGE:"+event.getImageUri());
                 Log.d(TAG, "Organizer ID: "+event.getOrganizer());
+                Log.d("DATABASE ARRAY","Attendees List: " + event.getAttendeesList().toString());
                 callBack.onEventFetched(event);
             }
         }).addOnFailureListener(e -> {
@@ -743,14 +744,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * @param attendees
      * A 2D ArrayList containing the attendees and the number of times they have checked in.
      */
-    public void updateEventAttendees(String eventID, ArrayList<ArrayList<String>> attendees){
-        eventRef.document(eventID).update("attendeeList",attendees).addOnSuccessListener( onSuccessListener -> {
-            Log.d(TAG, "Event successfully updated!");
-
-            // exception for if the task for some reason failed
-        }).addOnFailureListener(e -> {
-            Log.e(TAG, "Error updating event attendees", e);
-        });
+    public void updateEventAttendees(String eventID, ArrayList<String> attendees) {
+        eventRef.document(eventID).update("attendeesList", attendees)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Event attendee list successfully updated!"))
+                .addOnFailureListener(e -> Log.e(TAG, "Error updating event attendee list", e));
     }
 
     /**

@@ -10,9 +10,22 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class CheckedInFragment extends Fragment {
     // put your uninitialized attributes here
     ListView attendeesListView;
+    AttendeesArrayAdapter attendeesArrayAdapter;
+
+    ArrayList<Users> attendeesList;
+
+    HashMap<String, Integer> checkInCounts = new HashMap<>();
+
+    private String eventId;
     /**
      * Called to have the fragment instantiate its user interface view.
      * @param inflater The LayoutInflater object that can be used to inflate
@@ -35,9 +48,61 @@ public class CheckedInFragment extends Fragment {
         // if the data is passed via a bundle, do the following
         // Bundle bundle = getArguments();
 
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            eventId = bundle.getString("eventId");
+            Log.d("SignedUpFragment", "Received Event ID: " + eventId);
+        } else {
+            Log.d("SignedUpFragment", "No bundle passed");
+        }
+
+        attendeesList = new ArrayList<>();
+        ArrayList<Users> uniqueUidArray = new ArrayList<>();
+        attendeesArrayAdapter = new AttendeesArrayAdapter(getContext(), uniqueUidArray, "1", checkInCounts);
+        attendeesListView.setAdapter(attendeesArrayAdapter);
+        loadAttendees(eventId);
+
+
+
 
         return checkedInLayout;
     }
+
+
+    private void loadAttendees(String eventId) {
+        Database db = new Database();
+        ArrayList<Users> uniqueUidArray = new ArrayList<>();
+
+        db.getEventById(eventId, new Database.EventCallBack() {
+            @Override
+            public void onEventFetched(Event event) {
+                ArrayList<String> listAttendees = event.getAttendeesList();
+                for (String userId : listAttendees) {
+                    // Update check-in count
+                    checkInCounts.put(userId, checkInCounts.getOrDefault(userId, 0) + 1);
+
+                    // Load user details only if not already in the unique list
+                    if (!uniqueUidArray.stream().anyMatch(u -> u.getProfileUid().equals(userId))) {
+                        db.getUserDocument(userId, new Database.OnUserDocumentRetrievedListener() {
+                            @Override
+                            public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot) {
+                                if (documentSnapshot.exists()) {
+                                    Users user = documentSnapshot.toObject(Users.class);
+                                    if (user != null) {
+                                        uniqueUidArray.add(user);
+                                        if (getActivity() != null) {
+                                            getActivity().runOnUiThread(() -> attendeesArrayAdapter.notifyDataSetChanged());
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    }
+
 
     /**
      * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}

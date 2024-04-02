@@ -33,7 +33,7 @@ public class Event implements Serializable {
 
     private String checkInID;
 
-    private ArrayList<ArrayList<String>> attendeesList = new ArrayList<ArrayList<String>>();
+    private ArrayList<String> attendeesList = new ArrayList<String>();
 
     private ArrayList<ArrayList<String>> geolocationList = new ArrayList<ArrayList<String>>();
 
@@ -273,11 +273,11 @@ public class Event implements Serializable {
 
     public String getCheckInID(){return checkInID;}
 
-    public ArrayList<ArrayList<String>> getAttendeesList() {
+    public ArrayList<String> getAttendeesList() {
         return attendeesList;
     }
 
-    public void setAttendeesList(ArrayList<ArrayList<String>> attendesList) {
+    public void setAttendeesList(ArrayList<String> attendesList) {
         this.attendeesList = attendesList;
     }
 

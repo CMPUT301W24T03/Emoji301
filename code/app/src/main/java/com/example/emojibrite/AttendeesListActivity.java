@@ -59,16 +59,8 @@ public class AttendeesListActivity extends AppCompatActivity {
         //YOU HAVE TO CHANGE THIS PART OF THE CODE
         // I JUST WROTE RANDOM STUFF
         // TODO FIX AND INTEGRATE THE LOGIC OF THE CHECKINBUTTON
-        checkInBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // fragment to display the list of attendees who have checked in
-                // to pass data, we cna just add a parameter to the replaceFragment function
-                CheckedInFragment checkedInFragment = new CheckedInFragment();
-                replaceFragment(checkedInFragment, bundle);
-                updateButtonStyle(checkInBtn);
-            }
-        });
+
+        checkInBtn.setOnClickListener(view -> {openCheckedUpFragment();});
         signedUpBtn.setOnClickListener(view -> {openSignedUpFragment();});
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,6 +69,20 @@ public class AttendeesListActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void openCheckedUpFragment(){
+        CheckedInFragment checkedInFragment = new CheckedInFragment();
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+        Bundle data = new Bundle();
+        data.putString("eventId",eventId);
+        checkedInFragment.setArguments(data);
+        fragmentTransaction.replace(R.id.attendee_view_list_fragment_container, checkedInFragment).commit();
+        updateButtonStyle(checkInBtn);
+
+
     }
 
     /**
