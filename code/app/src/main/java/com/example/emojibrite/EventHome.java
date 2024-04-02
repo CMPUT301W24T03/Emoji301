@@ -48,7 +48,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
     /**
      * Opens the EventDetailsActivity to show the details of the selected event.
-     *
      * @param event The event to show details for.
      */
 
