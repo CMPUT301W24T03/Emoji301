@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" /> <!-- To handle the reselection within the app on Android 14 (API level 34) -->
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-feature android:name="android.hardware.location.network" />
 
     <application
         android:allowBackup="true"
