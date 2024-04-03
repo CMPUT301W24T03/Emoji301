@@ -74,9 +74,9 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         notificationButton = findViewById(R.id.Notification_button);
         deleteBtn = findViewById(R.id.delete_event);
         showMap = findViewById(R.id.show_map);
-        qrBtn = findViewById(R.id.qr_code);
+        qrBtn = findViewById(R.id.check_in_qr); // Double check!!!!!!!!! Put one for the event qr as well!!!!!
 
-        qrCodeEventDetails = findViewById(R.id.qr_code);
+        qrCodeEventDetails = findViewById(R.id.check_in_qr); // Double check!!!!!!!!!
 
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");

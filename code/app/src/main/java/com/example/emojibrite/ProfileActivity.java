@@ -2,9 +2,11 @@ package com.example.emojibrite;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.content.DialogInterface;
@@ -20,7 +22,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import android.Manifest;
 
 /**
@@ -31,6 +38,7 @@ import android.Manifest;
  */
 public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnInputSelected {
 
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 101;
     Users user;
     ImageView profilePictureImageView;
     SwitchCompat adminToggle;
@@ -110,6 +118,30 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                 // Show the ProfileEditFragment
             }
         });
+
+        geoToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean isChecked = geoToggle.isChecked();
+                if (isChecked) {
+                    Log.d("geolocation", "Location on");
+                    // Run-time permission check
+                    if (ActivityCompat.checkSelfPermission(ProfileActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ProfileActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        // Request location permission
+                        ActivityCompat.requestPermissions(ProfileActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+                        return;
+                    } else {
+                        // Location permission already granted, update geolocation permission
+                        updateUserGeolocationPermission(true);
+                    }
+                } else {
+                    // If the toggle is turned off, remove geolocation from Firestore and update UI
+                    updateUserGeolocationPermission(false);
+                }
+            }
+        });
+
+
 
 
         notifToggle.setOnClickListener(new View.OnClickListener() {
@@ -344,4 +376,61 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     }
 
     // End of Notification area //
+
+    // Geolocation Tracking area //
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Location permission granted
+                Log.d(TAG, "Location permission granted");
+                // Update the enableGeolocation field in the Firestore database
+                updateUserGeolocationPermission(true);
+            } else {
+                // Location permission denied
+                Log.d(TAG, "Location permission denied");
+                // Display permission needed message
+                displayLocationPermissionMessage();
+            }
+        }
+    }
+
+    private void displayLocationPermissionMessage() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Permission needed")
+                .setMessage("Please enable the location permission from the system settings.")
+                .setPositiveButton("OK", null)
+                .show();
+        geoToggle.setChecked(false);
+    }
+
+    private void updateUserGeolocationPermission(boolean permissionGranted) {
+        // Update the enableGeolocation field in the Firestore database
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("Users").document(user.getProfileUid());
+        userRef
+                .update("enableGeolocation", permissionGranted)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "User geolocation permission updated successfully");
+                        // Update UI or perform other actions upon successful update
+                        geoToggle.setChecked(permissionGranted);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating user geolocation permission", e);
+                        // Handle failure if needed
+                    }
+                });
+    }
+
+
+
+
+
 }
