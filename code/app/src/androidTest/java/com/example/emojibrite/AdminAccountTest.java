@@ -36,6 +36,8 @@ public class AdminAccountTest {
 
     public static Users mockUser;
 
+
+
     /**
      * Setup the mock user data
      */
@@ -43,10 +45,10 @@ public class AdminAccountTest {
     public void setup() {
         // Mock user data
         mockUser = new Users();
-        mockUser.setUploadedImageUri("mockUri");
+        mockUser.setRole("admin");
 
-        // Mock the intent used to start the activity
         AdminAccountActivity.user = mockUser;
+
     }
     /**
      * Test the Account button
@@ -56,6 +58,7 @@ public class AdminAccountTest {
 
         onView(withId(R.id.backButton)).perform(click());
         Espresso.onView(withId(R.id.accountAdminButton)).check(matches(isDisplayed()));
+
     }
 
     /**
@@ -81,16 +84,15 @@ public class AdminAccountTest {
      */
     @Test
     public void testAdminToggle() {
-        onView(withId(R.id.profile_list)).perform(testClickEventItemAtPosition());
-        onView(withId(R.id.delete_btn)).check(matches(isDisplayed()));
+        onView(withId(R.id.admin_access)).perform(click());
+        onView(withId(R.id.admin_access)).check(matches(isDisplayed()));
     }
 
     /**
      * Test the delete event button
      */
     @Test
-    public void testdeleteEvent() {
-        onView(withId(R.id.profile_list)).perform(testClickEventItemAtPosition());
+    public void testDeleteAccount() {
         onView(withId(R.id.delete_event)).perform(click());
         onView(withId(R.id.profile_list)).check(matches(isDisplayed()));
     }
@@ -100,7 +102,7 @@ public class AdminAccountTest {
      * Custom ViewAction to click on an item at a specific position
      * @return ViewAction
      */
-    private ViewAction testClickEventItemAtPosition() {
+    private ViewAction testClickAccountItemAtPosition() {
         return new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
