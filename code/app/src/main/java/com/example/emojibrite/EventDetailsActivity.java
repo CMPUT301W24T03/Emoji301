@@ -138,7 +138,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
                             // Add coordinates to the geolocationList
                             geolocationList.add("40.7128,74.0060");
-                            geolocationList.add("32.7157, 117.1611");
+                            geolocationList.add("32.7157,117.1611");
 
                             // Update the geolocationList in the event object
                             event.setGeolocationList(geolocationList);
@@ -166,7 +166,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
                                                             Event updatedEvent = document.toObject(Event.class);
                                                             if (updatedEvent != null) {
                                                                 ArrayList<String> updatedGeolocationList = updatedEvent.getGeolocationList();
-                                                                if (updatedGeolocationList.contains("32.7157, 117.1611")) {
+                                                                if (updatedGeolocationList.contains("32.7157,117.1611")) {
                                                                     Log.d("Firestore", "New coordinates successfully added to Firestore!");
                                                                 } else {
                                                                     Log.d("Firestore", "New coordinates not found in Firestore.");
