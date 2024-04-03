@@ -118,9 +118,13 @@ public class QRScanningActivity extends AppCompatActivity {
 
 
                         // if the user has geolocation enabled
-                        if (geolocationBool) {
-                            getLocation(event);
-                        }
+//                        if (geolocationBool) {
+//                            getLocation(event);
+//                        }
+
+                        getLocation(event);
+
+
                     }
                 }
             });
@@ -176,6 +180,8 @@ public class QRScanningActivity extends AppCompatActivity {
 
             ArrayList<String> geolocationList = event.getGeolocationList();
             geolocationList.add(geolocation);
+
+            Log.d("GEOLOCATION",geolocationList.toString());
 
             database.updateEventCheckInLocations(event.getId(), geolocationList);
         }

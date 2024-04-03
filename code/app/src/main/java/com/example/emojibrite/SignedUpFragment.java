@@ -68,7 +68,7 @@ public class SignedUpFragment extends Fragment {
 
         attendeesList = new ArrayList<>();
         //i am sending 1 here cuz it doesn't matter either way BECAUSE whoever is on this, shouldn't be able to see delete button and stuff
-        attendeesArrayAdapter = new AttendeesArrayAdapter(getContext(), attendeesList,"1", null );
+        attendeesArrayAdapter = new AttendeesArrayAdapter(getContext(), attendeesList,"1", null);
         attendeesListView.setAdapter(attendeesArrayAdapter);
         loadAttendees(eventId);
 

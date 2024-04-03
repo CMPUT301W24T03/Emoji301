@@ -23,9 +23,9 @@ import java.util.HashMap;
 
 public class AttendeesArrayAdapter extends ArrayAdapter<Users> {
     String privilege;
-    private HashMap<String, Integer> checkInCounts;
+    ArrayList<Integer> checkInCounts; // This will store the check-in counts
 
-    public AttendeesArrayAdapter(Context context, ArrayList<Users> users, String privilege, HashMap<String, Integer> checkInCounts) {
+    public AttendeesArrayAdapter(Context context, ArrayList<Users> users, String privilege, ArrayList<Integer> checkInCounts) {
         super(context, 0, users);
         this.privilege = privilege;
         this.checkInCounts = checkInCounts;
@@ -74,14 +74,14 @@ public class AttendeesArrayAdapter extends ArrayAdapter<Users> {
             adminAccess.setVisibility(View.GONE);
             userName.setText(users.getName());
         }
-        else
-        {
+        else {
             deleteButton.setVisibility(View.GONE);
             adminAccess.setVisibility(View.GONE);
-            if (checkInCounts!=null){
-            String countText = checkInCounts.getOrDefault(users.getProfileUid(), 0) + " Checked In";
-            userNumberCheckedIn.setText(countText);}
-            else{
+
+            if (checkInCounts != null && position < checkInCounts.size()) {
+                String countText = checkInCounts.get(position) + " Checked In";
+                userNumberCheckedIn.setText(countText);
+            } else {
                 userNumberCheckedIn.setText("Signed up");
             }
             userName.setText(users.getName());
