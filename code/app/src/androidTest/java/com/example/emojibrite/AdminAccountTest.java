@@ -43,13 +43,11 @@ public class AdminAccountTest {
     public void setup() {
         // Mock user data
         mockUser = new Users();
-        mockUser.setRole("mockRole");
         mockUser.setUploadedImageUri("mockUri");
 
         // Mock the intent used to start the activity
         AdminAccountActivity.user = mockUser;
     }
-
     /**
      * Test the Account button
      */
@@ -74,15 +72,15 @@ public class AdminAccountTest {
      * Test the list of accounts displayed
      */
     @Test
-    public void testEventListDisplayed() {
+    public void testAccountListDisplayed() {
         onView(withId(R.id.profile_list)).check(matches(isDisplayed()));
     }
 
     /**
-     * Test the event details
+     * Test the admin toggle
      */
     @Test
-    public void testClickEventToEventDetails() {
+    public void testAdminToggle() {
         onView(withId(R.id.profile_list)).perform(testClickEventItemAtPosition());
         onView(withId(R.id.delete_btn)).check(matches(isDisplayed()));
     }
