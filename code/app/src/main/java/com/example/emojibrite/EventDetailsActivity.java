@@ -19,8 +19,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -126,9 +130,82 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EventDetailsActivity.this, MapsActivity.class);
-                startActivity(intent);
+                database.getEventById(eventId, new Database.EventCallBack() {
+                    @Override
+                    public void onEventFetched(Event event) {
+                        if (event != null) {
+                            ArrayList<String> geolocationList = event.getGeolocationList();
+
+                            // Add coordinates to the geolocationList
+                            geolocationList.add("40.7128,74.0060");
+                            geolocationList.add("32.7157, 117.1611");
+
+                            // Update the geolocationList in the event object
+                            event.setGeolocationList(geolocationList);
+
+                            // Get a reference to the Firestore instance
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                            // Get a reference to the document for the event
+                            DocumentReference eventRef = db.collection("events").document(event.getId());
+
+                            // Set the event data in Firestore
+                            eventRef.set(event)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("Firestore", "DocumentSnapshot successfully written!");
+
+                                            // Retrieve the document again to verify the update
+                                            eventRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                        DocumentSnapshot document = task.getResult();
+                                                        if (document.exists()) {
+                                                            Event updatedEvent = document.toObject(Event.class);
+                                                            if (updatedEvent != null) {
+                                                                ArrayList<String> updatedGeolocationList = updatedEvent.getGeolocationList();
+                                                                if (updatedGeolocationList.contains("32.7157, 117.1611")) {
+                                                                    Log.d("Firestore", "New coordinates successfully added to Firestore!");
+                                                                } else {
+                                                                    Log.d("Firestore", "New coordinates not found in Firestore.");
+                                                                }
+                                                            }
+                                                        } else {
+                                                            Log.d("Firestore", "No such document");
+                                                        }
+                                                    } else {
+                                                        Log.d("Firestore", "get failed with ", task.getException());
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w("Firestore", "Error writing document", e);
+                                        }
+                                    });
+
+                            // Testing purpose only
+                            Log.d("GeolocationList", "GeolocationList: " + geolocationList);
+
+                            // Create an Intent to start the MapsActivity
+                            Intent intent = new Intent(EventDetailsActivity.this, MapsActivity.class);
+
+                            // Put the geolocationList into the Intent
+                            intent.putStringArrayListExtra("geolocationList", geolocationList);
+                            Log.d("GeolocationListAA", "GeolocationList: " + geolocationList);
+                            // Start the MapsActivity
+                            startActivity(intent);
+                        }
+                    }
+                });
             }
         });
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
