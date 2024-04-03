@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
@@ -56,6 +58,14 @@ public class QRScanningActivity extends AppCompatActivity {
         array = bundle.getStringArray("USER");
         uid = array[0];
         geolocationBool = Boolean.parseBoolean(array[1]);
+
+        // checking to see if we have location permissions
+        if (geolocationBool){
+            // run-time permission check
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},100);
+            }
+        }
 
         qrScanButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,7 +124,11 @@ public class QRScanningActivity extends AppCompatActivity {
 
                         attendees.add(uid);
                         Log.d("QRScanningActivity", "Attendees List: " + attendees.toString());
-                            database.updateEventAttendees(event.getId(), attendees);
+                        database.updateEventAttendees(event.getId(), attendees);
+
+                        found = true;
+
+                        Toast.makeText(getBaseContext(), "Successfully checked into " + event.getEventTitle() + "!", Toast.LENGTH_LONG).show();
 
 
                         // if the user has geolocation enabled
@@ -125,7 +139,9 @@ public class QRScanningActivity extends AppCompatActivity {
                 }
             });
         }
-        else {
+        
+        // if we did not find anything at all
+        else if (!found){
             Toast.makeText(this,"The scanned QR is not associated with any events.", Toast.LENGTH_LONG);
         }
     });
@@ -159,29 +175,47 @@ public class QRScanningActivity extends AppCompatActivity {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         // run-time permission check
+        // have to put this here or intelliJ is going to throw a fit
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},100);
-            return;
         }
 
         // gonna try to get a location
         try {
+            LocationListener locationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    double longitude = location.getLongitude();
+                    double latitude = location.getLatitude();
+                }
+            };
+
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0, locationListener);
+            locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER,0,0,locationListener);
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
             double longitude = location.getLongitude();
             double latitude = location.getLatitude();
 
             // adding things to the list
             String geolocation;
-            geolocation = longitude + "," + latitude;
+            geolocation = latitude + "," + longitude;
 
             ArrayList<String> geolocationList = event.getGeolocationList();
+
+            Log.d("GEOLOCATION LIST", geolocation);
+
             geolocationList.add(geolocation);
+
+            Log.d("GEOLOCATION LIST UPDATED", geolocation);
+            Log.d("GEOLOCATION", geolocation);
 
             database.updateEventCheckInLocations(event.getId(), geolocationList);
         }
         // something bad happened
         catch (Exception e){
-            Log.d("GEOLOCATION", "SOMETHING DID NOT OCCUR CORRECTLY");
+            // most likely occurred because permissions were denied
+            Log.d("GEOLOCATION", "Location services have not been granted: " + e);
         }
     }
 }
