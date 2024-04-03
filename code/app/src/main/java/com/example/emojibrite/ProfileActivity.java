@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.content.DialogInterface;
@@ -31,6 +32,7 @@ import android.Manifest;
  */
 public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnInputSelected {
 
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 101;
     Users user;
     ImageView profilePictureImageView;
     SwitchCompat adminToggle;
@@ -109,6 +111,16 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                 profileEditFragment.show(getSupportFragmentManager(), "ProfileEditFragment");
                 // Show the ProfileEditFragment
             }
+        });
+
+        geoToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (notifToggle.isChecked()) {
+                    requestLocationPermission();
+                    Log.d("geo", "User accepted geolocation");
+                }
+                }
         });
 
 
@@ -344,4 +356,32 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     }
 
     // End of Notification area //
+
+    /**
+     * Request location permission from the user.
+     */
+    private void requestLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Location permission is already granted
+            updateLocationPermission(true);
+        } else {
+            // Request location permission
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    /**
+     * Update the location permission for the user.
+     * @param isGranted : true if the permission is granted, false otherwise
+     */
+    private void updateLocationPermission(boolean isGranted) {
+        if (isGranted) {
+            // Location permission granted, perform necessary actions
+            Log.d(TAG, "Location permission granted");
+        } else {
+            // Location permission denied, perform necessary actions
+            Log.d(TAG, "Location permission denied");
+        }
+    }
+
 }
