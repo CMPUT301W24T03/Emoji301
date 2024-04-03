@@ -147,7 +147,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
                             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
                             // Get a reference to the document for the event
-                            DocumentReference eventRef = db.collection("events").document(event.getId());
+                            DocumentReference eventRef = db.collection("Events").document(event.getId());
 
                             // Set the event data in Firestore
                             eventRef.set(event)
