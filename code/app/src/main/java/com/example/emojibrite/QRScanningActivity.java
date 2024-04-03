@@ -171,11 +171,10 @@ public class QRScanningActivity extends AppCompatActivity {
             double latitude = location.getLatitude();
 
             // adding things to the list
-            ArrayList<String> geolocation = new ArrayList<String>();
-            geolocation.add(Double.toString(longitude));
-            geolocation.add(Double.toString(latitude));
+            String geolocation;
+            geolocation = longitude + "," + latitude;
 
-            ArrayList<ArrayList<String>> geolocationList = event.getGeolocationList();
+            ArrayList<String> geolocationList = event.getGeolocationList();
             geolocationList.add(geolocation);
 
             database.updateEventCheckInLocations(event.getId(), geolocationList);
