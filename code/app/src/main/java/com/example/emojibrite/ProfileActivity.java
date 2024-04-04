@@ -21,7 +21,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.DocumentSnapshot;
+
 import android.Manifest;
+import android.widget.Toast;
 
 /**
  * The main activity for displaying and editing user profiles.
@@ -38,9 +41,13 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
 
     SwitchCompat notifToggle;
 
+    Boolean userUpdated = false;
+
     TextView adminText;
     PushNotificationService pushNotificationService = new PushNotificationService();
     Database database = new Database();
+
+    Boolean userCheck = false;
     private boolean permissionNotificationDenied = false;    // flag
 
     String TAG = "ProfileActivity";
@@ -72,6 +79,43 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
 
         FloatingActionButton back = findViewById(R.id.backButton);
         FloatingActionButton editButton = findViewById(R.id.editButton);
+
+        database.getUserDocument(user.getProfileUid(), new Database.OnUserDocumentRetrievedListener() {
+                @Override
+                public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()) {
+                        userCheck = true;
+                        user = documentSnapshot.toObject(Users.class);
+
+                        emailTextView.setText(user.getEmail());
+                        phoneNumberTextView.setText(user.getNumber());
+                        nameTextView.setText(user.getName());
+                        homePageTextView.setText(user.getHomePage());
+                        adminToggle.setChecked(user.getEnableAdmin());
+                        notifToggle.setChecked(user.getEnableNotification());
+                        geoToggle.setChecked(user.getEnableGeolocation());
+
+                        checkRole();
+
+                        // Retrieve information from SharedPreferences and set it to UI elements
+
+                        settingPfp();
+
+                        Log.d(TAG, "User document retrieved successfully");
+                    } else {
+                        userCheck = false;
+                        Log.d(TAG, "User document does not exist");
+                        Toast.makeText(ProfileActivity.this, "user got deleted by admin", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                        startActivity(intent);
+
+
+                    }
+                }
+                });
+
+
+
 
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -126,20 +170,9 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                 }
             }
         });
-        emailTextView.setText(user.getEmail());
-        phoneNumberTextView.setText(user.getNumber());
-        nameTextView.setText(user.getName());
-        homePageTextView.setText(user.getHomePage());
-        adminToggle.setChecked(user.getEnableAdmin());
-        notifToggle.setChecked(user.getEnableNotification());
-        geoToggle.setChecked(user.getEnableGeolocation());
 
-        checkRole();
-
-        // Retrieve information from SharedPreferences and set it to UI elements
-
-        settingPfp();
     }
+
 
     /**
      * Called when the activity is resumed.
@@ -148,7 +181,9 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     protected void onResume() {
         super.onResume();
         Log.d("Resume", "User has resumed");
-        checkNotificationOnResume();
+        if (userCheck) {
+            checkNotificationOnResume();
+        }
     }
 
     /**
