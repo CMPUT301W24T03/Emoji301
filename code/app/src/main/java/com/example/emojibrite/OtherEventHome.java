@@ -40,6 +40,8 @@ public class OtherEventHome extends AppCompatActivity {
 
     Context context = this;
 
+    FloatingActionButton QRCodeScanner;
+
     ImageView profileButton;
 
     private static final String TAG = "ProfileActivityTAG";
@@ -77,6 +79,8 @@ public class OtherEventHome extends AppCompatActivity {
         eventList.setAdapter(eventAdapter);
 
         Button myEventButton = findViewById(R.id.my_events_button);
+
+        QRCodeScanner = findViewById(R.id.event_scan_btn);
 
         myEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,6 +122,22 @@ public class OtherEventHome extends AppCompatActivity {
 
             showEventDetails(selectedEvent,user);
         }));
+
+
+        QRCodeScanner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // checking if the user is logged in (as in there is an account associated with the device)
+
+                    Bundle bundle = new Bundle();
+                    // we put in the user ID and geolocation enabled bool
+                    bundle.putStringArray("USER", new String[]{user.getProfileUid(), Boolean.toString(user.getEnableGeolocation())});
+                    Intent intent = new Intent(OtherEventHome.this, QRScanningActivity.class);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+
+            }
+        });
     }
 
     private void fetchAllEvents(){
