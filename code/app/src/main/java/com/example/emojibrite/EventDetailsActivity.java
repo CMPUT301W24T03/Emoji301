@@ -387,7 +387,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
      */
     @Override
     public void onDialogPositiveClick(String message) {
-        sendNotification(message);
+        sendNotification(message, eventId);
     }
 
     /**
@@ -398,42 +398,21 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
      *                  <a href="https://www.youtube.com/watch?v=6_t87WW6_Gc&list=WL&index=7">here3</a>
      *                  <a href="https://www.youtube.com/watch?v=oNoRw69ro2k&list=WL&index=8">here4</a>
      */
-    private void sendNotification(String notifBody) {
+    private void sendNotification(String notifBody, String eventId) {
         Log.d("Notify", "SendNotification is called");
-        // todo: might want ot put this in PushNotificationService. Also send() is deprecated
-        // send the notification to the attendees signed up for the event (eventId)
-        // The topic name can be optionally prefixed with "/topics/"
-        String topic = eventId;
-
-//        // See documentation on defining a message payload
-//        Message messageNotif = Message.builder()
-//                .putData("title", "EmojiBrite")
-//                .putData("body", message.toString())
-//                .setTopic(topic)
-//                .build();
-//
-//        // Send a message to the devices subscribed to the provided topic:
-//        String response = FirebaseMessaging.getInstance().send(messageNotif);
-//        // Response is a message ID string.
-//        Log.d(TAG, "Successfully sent message: " + response);
-
-//        String host = "https://fcm.googleapis.com/v1/projects/emojibrite/messages:send";
-//        String token = "0b50cc51aa0d6c280549701f8f5149ae003f5580"; // todo: replace with your server key
 
         OkHttpClient client = new OkHttpClient();
-        MediaType mediaType = MediaType.parse("application/json");
+        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
 
         // Message creation
         JSONObject message = new JSONObject();
         JSONObject notification = new JSONObject();
 
         try{
+            message.put("to","/topics/" + eventId);
             notification.put("title", "EmojiBrite");
             notification.put("body", notifBody);
-            JSONObject msg = new JSONObject();
-            msg.put("topic", topic);
-            msg.put("notification", notification);
-            message.put("message", msg);
+            message.put("notification", notification);
             Log.d("Notify", message.toString());
         } catch (JSONException e){
             Log.d("Notify", "JSONException error: " + e);
@@ -460,8 +439,13 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 // This is where you would handle the response
-                Log.d("Notify", "Response: " + response);
-                response.close();
+                String responseBody = response.body().string();
+                if(response.isSuccessful()) {
+                    Log.d("Notify", "Successful Response: " + responseBody);
+//                response.close();
+                } else {
+                    Log.d("Notify", "Unsuccessful Response: " + responseBody);
+                }
             }
         });
 
