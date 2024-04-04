@@ -66,12 +66,14 @@ public class AttendeesArrayAdapter extends ArrayAdapter<Users> {
         {
             deleteButton.setVisibility(View.VISIBLE);
             adminAccess.setVisibility(View.VISIBLE);
+            userNumberCheckedIn.setVisibility(View.GONE);
             userName.setText(users.getName());
         }
         else if (privilege.equals("2"))
         {
             deleteButton.setVisibility(View.VISIBLE);
             adminAccess.setVisibility(View.GONE);
+            userNumberCheckedIn.setVisibility(View.GONE);
             userName.setText(users.getName());
         }
         else {
@@ -121,7 +123,6 @@ public class AttendeesArrayAdapter extends ArrayAdapter<Users> {
                 }
             }
         });
-
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -142,7 +143,6 @@ public class AttendeesArrayAdapter extends ArrayAdapter<Users> {
                         notifyDataSetChanged();
                     }
                 });
-
                 // Set the negative (No) button and its click listener
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override

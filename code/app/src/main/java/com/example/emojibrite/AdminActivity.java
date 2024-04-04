@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -22,6 +23,7 @@ public class AdminActivity extends AppCompatActivity {
 
     private ImageView profileButton;
 
+    private Database database = new Database();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +40,14 @@ public class AdminActivity extends AppCompatActivity {
         accountBtn = findViewById(R.id.accountAdminButton);
         imageBtn = findViewById(R.id.imagesAdminButton);
         profileButton = findViewById(R.id.profile_pic);
-        displayProfileIcon();
 
+        checkUserDoc(user.getProfileUid());
+
+
+
+    }
+
+    private void buttonListeners(){
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,6 +88,33 @@ public class AdminActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+    }
+
+    private void checkUserDoc(String userUid){
+        database.getUserDocument(userUid, documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+
+                user = documentSnapshot.toObject(Users.class);
+                if(user.getRole().equals("1")){
+                    Toast.makeText(this, "User lost moderator role", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(AdminActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
+
+
+                displayProfileIcon();
+                buttonListeners();
+            } else {
+
+
+                Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(AdminActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
     }
 
     private void displayProfileIcon() {

@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -62,6 +63,87 @@ public class OtherEventHome extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void checkUserDoc(String userUid){
+        database.getUserDocument(userUid, documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Log.d(TAG, "User document exists");
+                user = documentSnapshot.toObject(Users.class);
+                user.setEnableAdmin(false);
+                buttonListeners();
+                settingUpPfp();
+
+            } else {
+                Log.d(TAG, "User document does not exist");
+
+                Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(OtherEventHome.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+    }
+    private void buttonListeners(){
+        eventList.setOnItemClickListener(((parent, view, position, id) -> {
+            Event selectedEvent = dataList1.get(position);
+
+            showEventDetails(selectedEvent,user);
+        }));
+        QRCodeScanner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // checking if the user is logged in (as in there is an account associated with the device)
+
+                Bundle bundle = new Bundle();
+                // we put in the user ID and geolocation enabled bool
+                bundle.putStringArray("USER", new String[]{user.getProfileUid(), Boolean.toString(user.getEnableGeolocation())});
+                Intent intent = new Intent(OtherEventHome.this, QRScanningActivity.class);
+                intent.putExtras(bundle);
+                startActivity(intent);
+
+            }
+        });
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Go to the ProfileActivity page
+                Log.d(TAG, "Enter button clicked"); // for debugging
+
+                Intent intent = new Intent(OtherEventHome.this, ProfileActivity.class);
+
+                intent.putExtra("userObject", user);
+                startActivity(intent);
+            }
+        });
+
+
+    }
+
+    private void settingUpPfp(){
+        if (user.getUploadedImageUri() != null) {
+            // User uploaded a picture, use that as the ImageView
+            //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(OtherEventHome.this).load(user.getUploadedImageUri()).into(profileButton);
+                }
+            });
+            fetchAllEvents();
+        } else if (user.getUploadedImageUri() == null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(OtherEventHome.this).load(user.getAutoGenImageUri()).into(profileButton);
+                }
+            });
+            fetchAllEvents();
+
+        }
+
+    }
+
     /**
      * Called when the activity is created.
      *
@@ -94,50 +176,15 @@ public class OtherEventHome extends AppCompatActivity {
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
 
-        ImageView profileButton = findViewById(R.id.profile_pic);
+        profileButton = findViewById(R.id.profile_pic);
 
-        if (user.getUploadedImageUri() != null) {
-            // User uploaded a picture, use that as the ImageView
-            //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    Glide.with(OtherEventHome.this).load(user.getUploadedImageUri()).into(profileButton);
-                }
-            });
-            fetchAllEvents();
-        } else if (user.getUploadedImageUri() == null) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    Glide.with(OtherEventHome.this).load(user.getAutoGenImageUri()).into(profileButton);
-                }
-            });
-            fetchAllEvents();
-
-        }
-
-        eventList.setOnItemClickListener(((parent, view, position, id) -> {
-            Event selectedEvent = dataList1.get(position);
-
-            showEventDetails(selectedEvent,user);
-        }));
+        checkUserDoc(user.getProfileUid());
 
 
-        QRCodeScanner.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // checking if the user is logged in (as in there is an account associated with the device)
 
-                    Bundle bundle = new Bundle();
-                    // we put in the user ID and geolocation enabled bool
-                    bundle.putStringArray("USER", new String[]{user.getProfileUid(), Boolean.toString(user.getEnableGeolocation())});
-                    Intent intent = new Intent(OtherEventHome.this, QRScanningActivity.class);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
 
-            }
-        });
+
+
     }
 
     private void fetchAllEvents(){
