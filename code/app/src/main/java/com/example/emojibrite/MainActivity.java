@@ -72,6 +72,9 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtras(bundle);
                     startActivity(intent);
                 }
+                else{
+                    Toast.makeText(MainActivity.this,"Please hit \"Enter\" and create an account first before scanning.",Toast.LENGTH_LONG).show();
+                }
             }
         });
 
