@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,12 +25,25 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.MediaType.Companion.*;
 
 /**
  * EventDetailsActivity is responsible for displaying the detailed information
@@ -74,9 +88,9 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         notificationButton = findViewById(R.id.Notification_button);
         deleteBtn = findViewById(R.id.delete_event);
         showMap = findViewById(R.id.show_map);
-        qrBtn = findViewById(R.id.check_in_qr); // Double check!!!!!!!!! Put one for the event qr as well!!!!!
+        qrBtn = findViewById(R.id.check_in_qr);// make something for event qr!!!
 
-        qrCodeEventDetails = findViewById(R.id.check_in_qr); // Double check!!!!!!!!!
+        qrCodeEventDetails = findViewById(R.id.check_in_qr);// fix this as well!!!
 
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
@@ -130,28 +144,9 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EventDetailsActivity.this, MapsActivity.class);
-                database.getEventById(eventId, new Database.EventCallBack() {
-                    @Override
-                    public void onEventFetched(Event event) {
-                        if (event != null) {
-                            ArrayList<String> geolocationList = event.getGeolocationList();
-
-                            // Testing purpose only
-                            Log.d("GeolocationList", "GeolocationList: " + geolocationList);
-
-                            // Create an Intent to start the MapsActivity
-                            Intent intent = new Intent(EventDetailsActivity.this, MapsActivity.class);
-
-                            // Put the geolocationList into the Intent
-                            intent.putStringArrayListExtra("geolocationList", geolocationList);
-                            // Start the MapsActivity
-                            startActivity(intent);
-                        }
-                    }
-                });
+                startActivity(intent);
             }
         });
-
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

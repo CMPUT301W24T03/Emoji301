@@ -1,6 +1,9 @@
 package com.example.emojibrite;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -18,7 +21,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-// This class is implemted using the following website(s) as reference(s):
+// This class is implemented using the following website(s) as reference(s):
 // https://firebase.google.com/docs/cloud-messaging/android/first-message#java
 // https://firebase.google.com/docs/cloud-messaging/android/topic-messaging?utm_source=studio#java_4
 
@@ -39,11 +42,6 @@ public class PushNotificationService extends FirebaseMessagingService {
         void onTokenReceived(String token);
     }
 
-    /**
-     * This callback is called when the new token is made.
-     * @param token The token used for sending messages to this application instance. This token is
-     *     the same as the one retrieved by {@link FirebaseMessaging#getToken()}.
-     */
     @Override
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
@@ -55,6 +53,49 @@ public class PushNotificationService extends FirebaseMessagingService {
         before the user document is created cuz u cant send a token to a document that doesn't exist.
          */
 //        sendRegistrationToServer(token);
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
+        super.onMessageReceived(remoteMessage);
+        Log.d(TAG, "onMessageReceived - app in foreground just got a notification");
+
+        // Handle FCM messages here
+        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
+        Log.d(TAG, "From: " + remoteMessage.getFrom());
+
+        // Check if message contains a data payload
+        if (!remoteMessage.getData().isEmpty()) {
+            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+
+            if (/* Check if data needs to be processed by long running job*/ true) {
+                // for long-running task (10 seconds or more) use WorkManager.
+                scheduleJob();
+            } else {
+                // Handle message within 10 seconds
+                handleNow();
+            }
+        }
+
+        // Implemented using https://github.com/firebase/quickstart-android/blob/6c602cceec27ef137539390d1691846cfdb9ac21/messaging/app/src/main/java/com/google/firebase/quickstart/fcm/java/MyFirebaseMessagingService.java#L165
+        // Check if message contains a notification payload.
+        if (remoteMessage.getNotification() != null) {
+            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            String notificationBody = remoteMessage.getNotification().getBody();
+            if (remoteMessage.getNotification().getBody() != null) {
+                foregroundNotification(notificationBody);
+            }
+        }
+
+        // Also if you intend on generating your own notifications as a result of a received FCM
+        // message, here is where that should be initiated. see sendNotification method below
+    }
+
+
+    @Override
+    public void onDeletedMessages() {
+        super.onDeletedMessages();
     }
 
     /**
@@ -105,8 +146,8 @@ public class PushNotificationService extends FirebaseMessagingService {
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             DocumentReference userRef = FirebaseFirestore.getInstance()
-                                        .collection("Users")
-                                        .document(user.getUid());
+                    .collection("Users")
+                    .document(user.getUid());
             // update the fcmToken field in the user's document
             userRef.update("fcmToken", token)
                     .addOnSuccessListener(aVoid -> {
@@ -120,28 +161,36 @@ public class PushNotificationService extends FirebaseMessagingService {
         }
     }
 
-    @SuppressLint("MissingPermission")
-    @Override
-    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
-        super.onMessageReceived(remoteMessage);
+    private void scheduleJob() {
 
-        Log.d("FirebaseMessaging", "onMessageReceived - app in foreground just got a notification");
-        // Get the notification title and body
-        String title = remoteMessage.getNotification().getTitle();
-        String body = remoteMessage.getNotification().getBody();
-
-        // Create a notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "your_channel_id")
-                .setSmallIcon(R.drawable.emoji_brite_logo)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setDefaults(NotificationCompat.DEFAULT_ALL); // This will make a sound and vibrate
-        Log.d("FirebaseMessaging", "title: " + title);
-        Log.d("FirebaseMessaging", "text: " + body);
-        Log.d("FirebaseMessaging", "id" + remoteMessage);
-        // Show the notification
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(0, builder.build());
     }
+    private void handleNow() {
+
+    }
+
+    /**
+     * This method creates a notification that is displayed when the app is in the foreground
+     * @param notificationBody The body of the notification to be displayed
+     */
+    private void foregroundNotification(String notificationBody) {
+        String channelId = getString(R.string.default_notification_channel_id);
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, channelId)
+                        .setSmallIcon(R.drawable.emoji_brite_logo)
+                        .setContentTitle("EmojiBrite")  // change to event name in the future.
+                        .setContentText(notificationBody)
+                        .setAutoCancel(true)
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        // Since android Oreo, notification channel is needed.
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, "Events", NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+            Log.d(TAG, "Notification channel created: " + channel.toString());
+        }
+        notificationManager.notify(0/*ID of notification*/, notificationBuilder.build());
+    }
+
 }

@@ -104,7 +104,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.0")
 
 
-    // Firebase Cloud Messaging : Notifications
+    // Firebase Cloud Messaging : Notifications + OKHTTP
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-analytics:21.6.1")
 }
