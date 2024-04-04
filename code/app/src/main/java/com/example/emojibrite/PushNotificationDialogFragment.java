@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -39,7 +40,7 @@ public class PushNotificationDialogFragment extends DialogFragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-             listener = (NotificationDialogListener) context;
+            listener = (NotificationDialogListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement NotificationDialogListener");
         }
@@ -54,6 +55,7 @@ public class PushNotificationDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        Log.d("Notify", "Dialog creation");
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_notification_dialog, null);
 
@@ -63,6 +65,7 @@ public class PushNotificationDialogFragment extends DialogFragment {
         return builder.setView(view)
                 .setTitle("Send Notification")
                 .setPositiveButton("Send", (dialog, which) -> {
+                    Log.d("Notify", "send is clicked: ");
                     listener.onDialogPositiveClick(message.getText().toString());
                     // logic
                 })

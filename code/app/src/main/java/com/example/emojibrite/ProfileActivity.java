@@ -2,26 +2,38 @@ package com.example.emojibrite;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import com.google.firebase.firestore.DocumentSnapshot;
+
 import android.Manifest;
+import android.widget.Toast;
 
 /**
  * The main activity for displaying and editing user profiles.
@@ -31,6 +43,7 @@ import android.Manifest;
  */
 public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnInputSelected {
 
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 101;
     Users user;
     ImageView profilePictureImageView;
     SwitchCompat adminToggle;
@@ -38,9 +51,13 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
 
     SwitchCompat notifToggle;
 
+    Boolean userUpdated = false;
+
     TextView adminText;
     PushNotificationService pushNotificationService = new PushNotificationService();
     Database database = new Database();
+
+    Boolean userCheck = false;
     private boolean permissionNotificationDenied = false;    // flag
 
     String TAG = "ProfileActivity";
@@ -72,6 +89,43 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
 
         FloatingActionButton back = findViewById(R.id.backButton);
         FloatingActionButton editButton = findViewById(R.id.editButton);
+
+        database.getUserDocument(user.getProfileUid(), new Database.OnUserDocumentRetrievedListener() {
+                @Override
+                public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()) {
+                        userCheck = true;
+                        user = documentSnapshot.toObject(Users.class);
+
+                        emailTextView.setText(user.getEmail());
+                        phoneNumberTextView.setText(user.getNumber());
+                        nameTextView.setText(user.getName());
+                        homePageTextView.setText(user.getHomePage());
+                        adminToggle.setChecked(user.getEnableAdmin());
+                        notifToggle.setChecked(user.getEnableNotification());
+                        geoToggle.setChecked(user.getEnableGeolocation());
+
+                        checkRole();
+
+                        // Retrieve information from SharedPreferences and set it to UI elements
+
+                        settingPfp();
+
+                        Log.d(TAG, "User document retrieved successfully");
+                    } else {
+                        userCheck = false;
+                        Log.d(TAG, "User document does not exist");
+                        Toast.makeText(ProfileActivity.this, "user got deleted by admin", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                        startActivity(intent);
+
+
+                    }
+                }
+                });
+
+
+
 
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -111,6 +165,41 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
             }
         });
 
+        geoToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean isChecked = geoToggle.isChecked();
+                if (isChecked) {
+                    // If the toggle is turned on, check if the location permission is already granted
+                    if (ContextCompat.checkSelfPermission(ProfileActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        // If the permission is not granted, request the location permission
+                        ActivityCompat.requestPermissions(ProfileActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+                    } else {
+                        // If the permission is already granted, update the user object and save it to the database
+                        user.setEnableGeolocation(true);
+                        database.setUserObject(user);
+                    }
+                } else {
+                    // If the toggle is turned off, guide the user to the settings page
+                    new AlertDialog.Builder(ProfileActivity.this)
+                            .setMessage("Please disable the location permission for this app in your device settings.")
+                            .setPositiveButton("Go to settings", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                    intent.setData(uri);
+                                    startActivity(intent);
+                                }
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
+                }
+            }
+        });
+
+
+
 
         notifToggle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,20 +215,9 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                 }
             }
         });
-        emailTextView.setText(user.getEmail());
-        phoneNumberTextView.setText(user.getNumber());
-        nameTextView.setText(user.getName());
-        homePageTextView.setText(user.getHomePage());
-        adminToggle.setChecked(user.getEnableAdmin());
-        notifToggle.setChecked(user.getEnableNotification());
-        geoToggle.setChecked(user.getEnableGeolocation());
 
-        checkRole();
-
-        // Retrieve information from SharedPreferences and set it to UI elements
-
-        settingPfp();
     }
+
 
     /**
      * Called when the activity is resumed.
@@ -148,7 +226,12 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     protected void onResume() {
         super.onResume();
         Log.d("Resume", "User has resumed");
-        checkNotificationOnResume();
+        if (userCheck) {
+            checkNotificationOnResume();
+            onResumeLocation();
+        }
+
+
     }
 
     /**
@@ -267,6 +350,22 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
             }
         }
     }
+    private void onResumeLocation() {
+        // Check if location permission is granted
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // If the permission is granted, update the user object and save it to the database
+            user.setEnableGeolocation(true);
+            database.setUserObject(user);
+            // Update the toggle button
+            geoToggle.setChecked(user.getEnableGeolocation());
+        } else {
+            // If the permission is not granted, update the user object and save it to the database
+            user.setEnableGeolocation(false);
+            database.setUserObject(user);
+            // Update the toggle button
+            geoToggle.setChecked(user.getEnableGeolocation());
+        }
+    }
 
     /**
      * Request notification permission from the user.
@@ -344,4 +443,62 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     }
 
     // End of Notification area //
+
+    // Geolocation Tracking area //
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Location permission granted
+                Log.d(TAG, "Location permission granted");
+                // Update the enableGeolocation field in the Firestore database
+                updateUserGeolocationPermission(true);
+            } else {
+                // Location permission denied
+                Log.d(TAG, "Location permission denied");
+                // Display permission needed message
+                displayLocationPermissionMessage();
+            }
+        }
+    }
+
+    private void displayLocationPermissionMessage() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Permission needed")
+                .setMessage("Please enable the location permission from the system settings.")
+                .setPositiveButton("OK", null)
+                .show();
+        geoToggle.setChecked(false);
+    }
+
+    private void updateUserGeolocationPermission(boolean permissionGranted) {
+        // Update the enableGeolocation field in the Firestore database
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("Users").document(user.getProfileUid());
+        userRef
+                .update("enableGeolocation", permissionGranted)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "User geolocation permission updated successfully");
+                        // Update UI or perform other actions upon successful update
+                        geoToggle.setChecked(permissionGranted);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating user geolocation permission", e);
+                        // Handle failure if needed
+                    }
+                });
+    }
+
+
+
+
+
+
 }

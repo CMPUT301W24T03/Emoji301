@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         scanQRCode = findViewById(R.id.qrCodeText);
         adminAccess = findViewById(R.id.adminAccessText);
         loggedIn = false;
+        userDocExist = false;
+        user = null;
         automaticSignIn();
 
         // making the textview clickable
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // checking if the user is logged in (as in there is an account associated with the device)
-                if (loggedIn) {
+                if (userDocExist) {
                     Bundle bundle = new Bundle();
                     // we put in the user ID and geolocation enabled bool
                     bundle.putStringArray("USER", new String[]{user.getProfileUid(), Boolean.toString(user.getEnableGeolocation())});
@@ -82,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!loggedIn) {
                     Toast.makeText(MainActivity.this, "wait while you are logged in", Toast.LENGTH_SHORT).show();
-                    return;
+
                 }
                 else {
 
@@ -112,11 +114,12 @@ public class MainActivity extends AppCompatActivity {
      * This method creates a notification channel for the app which can be used to send notifications
      * to the user. You can customize the channel name and description as needed.
      * you can find this in settings -> apps -> your app -> notifications
+     * <a href="https://developer.android.com/develop/ui/views/notifications/channels">...</a>
      */
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.default_notification_channel_name);
-            String description = "Your channel description"; // Replace with your actual description
+            String description = "Default notification channel for EmojiBrite";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(getString(R.string.default_notification_channel_id), name, importance);
             channel.setDescription(description);
