@@ -20,9 +20,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,9 +89,9 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         notificationButton = findViewById(R.id.Notification_button);
         deleteBtn = findViewById(R.id.delete_event);
         showMap = findViewById(R.id.show_map);
-        qrBtn = findViewById(R.id.qr_code);
+        qrBtn = findViewById(R.id.check_in_qr); // Double check!!!!!!!!! Put one for the event qr as well!!!!!
 
-        qrCodeEventDetails = findViewById(R.id.qr_code);
+        qrCodeEventDetails = findViewById(R.id.check_in_qr); // Double check!!!!!!!!!
 
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
@@ -139,9 +145,28 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EventDetailsActivity.this, MapsActivity.class);
-                startActivity(intent);
+                database.getEventById(eventId, new Database.EventCallBack() {
+                    @Override
+                    public void onEventFetched(Event event) {
+                        if (event != null) {
+                            ArrayList<String> geolocationList = event.getGeolocationList();
+
+                            // Testing purpose only
+                            Log.d("GeolocationList", "GeolocationList: " + geolocationList);
+
+                            // Create an Intent to start the MapsActivity
+                            Intent intent = new Intent(EventDetailsActivity.this, MapsActivity.class);
+
+                            // Put the geolocationList into the Intent
+                            intent.putStringArrayListExtra("geolocationList", geolocationList);
+                            // Start the MapsActivity
+                            startActivity(intent);
+                        }
+                    }
+                });
             }
         });
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
