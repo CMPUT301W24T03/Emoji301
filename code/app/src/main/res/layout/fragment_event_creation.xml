@@ -179,25 +179,25 @@
             android:id="@+id/button_generate_checkin_qr"
             android:layout_width="150dp"
             android:layout_marginStart = "5dp"
+            android:layout_marginEnd="20dp"
             android:layout_height="wrap_content"
             android:background="@drawable/event_button_solid"
             android:checked="true"
             android:fontFamily="@font/frank_ruhl_libre"
             android:text="@string/check_in_qr_code"
             android:textColor="@color/white"
-            android:textSize="11dp" />
+            android:textSize="14dp" />
 
         <Button
             android:id="@+id/button_generate_eventpage_qr"
             android:layout_width="150dp"
-            android:layout_marginStart = "25dp"
             android:layout_height="wrap_content"
             android:checked="true"
             android:background="@drawable/event_button_solid"
             android:fontFamily="@font/frank_ruhl_libre"
             android:textColor="@color/white"
-            android:textSize="11dp"
-            android:text="@string/event_page_qr_code" />
+            android:textSize="14dp"
+            android:text="EVENT QR CODE" />
     </LinearLayout>
 
         <Button
