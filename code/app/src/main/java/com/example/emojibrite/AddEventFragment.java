@@ -72,8 +72,11 @@ public class AddEventFragment extends DialogFragment{
 
     private String eventId, checkInID;
 
-    ImageUploader imageUploader = new ImageUploader("eventPoster");
+    ImageUploader imageUploader = new ImageUploader("images");
     ImageUploader imageUploaderQR = new ImageUploader("QRCode");
+
+    private boolean isCheckInQRGenerated = false;
+    private boolean isEventQRGenerated = false;
 
 
 
@@ -159,6 +162,7 @@ public class AddEventFragment extends DialogFragment{
                             }
                         });
                         checkInID = data.getStringExtra("Check_In_ID");
+                        isCheckInQRGenerated=true;
 
                     }
                 }
@@ -187,6 +191,8 @@ public class AddEventFragment extends DialogFragment{
                                 Toast.makeText(getContext(), "Upload failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
+
+                        isEventQRGenerated=true;
 
                     }
                 }
@@ -285,49 +291,56 @@ public class AddEventFragment extends DialogFragment{
 
         Button buttonNext = view.findViewById(R.id.button_next);
         buttonNext.setOnClickListener(v -> {
-            String title = editTitle.getText().toString();
-            String description = editDescription.getText().toString();
-            Integer milestone = editMilestone.getText().toString().isEmpty() ? null : Integer.parseInt(editMilestone.getText().toString());
-            String location = editLocation.getText().toString();
-            Integer capacity = editCapacity.getText().toString().isEmpty() ? null : Integer.parseInt(editCapacity.getText().toString());
+
+            if (!isCheckInQRGenerated || !isEventQRGenerated) {
+                // Prompt user to generate QR codes first
+                Toast.makeText(getContext(), "Please generate both QR codes before proceeding.", Toast.LENGTH_LONG).show();
+            }
+            else {
+                String title = editTitle.getText().toString();
+                String description = editDescription.getText().toString();
+                Integer milestone = editMilestone.getText().toString().isEmpty() ? null : Integer.parseInt(editMilestone.getText().toString());
+                String location = editLocation.getText().toString();
+                Integer capacity = editCapacity.getText().toString().isEmpty() ? null : Integer.parseInt(editCapacity.getText().toString());
 //            Boolean checkInQR = switchCheckInQR.isChecked();
 //            Boolean eventPageQR = switchEventPageQR.isChecked();
 
-            String dateString = editEventDate.getText().toString();
-            String timeString = editEventTime.getText().toString();
-            Date eventDate = null;
-            try {
-                eventDate = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).parse(dateString);
-            } catch (ParseException e) {
-                e.printStackTrace();
+                String dateString = editEventDate.getText().toString();
+                String timeString = editEventTime.getText().toString();
+                Date eventDate = null;
+                try {
+                    eventDate = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).parse(dateString);
+                } catch (ParseException e) {
+                    e.printStackTrace();
 
-            }
+                }
 
-            String imageUriString = selectedImageUri != null ? selectedImageUri.toString() : null;
-            String checkInUriString = qrCodeCheckinURI != null ? qrCodeCheckinURI.toString() : null;
-            String eventUriString = qrCodeEventURI != null ? qrCodeEventURI.toString() : null;
+                String imageUriString = selectedImageUri != null ? selectedImageUri.toString() : null;
+                String checkInUriString = qrCodeCheckinURI != null ? qrCodeCheckinURI.toString() : null;
+                String eventUriString = qrCodeEventURI != null ? qrCodeEventURI.toString() : null;
 
-            Log.d(TAG,"EVENT DERIVED QR CODE ID: "+eventId);
-            Log.d(TAG,"CHECK IN QR CODE ID: "+checkInID);
+                Log.d(TAG, "EVENT DERIVED QR CODE ID: " + eventId);
+                Log.d(TAG, "CHECK IN QR CODE ID: " + checkInID);
 
 //            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
-            Event newEvent = new Event(eventId,imageUriString, title, eventDate, timeString, description, milestone, location, checkInUriString, eventUriString, capacity, user.getProfileUid(),checkInID); //ADDING USER WHICH WE GET AS AN ARGUMENT
-            listener.onEventAdded(newEvent);
+                Event newEvent = new Event(eventId, imageUriString, title, eventDate, timeString, description, milestone, location, checkInUriString, eventUriString, capacity, user.getProfileUid(), checkInID); //ADDING USER WHICH WE GET AS AN ARGUMENT
+                listener.onEventAdded(newEvent);
 
             /*
             creating meta data aka adding information to storage of the image so that I can use it for admin stuff later
             essentially adding new fields for me to trace back to
              */
-            if (selectedImageUri != null) {
-                FirebaseStorage storage = FirebaseStorage.getInstance();
-                StorageReference imageRef = storage.getReferenceFromUrl(imageUriString);
+                if (selectedImageUri != null) {
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference imageRef = storage.getReferenceFromUrl(imageUriString);
 
-                StorageMetadata metadata = new StorageMetadata.Builder()
-                        .setCustomMetadata("event_id", newEvent.getId())
-                        .setCustomMetadata("user_id", null)
-                        .build();
+                    StorageMetadata metadata = new StorageMetadata.Builder()
+                            .setCustomMetadata("event_id", newEvent.getId())
+                            .setCustomMetadata("user_id", null)
+                            .build();
 
-                imageRef.updateMetadata(metadata);
+                    imageRef.updateMetadata(metadata);
+                }
             }
 
             dismiss();

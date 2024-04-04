@@ -5,6 +5,7 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -27,6 +28,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -190,6 +195,43 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 });
     }
 
+    public void getAllUsers(OnUsersRetrievedListener listener) {
+        // Get all the users from the database
+        profileRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Users> users = new ArrayList<>();
+                for (DocumentSnapshot document : task.getResult()) {
+                    Users user = document.toObject(Users.class);
+                    users.add(user);
+                }
+                listener.onUsersRetrieved(users);
+            } else {
+                Log.d(firestoreDebugTag, "Error getting documents: ", task.getException());
+            }
+        });
+    }
+
+    public interface OnUsersRetrievedListener {
+        void onUsersRetrieved(List<Users> users);
+    }
+
+    public void deleteUser(String userId){
+        profileRef.document(userId).delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(firestoreDebugTag, "DocumentSnapshot successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(firestoreDebugTag, "Error deleting document", e);
+                    }
+                });
+    }
+
+
 
 
 
@@ -241,6 +283,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
     public void storeImageUri(String uid, String imageUri, String imageType) {
         //need testing
         // Get a reference to the user document
+        //needs to be gone. not used or needed
         DocumentReference docRef = db.collection("Users").document(uid);
 
         // Create a map to hold the image URI
@@ -291,8 +334,8 @@ once created, u can call getuseruid to get the user id and use it to get user da
         eventMap.put("eventQRCode", event.getEventQRCode() != null ? event.getEventQRCode().toString() : null);
 
         //2D arrays for attendees and geolocations
-        eventMap.put("attendeeList", event.getAttendeesList());
-        eventMap.put("geolocationsList", event.getGeolocationList());
+        eventMap.put("attendeesList", event.getAttendeesList());
+        eventMap.put("geolocationList", event.getGeolocationList());
 
         if (event.getImageUri()!=null){
             Log.d(TAG, event.getImageUri().toString()); //testing
@@ -307,6 +350,88 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Event successfully written!"))
                 .addOnFailureListener(e -> Log.w(TAG, "Error writing event", e))
                 .addOnCompleteListener(onCompleteListener);
+    }
+
+    public void deleteEvent(String eventId, OnCompleteListener<Void> onCompleteListener){
+        eventRef.document(eventId).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String qrCheckUri = documentSnapshot.getString("checkInQRCode");
+                String qrEventUri = documentSnapshot.getString("eventQRCode");
+                String imageUri = documentSnapshot.getString("imageUri");
+
+                Log.d(TAG, "Deleting QR Check-In URI: " + qrCheckUri);
+                Log.d(TAG, "Deleting QR Event URI: " + qrEventUri);
+                Log.d(TAG, "Deleting Image URI: " + imageUri);
+
+                deleteQrEventPoster(qrCheckUri, qrEventUri, imageUri);
+
+                eventRef.document(eventId).delete()
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Event successfully deleted!"))
+                        .addOnFailureListener(e -> Log.w(TAG, "Error deleting event", e))
+                        .addOnCompleteListener(onCompleteListener);
+            }
+        }).addOnFailureListener(e -> Log.e(TAG, "Error fetching event", e));
+    }
+
+    public void deleteQrEventPoster(String checkInUri, String eventUri, String eventPoster){
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+        //delete the qr code
+        if (checkInUri != null) {
+            StorageReference imageRef = storage.getReferenceFromUrl(checkInUri);
+            imageRef.delete();
+
+
+        }
+        if (eventUri != null) {
+            StorageReference imageRef = storage.getReferenceFromUrl(eventUri);
+            imageRef.delete();
+
+        }
+        if (eventPoster != null) {
+            StorageReference imageRef = storage.getReferenceFromUrl(eventPoster);
+            imageRef.delete();
+        }
+
+    }
+
+    public void deleteImageFromStorage(Image image, OnImageDeletedListener listener){
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference imageRef = storage.getReferenceFromUrl(image.getImageURL().toString());
+        imageRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    // Image deleted successfully
+                    if (image.getEventId() != null) {
+                        eventRef.document(image.getEventId()).get().addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists()) {
+                                String imageUri = documentSnapshot.getString("imageUri");
+                                if (imageUri != null && imageUri.equals(image.getImageURL().toString())) {
+                                    eventRef.document(image.getEventId()).update("imageUri", null);
+                                }
+                            }
+                        });
+                    } else if ( image.getUserId() != null) {
+                        profileRef.document(image.getUserId()).get().addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists()) {
+                                String imageUri = documentSnapshot.getString("uploadedImageUri");
+                                if (imageUri != null && imageUri.equals(image.getImageURL().toString())) {
+                                    profileRef.document(image.getUserId()).update("uploadedImageUri", null);
+                                }
+                            }
+                        });
+                    }
+                    listener.onImageDeleted();
+                }
+
+            }
+        });
+
+
+    }
+    public interface OnImageDeletedListener {
+        void onImageDeleted();
     }
 
     /**
@@ -391,6 +516,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
 //                }
                 Log.d(TAG,"URI IMAGE:"+event.getImageUri());
                 Log.d(TAG, "Organizer ID: "+event.getOrganizer());
+                Log.d("DATABASE ARRAY","Attendees List: " + event.getAttendeesList().toString());
                 callBack.onEventFetched(event);
             }
         }).addOnFailureListener(e -> {
@@ -422,24 +548,107 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 }).addOnFailureListener(e-> Log.e(TAG,"error fetching all the events", e));
     }
 
+    public void fetchImages( @Nullable String pageToken,OnImageRetrievedListener listener) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference imageRef = storage.getReference().child("images/");
+        Task<ListResult> listPageTask = pageToken != null
+                ? imageRef.list(100, pageToken)
+                : imageRef.list(100);
+
+        listPageTask
+                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                    @Override
+                    public void onSuccess(ListResult listResult) {
+                        List<StorageReference> prefixes = listResult.getPrefixes();
+                        List<StorageReference> items = listResult.getItems();
+
+                        // Process page of results
+                        List<Image> images = new ArrayList<>();
+                        for (StorageReference item : items) {
+                            item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    item.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+                                        @Override
+                                        public void onSuccess(StorageMetadata storageMetadata) {
+                                            Image image = new Image();
+                                            image.setImageURL(uri);
+                                            image.setEventId(storageMetadata.getCustomMetadata("event_id"));
+                                            image.setUserId(storageMetadata.getCustomMetadata("user_id"));
+                                            images.add(image);
+
+                                            // If all images have been fetched, return them through the listener
+                                            if (images.size() == items.size()) {
+                                                listener.onImageRetrieved(images);
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        // Recurse onto next page
+                        if (listResult.getPageToken() != null) {
+                            fetchImages(listResult.getPageToken(), listener);
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Uh-oh, an error occurred.
+                    }
+                });
+    }
+
+
+
+    public interface OnImageRetrievedListener {
+        void onImageRetrieved(List<Image> images);
+    }
+
     /**
-     * This method is mainly used while creating an event. When you create an event, it will create a new
-     * database where it has event ids and an array List of userIds who is a part of the event
-     * @param eventId
-     * @param signedAttendees
+     * Registers a new attendee for a specific event. If the event already has a list of attendees, the new attendee
+     * is added to this list. If the attendee is already registered, no changes are made. If the event does not
+     * have any attendees yet, a new list is created with the attendee in it.
+     *
+     * @param eventId       The unique identifier of the event for which to register the attendee.
+     * @param newAttendeeId The unique identifier of the attendee to register.
      */
 
-    public void addSignin(String eventId, ArrayList<String> signedAttendees )
-    {
-        Map<String, Object> eventMap = new HashMap<>();
-        eventMap.put("id",eventId);
-        eventMap.put("signedAttendees",signedAttendees);
-        signedUpRef.document(eventId).set(eventMap)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Event successfully written!"))
-                .addOnFailureListener(e -> Log.w(TAG, "Error writing event", e));
-//                .addOnCompleteListener(onCompleteListener);
-
+    public void addSignin(String eventId, String newAttendeeId) {
+        // Reference to the document for the specific event in the 'SignedUp' collection
+        DocumentReference eventDocRef = signedUpRef.document(eventId);
+        // Attempt to retrieve the event document
+        eventDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                // Retrieves the current list of attendees for the event
+                List<String> attendees = (List<String>) documentSnapshot.get("signedAttendees");
+                if (attendees == null) {
+                    // If there's no list, create a new one
+                    attendees = new ArrayList<>();
+                }
+                // Add the attendee if they're not already registered
+                if (!attendees.contains(newAttendeeId)) {
+                    attendees.add(newAttendeeId);
+                }
+                // Update the document with the new list of attendees
+                eventDocRef.update("signedAttendees", attendees)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Attendee successfully added"))
+                        .addOnFailureListener(e -> Log.e(TAG, "Error adding attendee", e));
+            } else {
+                // No document exists for the event, create a new event with the attendee
+                List<String> attendees = new ArrayList<>();
+                attendees.add(newAttendeeId);
+                Map<String, Object> newEventMap = new HashMap<>();
+                newEventMap.put("id", eventId);
+                newEventMap.put("signedAttendees", attendees);
+                // Set the new event in the database
+                eventDocRef.set(newEventMap)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "New event created with attendee"))
+                        .addOnFailureListener(e -> Log.e(TAG, "Error creating new event", e));
+            }
+        }).addOnFailureListener(e -> Log.e(TAG, "Error fetching event document", e));
     }
+
 
     /**
      * This method is to retrieve the array list once we pass the event id
@@ -535,14 +744,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * @param attendees
      * A 2D ArrayList containing the attendees and the number of times they have checked in.
      */
-    public void updateEventAttendees(String eventID, ArrayList<ArrayList<String>> attendees){
-        eventRef.document(eventID).update("attendeeList",attendees).addOnSuccessListener( onSuccessListener -> {
-            Log.d(TAG, "Event successfully updated!");
-
-            // exception for if the task for some reason failed
-        }).addOnFailureListener(e -> {
-            Log.e(TAG, "Error updating event attendees", e);
-        });
+    public void updateEventAttendees(String eventID, ArrayList<String> attendees) {
+        eventRef.document(eventID).update("attendeesList", attendees)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Event attendee list successfully updated!"))
+                .addOnFailureListener(e -> Log.e(TAG, "Error updating event attendee list", e));
     }
 
     /**
@@ -552,13 +757,13 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * @param checkInLocations
      * A 2D ArrayList containing the locations that attendees checked in from.
      */
-    public void updateEventCheckInLocations(String eventID, ArrayList<ArrayList<String>> checkInLocations){
-        eventRef.document(eventID).update("geolocationsList", checkInLocations).addOnSuccessListener( onSuccessListener -> {
-            Log.d(TAG, "Event successfully updated!");
+    public void updateEventCheckInLocations(String eventID, ArrayList<String> checkInLocations){
+        eventRef.document(eventID).update("geolocationList", checkInLocations).addOnSuccessListener( onSuccessListener -> {
+            Log.d(TAG, "Event geolocation check-ins successfully updated!");
 
             // exception for if the task for some reason failed
         }).addOnFailureListener(e -> {
-            Log.e(TAG, "Error updating event attendees", e);
+            Log.e(TAG, "Error updating event geolocation check-ins", e);
         });
     }
 

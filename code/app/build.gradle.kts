@@ -76,6 +76,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-database")
     implementation("com.karumi:dexter:6.2.2")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.4.0")
+
 
 
 

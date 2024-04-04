@@ -2,6 +2,8 @@ package com.example.emojibrite;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -17,6 +19,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -48,11 +52,15 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     ArrayList<String> signedAttendees;
 
-    Button signingup, attendeesButton, notificationButton;
+    Button signingup, attendeesButton, notificationButton,  deleteBtn, qrBtn, qrCodeEventDetails;
+    TextView showMap;
 
     Database database;
 
+    String privilege;
+
     String eventId;
+    Users user;
 
 
     /**
@@ -73,12 +81,51 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         attendeesButton = findViewById(R.id.attendees_button);
         signingup=findViewById(R.id.sign_up_button);
         notificationButton = findViewById(R.id.Notification_button);
+        deleteBtn = findViewById(R.id.delete_event);
+        showMap = findViewById(R.id.show_map);
+        qrBtn = findViewById(R.id.qr_code);
+
+        qrCodeEventDetails = findViewById(R.id.qr_code);
 
         Intent intent = getIntent();
-        currentUser = intent.getStringExtra("userlol"); // get the user
+        user = intent.getParcelableExtra("userObject");
+        currentUser = user.getProfileUid(); // get the user
 
         // Retrieving the event ID passed from the previous activity.
         eventId = getIntent().getStringExtra("eventId");
+
+        privilege = intent.getStringExtra("privilege");
+        if (privilege.equals("2")){
+            ImageView notifbell = findViewById(R.id.notif_bell);
+            ImageView profileButton = findViewById(R.id.profile_pic);
+
+            notifbell.setVisibility(View.GONE);
+            profileButton.setVisibility(View.GONE);
+            attendeesButton.setVisibility(View.GONE);
+            notificationButton.setVisibility(View.GONE);
+
+            signingup.setVisibility(View.GONE);
+            showMap.setVisibility(View.GONE);
+            qrBtn.setVisibility(View.GONE);
+            deleteBtn.setVisibility(View.VISIBLE);
+
+        }
+        else{
+            deleteBtn.setVisibility(View.GONE);
+            attendeesButton.setVisibility(View.VISIBLE);
+            signingup.setVisibility(View.VISIBLE);
+            showMap.setVisibility(View.VISIBLE);
+
+        }
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteAlertBuilder();
+
+            }
+        });
+
+
 
         if (currentUser!=null){
             Log.d(TAG,"YEPPIEEEE "+currentUser);
@@ -87,9 +134,6 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             Log.d(TAG, "SAAAAAAD IT IS NULL");
         }
 
-
-        Button attendeesButton = findViewById(R.id.attendees_button);
-        TextView showMap = findViewById(R.id.show_map);
 
         showMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,6 +151,17 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
 
         });
+
+        qrCodeEventDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String var = "true";
+                Intent intent = new Intent(EventDetailsActivity.this, DisplayEventQRCode.class);
+                intent.putExtra("eventId", eventId);
+                startActivity(intent);
+            }
+        });
+
 
         attendeesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,7 +186,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
 
 
-        signedAttendees=new ArrayList<>();
+        signedAttendees=new ArrayList<>();  //TODO: CREATE A NEW ARRAYLIST CALLED NOTIFICATION?
 
 //        signingup.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -147,7 +202,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         database.getEventById(eventId, new Database.EventCallBack() {
             @Override
             public void onEventFetched(Event event) {
-                if(event != null) {
+                if (event != null) {
                     setupViews(event);
                     database.getSignedAttendees(eventId, attendees -> {
                         signedAttendees = new ArrayList<>(attendees);
@@ -158,6 +213,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
                 }
             }
         });
+
         notificationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -199,16 +255,14 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     private void signUpForEvent(String eventId) {
         signedAttendees.add(currentUser);
-        database.addSignin(eventId, signedAttendees);
         subscribeToEvent(eventId);
+        database.addSignin(eventId, currentUser);
         signingup.setText("You have signed up"); // Set the text to indicate the user has signed up
         signingup.setBackgroundColor(Color.GREEN); // Change the background color to green
         signingup.setEnabled(false);
     }
 
 
-
-    private void signUpForEvent(){}
 
     /**
      * Sets up the views in the layout with the details of the event.
@@ -251,7 +305,9 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             //if both their ids match, that means they are the organizer itslf
             //so they do not have to sign up aka, we can remove it
             signingup.setVisibility(View.GONE);
-            notificationButton.setVisibility(View.VISIBLE);
+            if (!privilege.equals("2")) {
+                notificationButton.setVisibility(View.VISIBLE);
+            }
             Log.d(TAG,"SIGNINGUP BUTTON IS GOOONE");
 
         }
@@ -265,10 +321,6 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             notificationButton.setVisibility(View.GONE);
 
         }
-
-
-
-
         // Formatting and displaying the event date and time.
         String dateTime = "";
         if (event.getDate() != null) {
@@ -312,8 +364,6 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         }
 
     }
-
-
     /**
      * Sets text to a TextView or hides it if the text is null or empty.
      *
@@ -451,4 +501,44 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
                 });
     }
     // End of Notification stuff
+
+    private void deleteAlertBuilder(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // Set the message and the title of the dialog
+        builder.setTitle("Confirm Delete");
+        builder.setMessage("Are you sure you want to delete this event?");
+        // Set the positive (Yes) button and its click listener
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                database.deleteEvent(eventId, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Event deleted successfully");
+                            Intent intent = new Intent(EventDetailsActivity.this, AdminEventActivity.class);
+                            intent.putExtra("userObject", user);
+                            startActivity(intent);
+                            finish();
+
+                        } else {
+                            Log.d(TAG, "Failed to delete event");
+                        }
+                    }
+                });
+            }
+        });
+        // Set the negative (No) button and its click listener
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Dismiss the dialog
+                dialog.dismiss();
+            }
+        });
+        // Create and show the dialog
+        builder.create().show();
+    }
+
 }

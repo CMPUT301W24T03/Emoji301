@@ -10,9 +10,22 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 public class CheckedInFragment extends Fragment {
     // put your uninitialized attributes here
     ListView attendeesListView;
+    AttendeesArrayAdapter attendeesArrayAdapter;
+
+    ArrayList<Integer> countOfAttendees;
+
+    ArrayList<Users> attendeesList;
+
+    private String eventId;
     /**
      * Called to have the fragment instantiate its user interface view.
      * @param inflater The LayoutInflater object that can be used to inflate
@@ -35,9 +48,82 @@ public class CheckedInFragment extends Fragment {
         // if the data is passed via a bundle, do the following
         // Bundle bundle = getArguments();
 
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            eventId = bundle.getString("eventId");
+            Log.d("SignedUpFragment", "Received Event ID: " + eventId);
+        } else {
+            Log.d("SignedUpFragment", "No bundle passed");
+        }
 
-        return checkedInLayout;
+            attendeesList = new ArrayList<>();
+            countOfAttendees = new ArrayList<>(); // Initialize countOfAttendees
+            attendeesArrayAdapter = new AttendeesArrayAdapter(getContext(), attendeesList, "1", countOfAttendees);
+            attendeesListView.setAdapter(attendeesArrayAdapter);
+            loadAttendees(eventId);
+
+            return checkedInLayout;
+        }
+
+    /**
+     *
+     * @param eventId
+     */
+
+    private void loadAttendees(String eventId){
+            Database db = new Database();
+            attendeesList.clear();
+            countOfAttendees.clear();
+            db.getEventById(eventId, new Database.EventCallBack() {
+                @Override
+                public void onEventFetched(Event event) {
+                    ArrayList<String> listAttendees = event.getAttendeesList();
+
+                    // Reset countOfAttendees before populating
+                    countOfAttendees.clear();
+
+                    for (String userId : listAttendees) {
+                        db.getUserDocument(userId, new Database.OnUserDocumentRetrievedListener() {
+                            @Override
+                            public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot) {
+                                if (documentSnapshot.exists()) {
+                                    Users user = documentSnapshot.toObject(Users.class);
+                                    if (user != null) {
+                                        if (!attendeesList.contains(user)) {
+                                            attendeesList.add(user);
+                                            Log.d("ADDING USERS","checking how many times it adds");
+                                            Integer countOfUsers = countOfElements(listAttendees, userId);
+                                            countOfAttendees.add(countOfUsers); // Populate count list
+                                        }
+                                        if (getActivity() != null) {
+                                            getActivity().runOnUiThread(() -> attendeesArrayAdapter.notifyDataSetChanged());
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+
+    /**
+     *
+     * @param listAttendees
+     * @param userId
+     * @return
+     */
+    public Integer countOfElements(ArrayList<String> listAttendees, String userId) {
+        Integer counter = 0;
+        for (String user : listAttendees) {
+            if (Objects.equals(user, userId)) {
+                counter++;
+            }
+        }
+        return counter;
     }
+
 
     /**
      * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}

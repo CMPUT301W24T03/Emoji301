@@ -5,15 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 
 import android.os.Handler;
 import android.os.Looper;
 
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,7 +18,7 @@ import android.widget.ListView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,7 +44,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
     /**
      * Opens the EventDetailsActivity to show the details of the selected event.
-     *
      * @param event The event to show details for.
      */
 
@@ -57,7 +52,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         intent.putExtra("eventId", event.getId());
         if (user!=null){
             Log.d("TAG","CHECKING CHECKING CHECKING  "+ user.getProfileUid());}
-        intent.putExtra("userlol",user.getProfileUid()); //You send the current user profile id into the details section
+        intent.putExtra("userObject", user);
+        intent.putExtra("privilege", "1");//You send the current user profile id into the details section
         startActivity(intent);
     }
 
@@ -141,16 +137,33 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         Button otherEvent = findViewById(R.id.other_events_button);
 
         Intent intent = getIntent();
-        user = intent.getParcelableExtra("userObject");
-        //this allows the user to not be stuck on admin activity all the time
-        user.setEnableAdmin(false);
+//        user = intent.getParcelableExtra("userObject");
+//        //this allows the user to not be stuck on admin activity all the time
+//        user.setEnableAdmin(false);
+        if (intent.hasExtra("userObject"))
+        {
+            user = intent.getParcelableExtra("userObject");
+            if (user != null) {
+                user.setEnableAdmin(false);
+            } else {
+                Log.e("EVENTHOME: PROFILE", "User object is null");
+            }
+        }
+        else {
+            Log.e(TAG, "No userObject passed in intent");
+
+        }
+
+
+
+
 
         Log.d(TAG, "PROFILE PIC EVENT HOME "+user.getUploadedImageUri());
         if(user!=null) {
             Log.d(TAG, "user name for EventHome: " + user.getName() + user.getProfileUid() + user.getUploadedImageUri() + user.getAutoGenImageUri() + user.getHomePage());
             Log.d(TAG, "user id for EventHome: " + user.getProfileUid());
 
-            FloatingActionButton fab = findViewById(R.id.event_add_btn);
+            FloatingActionButton fab = findViewById(R.id.event_scan_btn);
             fab.setOnClickListener(view -> showAddEventDialog());
         }
 
