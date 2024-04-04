@@ -12,10 +12,12 @@ import androidx.core.content.ContextCompat;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -124,19 +126,30 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
             public void onClick(View view) {
                 boolean isChecked = geoToggle.isChecked();
                 if (isChecked) {
-                    Log.d("geolocation", "Location on");
-                    // Run-time permission check
-                    if (ActivityCompat.checkSelfPermission(ProfileActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ProfileActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        // Request location permission
-                        ActivityCompat.requestPermissions(ProfileActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-                        return;
+                    // If the toggle is turned on, check if the location permission is already granted
+                    if (ContextCompat.checkSelfPermission(ProfileActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        // If the permission is not granted, request the location permission
+                        ActivityCompat.requestPermissions(ProfileActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
                     } else {
-                        // Location permission already granted, update geolocation permission
-                        updateUserGeolocationPermission(true);
+                        // If the permission is already granted, update the user object and save it to the database
+                        user.setEnableGeolocation(true);
+                        database.setUserObject(user);
                     }
                 } else {
-                    // If the toggle is turned off, remove geolocation from Firestore and update UI
-                    updateUserGeolocationPermission(false);
+                    // If the toggle is turned off, guide the user to the settings page
+                    new AlertDialog.Builder(ProfileActivity.this)
+                            .setMessage("Please disable the location permission for this app in your device settings.")
+                            .setPositiveButton("Go to settings", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                    intent.setData(uri);
+                                    startActivity(intent);
+                                }
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
                 }
             }
         });
@@ -181,6 +194,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         super.onResume();
         Log.d("Resume", "User has resumed");
         checkNotificationOnResume();
+        onResumeLocation();
     }
 
     /**
@@ -297,6 +311,22 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
             } else if (!permissionNotificationDenied) {
                 requestNotificationPermission();
             }
+        }
+    }
+    private void onResumeLocation() {
+        // Check if location permission is granted
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // If the permission is granted, update the user object and save it to the database
+            user.setEnableGeolocation(true);
+            database.setUserObject(user);
+            // Update the toggle button
+            geoToggle.setChecked(user.getEnableGeolocation());
+        } else {
+            // If the permission is not granted, update the user object and save it to the database
+            user.setEnableGeolocation(false);
+            database.setUserObject(user);
+            // Update the toggle button
+            geoToggle.setChecked(user.getEnableGeolocation());
         }
     }
 
@@ -428,6 +458,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                     }
                 });
     }
+
 
 
 
