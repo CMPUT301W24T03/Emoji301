@@ -103,9 +103,6 @@ dependencies {
 
 
     // Firebase Cloud Messaging : Notifications + OKHTTP
-    // todo check this for sending message: implementation("com.google.firebase:firebase-admin:9.2.0")
-    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
-    implementation("com.squareup.okhttp3:okhttp")
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-analytics:21.6.1")
 }

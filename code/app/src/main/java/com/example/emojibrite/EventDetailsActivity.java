@@ -367,8 +367,8 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 //        // Response is a message ID string.
 //        Log.d(TAG, "Successfully sent message: " + response);
 
-        String host = "https://fcm.googleapis.com/v1/projects/emojibrite/messages:send";
-        String token = "0b50cc51aa0d6c280549701f8f5149ae003f5580"; // todo: replace with your server key
+//        String host = "https://fcm.googleapis.com/v1/projects/emojibrite/messages:send";
+//        String token = "0b50cc51aa0d6c280549701f8f5149ae003f5580"; // todo: replace with your server key
 
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json");
@@ -393,9 +393,9 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         RequestBody rBody = RequestBody.create(message.toString(), mediaType);
         Log.d("Notify", "rBody: "+ rBody);
         Request request = new Request.Builder()
-                .url(host)
+                .url("https://fcm.googleapis.com/fcm/send")
                 .post(rBody)
-                .addHeader("Authorization", "Bearer " + token)
+                .addHeader("Authorization", "key=AAAAiYm6-Io:APA91bE8KQIhhQ7C3QeqISXSEfWcyr_p9-QWvquKJoHrTqHknOfjLdLGopi88PqhDdLkU2Il1vbG9NLLK7TkfqAZytcnxm48Ux2hdlPOhwnh4GHWip2KEqE346t2y2wOcNexz9djZrb7")
                 .addHeader("Content-Type", "application/json")
                 .build();
         Log.d("Notify", "Request " +  request);
