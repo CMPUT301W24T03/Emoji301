@@ -5,15 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 
 import android.os.Handler;
 import android.os.Looper;
 
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,7 +18,7 @@ import android.widget.ListView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -167,7 +163,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
             Log.d(TAG, "user name for EventHome: " + user.getName() + user.getProfileUid() + user.getUploadedImageUri() + user.getAutoGenImageUri() + user.getHomePage());
             Log.d(TAG, "user id for EventHome: " + user.getProfileUid());
 
-            FloatingActionButton fab = findViewById(R.id.event_add_btn);
+            FloatingActionButton fab = findViewById(R.id.event_scan_btn);
             fab.setOnClickListener(view -> showAddEventDialog());
         }
 

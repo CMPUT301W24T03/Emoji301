@@ -335,7 +335,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
         //2D arrays for attendees and geolocations
         eventMap.put("attendeesList", event.getAttendeesList());
-        eventMap.put("geolocationsList", event.getGeolocationList());
+        eventMap.put("geolocationList", event.getGeolocationList());
 
         if (event.getImageUri()!=null){
             Log.d(TAG, event.getImageUri().toString()); //testing
@@ -758,7 +758,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * A 2D ArrayList containing the locations that attendees checked in from.
      */
     public void updateEventCheckInLocations(String eventID, ArrayList<String> checkInLocations){
-        eventRef.document(eventID).update("geolocationsList", checkInLocations).addOnSuccessListener( onSuccessListener -> {
+        eventRef.document(eventID).update("geolocationList", checkInLocations).addOnSuccessListener( onSuccessListener -> {
             Log.d(TAG, "Event geolocation check-ins successfully updated!");
 
             // exception for if the task for some reason failed

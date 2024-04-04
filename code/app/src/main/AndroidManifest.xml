@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" /> <!-- To handle the reselection within the app on Android 14 (API level 34) -->
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-feature android:name="android.hardware.location.network" />
 
     <application
         android:allowBackup="true"
@@ -140,11 +142,11 @@
         <!--Set custom default icon, This is used when no icon is set for incoming notification messages-->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/emoji_logo"/>
+            android:resource="@drawable/emoji_brite_logo2"/>
         <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming-->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/colorPrimary"/>
+            android:resource="@color/ivory"/>
         <!--FCM provides default notification channel with basic settings. Use below to create your own channel by setting the default_notification_channel_id to ID of the notification channel object-->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
