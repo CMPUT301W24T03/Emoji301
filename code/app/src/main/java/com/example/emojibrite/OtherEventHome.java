@@ -92,15 +92,9 @@ public class OtherEventHome extends AppCompatActivity {
         QRCodeScanner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // checking if the user is logged in (as in there is an account associated with the device)
-
-                Bundle bundle = new Bundle();
-                // we put in the user ID and geolocation enabled bool
-                bundle.putStringArray("USER", new String[]{user.getProfileUid(), Boolean.toString(user.getEnableGeolocation())});
                 Intent intent = new Intent(OtherEventHome.this, QRScanningActivity.class);
-                intent.putExtras(bundle);
+                intent.putExtra("userObject", user);
                 startActivity(intent);
-
             }
         });
         profileButton.setOnClickListener(new View.OnClickListener() {
