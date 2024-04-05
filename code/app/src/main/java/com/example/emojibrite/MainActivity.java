@@ -65,12 +65,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // checking if the user is logged in (as in there is an account associated with the device)
                 if (userDocExist) {
-                    Bundle bundle = new Bundle();
-                    // we put in the user ID and geolocation enabled bool
-                    bundle.putStringArray("USER", new String[]{user.getProfileUid(), Boolean.toString(user.getEnableGeolocation()), "main"});
                     Intent intent = new Intent(MainActivity.this, QRScanningActivity.class);
-                    intent.putExtras(bundle);
+                    intent.putExtra("userObject", user);
+                    intent.putExtra("activity", "main");
                     startActivity(intent);
+                }
+                else{
+                    Toast.makeText(MainActivity.this,"Please hit \"Enter\" and create an account first before scanning.",Toast.LENGTH_LONG).show();
                 }
             }
         });
