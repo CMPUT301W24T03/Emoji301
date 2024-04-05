@@ -38,6 +38,11 @@ public class QRScanningActivity extends AppCompatActivity {
 
     private Database database = new Database();
 
+    PushNotificationService pushNotificationService = new PushNotificationService(); // to subscribe the newly checked in attendee
+
+    private String[] array;
+
+
     private boolean found = false;
 
     private Users user;
@@ -171,6 +176,13 @@ public class QRScanningActivity extends AppCompatActivity {
 
                         Toast.makeText(getBaseContext(), "Successfully checked into " + event.getEventTitle() + "!", Toast.LENGTH_LONG).show();
 
+                        // Notification: Subscribe current checked-in user to the event
+                        pushNotificationService.subscribeToEvent(event.getId(), new PushNotificationService.SubscribeCallback() {
+                            @Override
+                            public void onSubscriptionResult(String msg) {
+                                Toast.makeText(QRScanningActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
                         // if the user has geolocation enabled
                         if (user.getEnableGeolocation()) {

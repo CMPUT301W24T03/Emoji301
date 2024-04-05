@@ -1,5 +1,7 @@
 package com.example.emojibrite;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -21,6 +23,19 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 // This class is implemented using the following website(s) as reference(s):
 // https://firebase.google.com/docs/cloud-messaging/android/first-message#java
 // https://firebase.google.com/docs/cloud-messaging/android/topic-messaging?utm_source=studio#java_4
@@ -39,7 +54,22 @@ public class PushNotificationService extends FirebaseMessagingService {
      * and the token is not guaranteed to be received before it is used
      */
     public interface TokenCallback {
+        /**
+         * This method is called when the token is received
+         * @param token The token used for sending messages to this application instance
+         */
         void onTokenReceived(String token);
+    }
+
+    /**
+     * This interface hosts the callback method for the subscription to an event
+     */
+    public interface SubscribeCallback {
+        /**
+         * This method is called when the subscription is successful or not
+         * @param msg The message to be displayed when the subscription is successful or not
+         */
+        void onSubscriptionResult(String msg);
     }
 
     @Override
@@ -191,6 +221,101 @@ public class PushNotificationService extends FirebaseMessagingService {
             Log.d(TAG, "Notification channel created: " + channel.toString());
         }
         notificationManager.notify(0/*ID of notification*/, notificationBuilder.build());
+    }
+    /**
+     * This function is used to send a notification to the attendees of the event
+     * @param notifBody The message to be sent to the attendee.
+     * @param eventId The id of the event to send the notification to.
+     * reference: <a href="https://firebase.google.com/docs/cloud-messaging/android/send-multiple#build_send_requests">Here</a>
+     *                  <a href="https://www.youtube.com/watch?v=G9TO6J_i3LU&list=WL&index=6">here2</a>
+     *                  <a href="https://www.youtube.com/watch?v=6_t87WW6_Gc&list=WL&index=7">here3</a>
+     *                  <a href="https://www.youtube.com/watch?v=oNoRw69ro2k&list=WL&index=8">here4</a>
+     */
+    public void sendNotification(String notifBody, String eventId) {
+        Log.d("Notify", "SendNotification is called");
+
+        OkHttpClient client = new OkHttpClient();
+        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+
+        // Message creation
+        JSONObject message = new JSONObject();
+        JSONObject notification = new JSONObject();
+
+        try{
+            message.put("to","/topics/" + eventId);
+            notification.put("title", "EmojiBrite");
+            notification.put("body", notifBody);
+            message.put("notification", notification);
+            Log.d("Notify", message.toString());
+        } catch (JSONException e){
+            Log.d("Notify", "JSONException error: " + e);
+        }
+
+        // send message to firebase API
+        RequestBody rBody = RequestBody.create(message.toString(), mediaType);
+        Log.d("Notify", "rBody: "+ rBody);
+        Request request = new Request.Builder()
+                .url("https://fcm.googleapis.com/fcm/send")
+                .post(rBody)
+                .addHeader("Authorization", "key=AAAAiYm6-Io:APA91bE8KQIhhQ7C3QeqISXSEfWcyr_p9-QWvquKJoHrTqHknOfjLdLGopi88PqhDdLkU2Il1vbG9NLLK7TkfqAZytcnxm48Ux2hdlPOhwnh4GHWip2KEqE346t2y2wOcNexz9djZrb7")
+                .addHeader("Content-Type", "application/json")
+                .build();
+        Log.d("Notify", "Request " +  request);
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                // This is where you would handle a request failure
+                Log.d("Notify", "IOException error: " + e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                // This is where you would handle the response
+                String responseBody = response.body().string();
+                if(response.isSuccessful()) {
+                    Log.d("Notify", "Successful Response: " + responseBody);
+//                response.close();
+                } else {
+                    Log.d("Notify", "Unsuccessful Response: " + responseBody);
+                }
+            }
+        });
+
+    }
+
+    /**
+     * This function is used to subscribe the user to the event via the event ID.
+     * Uses the Firebase Cloud Messaging (FCM) token to subscribe the user to the event.
+     * @param eventId The event ID to subscribe to
+     */
+    public void subscribeToEvent(String eventId, SubscribeCallback callback) {
+        FirebaseMessaging.getInstance().subscribeToTopic(eventId)
+                .addOnCompleteListener(task -> {
+                    String msg = "Subscribe Successful";
+                    if (!task.isSuccessful()) {
+                        msg = "Subscribe Failed";
+                    }
+                    Log.d(TAG, msg);
+                    callback.onSubscriptionResult(msg);
+                });
+    }
+
+    /**
+     * This function is used to unsubscribe the user from the event via the event ID.
+     * Uses the Firebase Cloud Messaging (FCM) token to unsubscribe the user from the event.
+     * @param eventId The event ID to unsubscribe from
+     */
+    public void unsubscribeFromEvent(String eventId, SubscribeCallback callback) {
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(eventId)
+                .addOnCompleteListener(task -> {
+                    String msg = "Unsubscribe Successful";
+                    if (!task.isSuccessful()) {
+                        msg = "Unsubscribe Failed";
+                    }
+                    Log.d(TAG, msg);
+                    callback.onSubscriptionResult(msg);
+                });
     }
 
 }
