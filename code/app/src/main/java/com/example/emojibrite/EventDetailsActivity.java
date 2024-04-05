@@ -81,6 +81,11 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event_details);
 
+        ImageView notif = findViewById(R.id.notif_bell);
+        ImageView pfp = findViewById(R.id.profile_pic);
+
+        notif.setVisibility(View.GONE);
+        pfp.setVisibility(View.GONE);
         ImageView backButton = findViewById(R.id.imageView); //back button
         attendeesButton = findViewById(R.id.attendees_button);
         signingup=findViewById(R.id.sign_up_button);
@@ -128,8 +133,6 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
             }
         });
-
-
 
         if (currentUser!=null){
             Log.d(TAG,"YEPPIEEEE "+currentUser);
@@ -517,6 +520,8 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         builder.setMessage("Are you sure you want to delete this event?");
         // Set the positive (Yes) button and its click listener
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 database.deleteEvent(eventId, new OnCompleteListener<Void>() {
@@ -524,6 +529,8 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "Event deleted successfully");
+                            database.deleteEventNotification(eventId);
+
                             Intent intent = new Intent(EventDetailsActivity.this, AdminEventActivity.class);
                             intent.putExtra("userObject", user);
                             startActivity(intent);

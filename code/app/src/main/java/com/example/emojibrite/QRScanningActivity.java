@@ -155,6 +155,7 @@ public class QRScanningActivity extends AppCompatActivity {
                     if (event != null) {
                         showEventDetails(event, user);
                         found = true;
+                        finish();
                     }
                 }
             });
@@ -186,6 +187,15 @@ public class QRScanningActivity extends AppCompatActivity {
                         if (user.getEnableGeolocation()) {
                             getLocation(event);
                         }
+
+                        // going to other event home after checking in
+                        if (found){
+                            Intent intent = new Intent(QRScanningActivity.this, OtherEventHome.class);
+                            intent.putExtra("userObject", user);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            finish();
+                        }
                     }
                 }
             });
@@ -214,7 +224,7 @@ public class QRScanningActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EventDetailsActivity.class);
         intent.putExtra("eventId", event.getId());
         intent.putExtra("userObject", user);
-        intent.putExtra("privilege", user.getRole());
+        intent.putExtra("privilege", "0");
         startActivity(intent);
     }
 
