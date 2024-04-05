@@ -42,6 +42,8 @@ public class QRScanningActivity extends AppCompatActivity {
     private boolean found = false;
 
     private String uid;
+
+    private Users user;
     private boolean geolocationBool;
 
     @Override
@@ -59,6 +61,8 @@ public class QRScanningActivity extends AppCompatActivity {
         uid = array[0];
         geolocationBool = Boolean.parseBoolean(array[1]);
 
+        checkUserDoc(uid);
+
         // checking to see if we have location permissions
         if (geolocationBool){
             // run-time permission check
@@ -67,10 +71,32 @@ public class QRScanningActivity extends AppCompatActivity {
             }
         }
 
-        qrScanButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                QR_scan();
+
+
+
+    }
+
+    private void checkUserDoc(String userUid){
+        database.getUserDocument(userUid, documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+
+                user = documentSnapshot.toObject(Users.class);
+                user.setEnableAdmin(false);
+
+                qrScanButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        QR_scan();
+                    }
+                });
+
+
+            } else {
+
+
+                Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(QRScanningActivity.this, MainActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -163,6 +189,7 @@ public class QRScanningActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EventDetailsActivity.class);
         intent.putExtra("eventId", event.getId());
         intent.putExtra("userlol",userID); //You send the current user profile id into the details section
+        intent.putExtra("privilege", "1");
         startActivity(intent);
     }
 
