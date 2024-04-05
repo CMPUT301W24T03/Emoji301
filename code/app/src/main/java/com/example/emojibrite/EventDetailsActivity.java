@@ -25,25 +25,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.MediaType.Companion.*;
 
 /**
  * EventDetailsActivity is responsible for displaying the detailed information
@@ -65,6 +51,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     String eventId;
     Users user;
+    PushNotificationService pushNotificationService = new PushNotificationService();
 
 
     /**
@@ -278,7 +265,12 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     private void signUpForEvent(String eventId) {
         signedAttendees.add(currentUser);
-        subscribeToEvent(eventId);
+        pushNotificationService.subscribeToEvent(eventId, currentUser, new PushNotificationService.SubscribeCallback() {
+            @Override
+            public void onSubscriptionResult(String msg) {
+                Toast.makeText(EventDetailsActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
         database.addSignin(eventId, currentUser);
         signingup.setText("You have signed up"); // Set the text to indicate the user has signed up
         signingup.setBackgroundColor(Color.GREEN); // Change the background color to green
@@ -410,104 +402,10 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
      */
     @Override
     public void onDialogPositiveClick(String message) {
-        sendNotification(message, eventId);
+        pushNotificationService.sendNotification(message, eventId);
+        database.storeNotification(message, eventId);
     }
 
-    /**
-     * This function is used to send a notification to the attendees of the event
-     * @param notifBody The message to be sent to the attendee
-     * reference: <a href="https://firebase.google.com/docs/cloud-messaging/android/send-multiple#build_send_requests">Here</a>
-     *                  <a href="https://www.youtube.com/watch?v=G9TO6J_i3LU&list=WL&index=6">here2</a>
-     *                  <a href="https://www.youtube.com/watch?v=6_t87WW6_Gc&list=WL&index=7">here3</a>
-     *                  <a href="https://www.youtube.com/watch?v=oNoRw69ro2k&list=WL&index=8">here4</a>
-     */
-    private void sendNotification(String notifBody, String eventId) {
-        Log.d("Notify", "SendNotification is called");
-
-        OkHttpClient client = new OkHttpClient();
-        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
-
-        // Message creation
-        JSONObject message = new JSONObject();
-        JSONObject notification = new JSONObject();
-
-        try{
-            message.put("to","/topics/" + eventId);
-            notification.put("title", "EmojiBrite");
-            notification.put("body", notifBody);
-            message.put("notification", notification);
-            Log.d("Notify", message.toString());
-        } catch (JSONException e){
-            Log.d("Notify", "JSONException error: " + e);
-        }
-
-        // send message to firebase API
-        RequestBody rBody = RequestBody.create(message.toString(), mediaType);
-        Log.d("Notify", "rBody: "+ rBody);
-        Request request = new Request.Builder()
-                .url("https://fcm.googleapis.com/fcm/send")
-                .post(rBody)
-                .addHeader("Authorization", "key=AAAAiYm6-Io:APA91bE8KQIhhQ7C3QeqISXSEfWcyr_p9-QWvquKJoHrTqHknOfjLdLGopi88PqhDdLkU2Il1vbG9NLLK7TkfqAZytcnxm48Ux2hdlPOhwnh4GHWip2KEqE346t2y2wOcNexz9djZrb7")
-                .addHeader("Content-Type", "application/json")
-                .build();
-        Log.d("Notify", "Request " +  request);
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                // This is where you would handle a request failure
-                Log.d("Notify", "IOException error: " + e);
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                // This is where you would handle the response
-                String responseBody = response.body().string();
-                if(response.isSuccessful()) {
-                    Log.d("Notify", "Successful Response: " + responseBody);
-//                response.close();
-                } else {
-                    Log.d("Notify", "Unsuccessful Response: " + responseBody);
-                }
-            }
-        });
-
-    }
-
-    /**
-     * This function is used to subscribe the user to the event via the event ID.
-     * Uses the Firebase Cloud Messaging (FCM) token to subscribe the user to the event.
-     * @param eventId The event ID to subscribe to
-     */
-    private void subscribeToEvent(String eventId) {
-        FirebaseMessaging.getInstance().subscribeToTopic(eventId)
-                .addOnCompleteListener(task -> {
-                    String msg = "User "+ currentUser +" is now subscribed to event: " + eventId;
-                    if (!task.isSuccessful()) {
-                        msg = "Failed to subscribe user " + currentUser + "to event: " + eventId;
-                    }
-                    Log.d(TAG, msg);
-                    Toast.makeText(EventDetailsActivity.this, msg, Toast.LENGTH_SHORT).show();
-                });
-    }
-
-    /**
-     * This function is used to unsubscribe the user from the event via the event ID.
-     * Uses the Firebase Cloud Messaging (FCM) token to unsubscribe the user from the event.
-     * @param eventId The event ID to unsubscribe from
-     */
-    private void unsubscribeFromEvent(String eventId) {
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(eventId)
-                .addOnCompleteListener(task -> {
-                    String msg = "User "+ currentUser +" is now unsubscribed from event: " + eventId;
-                    if (!task.isSuccessful()) {
-                        msg = "Failed to unsubscribe user " + currentUser + "from event: " + eventId;
-                    }
-                    Log.d(TAG, msg);
-                    Toast.makeText(EventDetailsActivity.this, msg, Toast.LENGTH_SHORT).show();
-                });
-    }
-    // End of Notification stuff
 
     private void deleteAlertBuilder(){
 
