@@ -144,7 +144,26 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EventDetailsActivity.this, MapsActivity.class);
-                startActivity(intent);
+                database.getEventById(eventId, new Database.EventCallBack() {
+                    @Override
+                    public void onEventFetched(Event event) {
+                        if (event != null) {
+                            ArrayList<String> geolocationList = event.getGeolocationList();
+
+                            // Testing purpose only
+                            Log.d("GeolocationList", "GeolocationList: " + geolocationList);
+
+                            // Create an Intent to start the MapsActivity
+                            Intent intent = new Intent(EventDetailsActivity.this, MapsActivity.class);
+
+                            // Put the geolocationList into the Intent
+                            intent.putStringArrayListExtra("geolocationList", geolocationList);
+                            Log.d("GeolocationListAA", "GeolocationList: " + geolocationList);
+                            // Start the MapsActivity
+                            startActivity(intent);
+                        }
+                    }
+                });
             }
         });
         backButton.setOnClickListener(new View.OnClickListener() {
