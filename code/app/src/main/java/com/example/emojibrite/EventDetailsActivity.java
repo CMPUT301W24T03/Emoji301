@@ -27,7 +27,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.firestore.FirebaseFirestore;
->>>>>>>>> Temporary merge branch 2
 
 import org.json.JSONException;
 import org.json.JSONObject;
