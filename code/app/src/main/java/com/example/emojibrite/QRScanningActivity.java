@@ -159,7 +159,7 @@ public class QRScanningActivity extends AppCompatActivity {
                         Toast.makeText(getBaseContext(), "Successfully checked into " + event.getEventTitle() + "!", Toast.LENGTH_LONG).show();
 
                         // Notification: Subscribe current checked-in user to the event
-                        pushNotificationService.subscribeToEvent(event.getId(), uid, new PushNotificationService.SubscribeCallback() {
+                        pushNotificationService.subscribeToEvent(event.getId(), new PushNotificationService.SubscribeCallback() {
                             @Override
                             public void onSubscriptionResult(String msg) {
                                 Toast.makeText(QRScanningActivity.this, msg, Toast.LENGTH_SHORT).show();

@@ -265,7 +265,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     private void signUpForEvent(String eventId) {
         signedAttendees.add(currentUser);
-        pushNotificationService.subscribeToEvent(eventId, currentUser, new PushNotificationService.SubscribeCallback() {
+        pushNotificationService.subscribeToEvent(eventId, new PushNotificationService.SubscribeCallback() {
             @Override
             public void onSubscriptionResult(String msg) {
                 Toast.makeText(EventDetailsActivity.this, msg, Toast.LENGTH_SHORT).show();

@@ -289,7 +289,7 @@ public class PushNotificationService extends FirebaseMessagingService {
      * Uses the Firebase Cloud Messaging (FCM) token to subscribe the user to the event.
      * @param eventId The event ID to subscribe to
      */
-    public void subscribeToEvent(String eventId, String currentUser, SubscribeCallback callback) {
+    public void subscribeToEvent(String eventId, SubscribeCallback callback) {
         FirebaseMessaging.getInstance().subscribeToTopic(eventId)
                 .addOnCompleteListener(task -> {
                     String msg = "Subscribe Successful";
@@ -306,15 +306,15 @@ public class PushNotificationService extends FirebaseMessagingService {
      * Uses the Firebase Cloud Messaging (FCM) token to unsubscribe the user from the event.
      * @param eventId The event ID to unsubscribe from
      */
-    public void unsubscribeFromEvent(String eventId, String currentUser) {
+    public void unsubscribeFromEvent(String eventId, SubscribeCallback callback) {
         FirebaseMessaging.getInstance().unsubscribeFromTopic(eventId)
                 .addOnCompleteListener(task -> {
-                    String msg = "User "+ currentUser +" is now unsubscribed from event: " + eventId;
+                    String msg = "Unsubscribe Successful";
                     if (!task.isSuccessful()) {
-                        msg = "Failed to unsubscribe user " + currentUser + "from event: " + eventId;
+                        msg = "Unsubscribe Failed";
                     }
                     Log.d(TAG, msg);
-                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                    callback.onSubscriptionResult(msg);
                 });
     }
 
