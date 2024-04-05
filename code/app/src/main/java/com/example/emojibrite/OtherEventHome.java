@@ -96,7 +96,7 @@ public class OtherEventHome extends AppCompatActivity {
 
                 Bundle bundle = new Bundle();
                 // we put in the user ID and geolocation enabled bool
-                bundle.putStringArray("USER", new String[]{user.getProfileUid(), Boolean.toString(user.getEnableGeolocation())});
+                bundle.putStringArray("USER", new String[]{user.getProfileUid(), Boolean.toString(user.getEnableGeolocation()), "event"});
                 Intent intent = new Intent(OtherEventHome.this, QRScanningActivity.class);
                 intent.putExtras(bundle);
                 startActivity(intent);

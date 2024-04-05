@@ -46,6 +46,8 @@ public class QRScanningActivity extends AppCompatActivity {
     private Users user;
     private boolean geolocationBool;
 
+    private String activity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +62,7 @@ public class QRScanningActivity extends AppCompatActivity {
         array = bundle.getStringArray("USER");
         uid = array[0];
         geolocationBool = Boolean.parseBoolean(array[1]);
+        activity = array[2];
 
         checkUserDoc(uid);
 
@@ -70,10 +73,6 @@ public class QRScanningActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},100);
             }
         }
-
-
-
-
     }
 
     private void checkUserDoc(String userUid){
@@ -92,11 +91,19 @@ public class QRScanningActivity extends AppCompatActivity {
 
 
             } else {
+                if (activity.equals("main")) {
 
 
-                Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(QRScanningActivity.this, MainActivity.class);
-                startActivity(intent);
+                    Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(QRScanningActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
+                else if (activity.equals("event")) {
+                    Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(QRScanningActivity.this, OtherEventHome.class);
+                    intent.putExtra("userObject", user);
+                    startActivity(intent);
+                }
             }
         });
 
