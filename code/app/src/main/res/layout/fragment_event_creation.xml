@@ -173,13 +173,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center">
 
         <Button
             android:id="@+id/button_generate_checkin_qr"
             android:layout_width="150dp"
-            android:layout_marginStart = "5dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="5dp"
             android:layout_height="wrap_content"
             android:background="@drawable/event_button_solid"
             android:checked="true"
@@ -191,6 +191,7 @@
         <Button
             android:id="@+id/button_generate_eventpage_qr"
             android:layout_width="150dp"
+            android:layout_marginStart = "5dp"
             android:layout_height="wrap_content"
             android:checked="true"
             android:background="@drawable/event_button_solid"
