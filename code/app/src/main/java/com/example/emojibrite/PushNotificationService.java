@@ -46,6 +46,7 @@ import okhttp3.Response;
  */
 public class PushNotificationService extends FirebaseMessagingService {
     FirebaseUser user;
+    Database database = new Database();
     private static final String TAG = "Notify";
 
     /**
@@ -114,7 +115,12 @@ public class PushNotificationService extends FirebaseMessagingService {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
             String notificationBody = remoteMessage.getNotification().getBody();
             if (remoteMessage.getNotification().getBody() != null) {
-                foregroundNotification(notificationBody);
+                Log.d(TAG, "Message Notification Title: " + remoteMessage.getNotification().getTitle());
+                if (remoteMessage.getNotification().getTitle() != null) {
+                    foregroundNotification(notificationBody, remoteMessage.getNotification().getTitle());
+                } else {
+                    foregroundNotification(notificationBody, "EmojiBrite Event");
+                }
             }
         }
 
@@ -202,12 +208,12 @@ public class PushNotificationService extends FirebaseMessagingService {
      * This method creates a notification that is displayed when the app is in the foreground
      * @param notificationBody The body of the notification to be displayed
      */
-    private void foregroundNotification(String notificationBody) {
+    private void foregroundNotification(String notificationBody, String eventTitle) {
         String channelId = getString(R.string.default_notification_channel_id);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.emoji_brite_logo)
-                        .setContentTitle("EmojiBrite")  // change to event name in the future.
+                        .setContentTitle(eventTitle)  // change to event name in the future.
                         .setContentText(notificationBody)
                         .setAutoCancel(true)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
@@ -232,7 +238,7 @@ public class PushNotificationService extends FirebaseMessagingService {
      *                  <a href="https://www.youtube.com/watch?v=oNoRw69ro2k&list=WL&index=8">here4</a>
      */
     public void sendNotification(String notifBody, String eventId) {
-        Log.d("Notify", "SendNotification is called");
+        Log.d("Notify", "SendNotification is called " + eventId );
 
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
@@ -241,47 +247,51 @@ public class PushNotificationService extends FirebaseMessagingService {
         JSONObject message = new JSONObject();
         JSONObject notification = new JSONObject();
 
-        try{
-            message.put("to","/topics/" + eventId);
-            notification.put("title", "EmojiBrite");
-            notification.put("body", notifBody);
-            message.put("notification", notification);
-            Log.d("Notify", message.toString());
-        } catch (JSONException e){
-            Log.d("Notify", "JSONException error: " + e);
-        }
-
-        // send message to firebase API
-        RequestBody rBody = RequestBody.create(message.toString(), mediaType);
-        Log.d("Notify", "rBody: "+ rBody);
-        Request request = new Request.Builder()
-                .url("https://fcm.googleapis.com/fcm/send")
-                .post(rBody)
-                .addHeader("Authorization", "key=AAAAiYm6-Io:APA91bE8KQIhhQ7C3QeqISXSEfWcyr_p9-QWvquKJoHrTqHknOfjLdLGopi88PqhDdLkU2Il1vbG9NLLK7TkfqAZytcnxm48Ux2hdlPOhwnh4GHWip2KEqE346t2y2wOcNexz9djZrb7")
-                .addHeader("Content-Type", "application/json")
-                .build();
-        Log.d("Notify", "Request " +  request);
-
-        client.newCall(request).enqueue(new Callback() {
+        database.getEventById(eventId, new Database.EventCallBack() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                // This is where you would handle a request failure
-                Log.d("Notify", "IOException error: " + e);
-            }
+            public void onEventFetched(Event event) {
+                try{
+                    message.put("to","/topics/" + eventId);
+                    notification.put("title", event.getEventTitle());
+                    notification.put("body", notifBody);
+                    message.put("notification", notification);
+                    Log.d("Notify", message.toString());
 
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                // This is where you would handle the response
-                String responseBody = response.body().string();
-                if(response.isSuccessful()) {
-                    Log.d("Notify", "Successful Response: " + responseBody);
-//                response.close();
-                } else {
-                    Log.d("Notify", "Unsuccessful Response: " + responseBody);
+                    // send message to firebase API
+                    RequestBody rBody = RequestBody.create(message.toString(), mediaType);
+                    Log.d("Notify", "rBody: "+ rBody);
+                    Request request = new Request.Builder()
+                            .url("https://fcm.googleapis.com/fcm/send")
+                            .post(rBody)
+                            .addHeader("Authorization", "key=AAAAiYm6-Io:APA91bE8KQIhhQ7C3QeqISXSEfWcyr_p9-QWvquKJoHrTqHknOfjLdLGopi88PqhDdLkU2Il1vbG9NLLK7TkfqAZytcnxm48Ux2hdlPOhwnh4GHWip2KEqE346t2y2wOcNexz9djZrb7")
+                            .addHeader("Content-Type", "application/json")
+                            .build();
+                    Log.d("Notify", "Request " +  request);
+
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                            // This is where you would handle a request failure
+                            Log.d("Notify", "IOException error: " + e);
+                        }
+
+                        @Override
+                        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                            // This is where you would handle the response
+                            String responseBody = response.body().string();
+                            if(response.isSuccessful()) {
+                                Log.d("Notify", "Successful Response: " + responseBody);
+                            } else {
+                                Log.d("Notify", "Unsuccessful Response: " + responseBody);
+                            }
+                        }
+                    });
+
+                } catch (JSONException e){
+                    Log.d("Notify", "JSONException error: " + e);
                 }
             }
         });
-
     }
 
     /**
@@ -317,5 +327,4 @@ public class PushNotificationService extends FirebaseMessagingService {
                     callback.onSubscriptionResult(msg);
                 });
     }
-
 }
