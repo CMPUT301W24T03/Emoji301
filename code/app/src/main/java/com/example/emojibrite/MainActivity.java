@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.default_notification_channel_name);
             String description = "Default notification channel for EmojiBrite";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel(getString(R.string.default_notification_channel_id), name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
