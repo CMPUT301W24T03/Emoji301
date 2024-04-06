@@ -192,6 +192,15 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // checking to see if we're from QR scanning
+                if (getIntent().getStringExtra("fromQRScanning") != null){
+                    Log.d("fromQRScanning", "we came from QR scanning event details");
+                    Intent intent = new Intent(EventDetailsActivity.this, OtherEventHome.class);
+                    intent.putExtra("userObject", user);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                }
 
                 finish();
             }
