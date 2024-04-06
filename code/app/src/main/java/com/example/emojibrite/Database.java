@@ -217,12 +217,16 @@ once created, u can call getuseruid to get the user id and use it to get user da
         void onUsersRetrieved(List<Users> users);
     }
 
-    public void deleteUser(String userId){
+    public void deleteUser(String userId, String imageUri){
         profileRef.document(userId).delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(firestoreDebugTag, "DocumentSnapshot successfully deleted!");
+                        deleteUserFromSignedUp(userId);
+                        deleteUserFromAttendeeList(userId);
+                        deleteEventIfOrganizerDeleted(userId);
+                        deleteUserUploadedImageFromStorage(imageUri);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -232,6 +236,91 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     }
                 });
     }
+
+    public void deleteUserUploadedImageFromStorage(String imageUri){
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference imageRef = storage.getReferenceFromUrl(imageUri);
+        imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Image successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting image", e);
+                    }
+                });
+    }
+
+    public void deleteEventIfOrganizerDeleted(String userId){
+        eventRef.whereEqualTo("organizer", userId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    String eventId = document.getId();
+                    deleteEvent(eventId, null);
+
+                }
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
+            }
+        });
+
+    }
+
+    public void deleteUserFromSignedUp(String userId){
+
+        signedUpRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    List<String> signedAttendees = (List<String>) document.get("signedAttendees");
+                    if (signedAttendees != null && signedAttendees.contains(userId)) {
+                        signedAttendees.remove(userId);
+                        document.getReference().update("signedAttendees", signedAttendees);
+                    }
+                }
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
+            }
+        });
+
+    }
+    public void deleteUserFromAttendeeList(String userId){
+        eventRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    List<String> attendeeList = (List<String>) document.get("attendeesList");
+                    if (attendeeList != null && attendeeList.contains(userId)) {
+                        attendeeList.remove(userId);
+                        document.getReference().update("attendeesList", attendeeList);
+                    }
+                }
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
+            }
+        });
+
+    }
+
+    public void deleteEventNotification(String eventId){
+        notificationRef.document(eventId).delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Notification successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting notification", e);
+                    }
+                });
+
+    }
+
+
 
 
 
@@ -366,6 +455,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 Log.d(TAG, "Deleting Image URI: " + imageUri);
 
                 deleteQrEventPoster(qrCheckUri, qrEventUri, imageUri);
+                deleteEventNotification(eventId);
 
                 eventRef.document(eventId).delete()
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Event successfully deleted!"))

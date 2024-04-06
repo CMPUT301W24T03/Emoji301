@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 if (userDocExist) {
                     Intent intent = new Intent(MainActivity.this, QRScanningActivity.class);
                     intent.putExtra("userObject", user);
+                    intent.putExtra("activity", "main");
                     startActivity(intent);
                 }
                 else{

@@ -54,6 +54,8 @@ public class QRScanningActivity extends AppCompatActivity {
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      *
      */
+    private String activity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +67,7 @@ public class QRScanningActivity extends AppCompatActivity {
         // get the user object from the intent
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
+        activity = intent.getParcelableExtra("activity");
 
         checkUserDoc(user.getProfileUid());
 
@@ -111,11 +114,19 @@ public class QRScanningActivity extends AppCompatActivity {
 
 
             } else {
+                if (activity.equals("main")) {
 
 
-                Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(QRScanningActivity.this, MainActivity.class);
-                startActivity(intent);
+                    Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(QRScanningActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
+                else if (activity.equals("event")) {
+                    Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(QRScanningActivity.this, OtherEventHome.class);
+                    intent.putExtra("userObject", user);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -230,7 +241,7 @@ public class QRScanningActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EventDetailsActivity.class);
         intent.putExtra("eventId", event.getId());
         intent.putExtra("userObject", user);
-        intent.putExtra("privilege", user.getRole());
+        intent.putExtra("privilege", "0");
         startActivity(intent);
     }
 

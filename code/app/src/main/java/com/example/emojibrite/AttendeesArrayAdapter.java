@@ -138,7 +138,7 @@ public class AttendeesArrayAdapter extends ArrayAdapter<Users> {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // Delete the user
-                        database.deleteUser(users.getProfileUid());
+                        database.deleteUser(users.getProfileUid(), users.getUploadedImageUri());
                         remove(users);
                         notifyDataSetChanged();
                     }
