@@ -43,6 +43,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
 //    Button otherEvent = findViewById(R.id.other_events_button);
 
+    ImageView notifButton;
+
     ImageView profileButton;
 
     private static final String TAG = "ProfileActivityTAG";
@@ -59,6 +61,14 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
             Log.d("TAG","CHECKING CHECKING CHECKING  "+ user.getProfileUid());}
         intent.putExtra("userObject", user);
         intent.putExtra("privilege", "1");//You send the current user profile id into the details section
+        startActivity(intent);
+    }
+
+    private void showNotifications(Users user){
+        Intent intent = new Intent(this, NotificationsActivity.class);
+        if (user!=null){
+            Log.d("TAG","CHECKING CHECKING CHECKING  "+ user.getProfileUid());}
+        intent.putExtra("userObject", user);
         startActivity(intent);
     }
 
@@ -162,6 +172,10 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         }));
 
+
+
+
+
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -214,6 +228,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         otherEvent = findViewById(R.id.other_events_button);
 
+        notifButton = findViewById(R.id.notif_bell);
+
         Intent intent = getIntent();
 //        user = intent.getParcelableExtra("userObject");
 //        //this allows the user to not be stuck on admin activity all the time
@@ -236,6 +252,18 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         checkUserDoc(user.getProfileUid());
 
         Log.d(TAG, "PROFILE PIC EVENT HOME "+user.getUploadedImageUri());
+
+//        notifButton.setOnClickListener();
+
+        notifButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showNotifications(user);
+
+            }
+        });
+
+
 
 
 
