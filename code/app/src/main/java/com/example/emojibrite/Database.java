@@ -910,4 +910,50 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
     // Notification Database Section //
 
+    /**
+     * Retrieves a list of notification messages for a specific event.
+     *
+     * @param eventId  The unique ID of the event for which to retrieve the notifications.
+     * @param listener A listener that is called when the notifications are successfully retrieved.
+     */
+    public void getNotificationsForEvent(String eventId, OnNotificationsRetrievedListener listener) {
+        // Get a reference to the document that represents the event in the 'Notifications' collection
+        DocumentReference eventNotificationRef = notificationRef.document(eventId);
+
+        // Fetch the document
+        eventNotificationRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                // Extract the list of notification messages
+                List<String> messages = (List<String>) documentSnapshot.get("messages");
+                if (messages != null) {
+                    // Pass the list to the listener
+                    listener.onNotificationsRetrieved(messages);
+                } else {
+                    // Handle the case where the 'messages' field is null or doesn't exist
+                    listener.onNotificationsRetrieved(new ArrayList<>());
+                }
+            } else {
+                // Handle the case where the event has no notifications
+                listener.onNotificationsRetrieved(new ArrayList<>());
+            }
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Error fetching notifications for event", e);
+            // In case of an error, return an empty list or handle the error as appropriate
+            listener.onNotificationsRetrieved(new ArrayList<>());
+        });
+    }
+
+    /**
+     * An interface for listeners that handle the retrieval of notification messages.
+     */
+    public interface OnNotificationsRetrievedListener {
+        /**
+         * Method called when a list of notification messages is successfully retrieved.
+         *
+         * @param notifications A list of notification message strings.
+         */
+        void onNotificationsRetrieved(List<String> notifications);
+    }
+
+
 }

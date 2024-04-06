@@ -3,6 +3,7 @@ package com.example.emojibrite;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +18,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Activity for displaying notifications related to events the user is involved in.
+ * This includes notifications for events the user has signed up for or checked into.
+ */
+
 public class NotificationsActivity extends AppCompatActivity {
 
     FloatingActionButton backButton;
@@ -26,8 +32,15 @@ public class NotificationsActivity extends AppCompatActivity {
     // Using a Set to avoid adding duplicate events
     Set<Event> eventSet = new HashSet<>();
 
+    private ArrayList<EventNotifications> allEventNotifications = new ArrayList<>();
+    private ListView notificationListView; // Assuming you are using a ListView
+    private NotificationAdapter eventNotificationAdapter; // Assuming you have an adapter named NotificationAdapter
+
     private Database database = new Database();
-    NotificationAdapter notificationAdapter;
+
+    // Counter for tracking the number of events pending processing
+    private int eventsToProcess;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +63,8 @@ public class NotificationsActivity extends AppCompatActivity {
 
             //fetch events checked into the same array as seen above in fetchSignedUpEvents
             fetchCheckedInEvents();
+
+//            fetchEventNotifications();
         }
 
         // Setup the adapter for the RecyclerView or ListView you are using (code for this setup is not provided here)
@@ -63,18 +78,78 @@ public class NotificationsActivity extends AppCompatActivity {
         database.getSignedUpEvents(currentUser, this::processEvents);
     }
 
+    /**
+     * Fetches and processes events that the user has checked in for.
+     */
     private void fetchCheckedInEvents() {
         database.getCheckedInEvents(currentUser, this::processEvents);
     }
 
     /**
-     * Process events and update UI accordingly
-     * @param events List of events to be processed
+     * Processes a list of events by fetching notifications for each event and updating the UI.
+     * Once all events have been processed and their notifications fetched, the UI is updated.
+     *
+     * @param events List of events to be processed.
      */
     private void processEvents(List<Event> events) {
-        eventSet.addAll(events);
-//        updateUI(new ArrayList<>(eventSet)); // WHAT I WANT IS TO TRAVERSE THROUGH ALL THE EVENTS IN THE LIST AND GET ME THE
+        eventsToProcess = events.size(); // Set the number of events that need to be processed
+
+        if (eventsToProcess > 0) {
+            for (Event event : events) {
+                database.getNotificationsForEvent(event.getId(), notifications -> {
+                    eventSet.add(event); // Make sure to add the event to the set
+                    for (String message : notifications) {
+                        allEventNotifications.add(new EventNotifications(event.getEventTitle(), message, event.getImageUri()));
+                    }
+                    eventsToProcess--; // Decrement the counter
+                    if (eventsToProcess <= 0) {
+                        // All events have been processed, update the UI
+                        updateUI();
+                    }
+                });
+            }
+        } else {
+            // No events to process, update the UI
+            updateUI();
+        }
     }
+
+    // Call this method inside processEvents after fetching all events the user is signed up for or checked into
+
+    private void fetchEventNotifications() {
+        for (Event event : eventSet) {
+            database.getNotificationsForEvent(event.getId(), notifications -> {
+                // For each notification message, create an EventNotification and add it to the list
+                for (String message : notifications) {
+                    allEventNotifications.add(new EventNotifications(event.getEventTitle(), message, event.getImageUri()));
+                }
+                // Update the UI after processing all events
+                updateUI();
+            });
+        }
+    }
+
+    // Update the UI with the list of event notifications
+    /**
+     * Updates the user interface with the latest set of event notifications.
+     * This method initializes the NotificationAdapter with the list of event notifications if it's not already created.
+     * If the adapter already exists, it updates the adapter's data and refreshes the list view to reflect the latest information.
+     * This method is called after event notifications have been fully processed and are ready to be displayed.
+     */
+    private void updateUI() {
+        if (eventNotificationAdapter == null) {
+            // Initialize your adapter with the list of event notifications
+            eventNotificationAdapter = new NotificationAdapter(this, allEventNotifications);
+            notificationListView = findViewById(R.id.attendee_view_list); // Replace with your actual ListView ID
+            notificationListView.setAdapter(eventNotificationAdapter);
+        } else {
+            // Update the adapter's data and refresh the list
+            eventNotificationAdapter.updateData(allEventNotifications);
+            eventNotificationAdapter.notifyDataSetChanged();
+        }
+    }
+
+
 
 
 }
