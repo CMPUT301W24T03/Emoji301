@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -52,10 +53,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Create an Intent to start the EventDetailsActivity
-                Intent intent = new Intent(MapsActivity.this, EventDetailsActivity.class);
-                startActivity(intent);
-
                 finish();
             }
         });
@@ -76,6 +73,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Retrieve the geolocationList from the Intent
         ArrayList<String> geolocationList = getIntent().getStringArrayListExtra("geolocationList");
+
+        // Check if the geolocationList is null or empty
+        if (geolocationList == null || geolocationList.isEmpty()) {
+            // Show a message to the user and return from the method
+            Toast.makeText(this, "No attendees have checked-in", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Loop through the geolocationList
         for (String geolocation : geolocationList) {
@@ -104,4 +108,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    public GoogleMap getMap() {
+        return mMap;
+    }
 }

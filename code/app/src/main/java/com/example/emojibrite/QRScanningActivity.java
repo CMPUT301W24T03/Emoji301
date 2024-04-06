@@ -20,6 +20,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -37,14 +38,23 @@ public class QRScanningActivity extends AppCompatActivity {
 
     private Database database = new Database();
 
+    PushNotificationService pushNotificationService = new PushNotificationService(); // to subscribe the newly checked in attendee
+
     private String[] array;
+
 
     private boolean found = false;
 
-    private String uid;
-
     private Users user;
-    private boolean geolocationBool;
+
+    /**
+     * Sets up UI elements and functionality for QR scanning activity.
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
+    private String activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,24 +64,36 @@ public class QRScanningActivity extends AppCompatActivity {
 
         qrScanButton = findViewById(R.id.scan_qr_button);
 
-        // need to pass in UID and geolocation bool
-        Bundle bundle = this.getIntent().getExtras();
-        // index 0 is uid, index 1 is geolocation bool
-        array = bundle.getStringArray("USER");
-        uid = array[0];
-        geolocationBool = Boolean.parseBoolean(array[1]);
+        // get the user object from the intent
+        Intent intent = getIntent();
+        user = intent.getParcelableExtra("userObject");
+        activity = intent.getParcelableExtra("activity");
 
-        checkUserDoc(uid);
+        checkUserDoc(user.getProfileUid());
 
         // checking to see if we have location permissions
-        if (geolocationBool){
+        if (user.getEnableGeolocation()){
             // run-time permission check
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},100);
             }
+            // if location permissions were denied
+            if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(this,"Geolocation tagging requires location permission.", Toast.LENGTH_LONG).show();
+            }
         }
 
-
+        // checking to see if camera permissions were given
+        // if not we ask
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 101);
+        }
+        // if camera permissions were denied
+        // we exit QR scanning
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
+            Toast.makeText(getApplicationContext(), "QR scanning requires camera permissions.", Toast.LENGTH_LONG).show();
+            finish();
+        }
 
 
     }
@@ -92,11 +114,19 @@ public class QRScanningActivity extends AppCompatActivity {
 
 
             } else {
+                if (activity.equals("main")) {
 
 
-                Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(QRScanningActivity.this, MainActivity.class);
-                startActivity(intent);
+                    Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(QRScanningActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
+                else if (activity.equals("event")) {
+                    Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(QRScanningActivity.this, OtherEventHome.class);
+                    intent.putExtra("userObject", user);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -128,8 +158,9 @@ public class QRScanningActivity extends AppCompatActivity {
                 public void onEventFetched(Event event) {
                     // if the event exists, we pass in the event and userid to go to the event details page
                     if (event != null) {
-                        showEventDetails(event, uid);
+                        showEventDetails(event, user);
                         found = true;
+                        finish();
                     }
                 }
             });
@@ -148,7 +179,7 @@ public class QRScanningActivity extends AppCompatActivity {
 
                         // Check if the current user is already in the attendees list
 
-                        attendees.add(uid);
+                        attendees.add(user.getProfileUid());
                         Log.d("QRScanningActivity", "Attendees List: " + attendees.toString());
                         database.updateEventAttendees(event.getId(), attendees);
 
@@ -156,10 +187,26 @@ public class QRScanningActivity extends AppCompatActivity {
 
                         Toast.makeText(getBaseContext(), "Successfully checked into " + event.getEventTitle() + "!", Toast.LENGTH_LONG).show();
 
+                        // Notification: Subscribe current checked-in user to the event
+                        pushNotificationService.subscribeToEvent(event.getId(), new PushNotificationService.SubscribeCallback() {
+                            @Override
+                            public void onSubscriptionResult(String msg) {
+                                Toast.makeText(QRScanningActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
                         // if the user has geolocation enabled
-                        if (geolocationBool) {
+                        if (user.getEnableGeolocation()) {
                             getLocation(event);
+                        }
+
+                        // going to other event home after checking in
+                        if (found){
+                            Intent intent = new Intent(QRScanningActivity.this, OtherEventHome.class);
+                            intent.putExtra("userObject", user);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            finish();
                         }
                     }
                 }
@@ -169,6 +216,11 @@ public class QRScanningActivity extends AppCompatActivity {
         // if we did not find anything at all
         else if (!found){
             Toast.makeText(this,"The scanned QR is not associated with any events.", Toast.LENGTH_LONG);
+            Intent intent = new Intent(QRScanningActivity.this, OtherEventHome.class);
+            intent.putExtra("userObject", user);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
         }
     });
 
@@ -182,14 +234,14 @@ public class QRScanningActivity extends AppCompatActivity {
      * @param event
      * The event to show details for.
      *
-     * @param userID
+     * @param user
      * Current user.
      */
-    private void showEventDetails(Event event, String userID) {
+    private void showEventDetails(Event event, Users user) {
         Intent intent = new Intent(this, EventDetailsActivity.class);
         intent.putExtra("eventId", event.getId());
-        intent.putExtra("userlol",userID); //You send the current user profile id into the details section
-        intent.putExtra("privilege", "1");
+        intent.putExtra("userObject", user);
+        intent.putExtra("privilege", "0");
         startActivity(intent);
     }
 
