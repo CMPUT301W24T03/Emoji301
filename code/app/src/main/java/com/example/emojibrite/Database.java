@@ -720,6 +720,25 @@ once created, u can call getuseruid to get the user id and use it to get user da
         });
     }
 
+    public void getCheckedInEvents(String userId, OnEventsRetrievedListener listener){
+        eventRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Event> checkedInEvents = new ArrayList<>();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Event event = document.toObject(Event.class);
+                    ArrayList<String> attendeesList = event.getAttendeesList();
+                    if (attendeesList != null && attendeesList.contains(userId)) {
+                        checkedInEvents.add(event);
+                    }
+                }
+                listener.onEventsRetrieved(checkedInEvents);
+            } else {
+                Log.d(TAG, "Error getting checked-in events: ", task.getException());
+            }
+        });
+    }
+
+
 
     public void checkUserInEvent(String userUid, String eventId, CheckUserInEventCallback callback) {
 
