@@ -108,4 +108,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    public GoogleMap getMap() {
+        return mMap;
+    }
 }

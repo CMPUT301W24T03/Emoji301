@@ -38,6 +38,11 @@ public class QRScanningActivity extends AppCompatActivity {
 
     private Database database = new Database();
 
+    PushNotificationService pushNotificationService = new PushNotificationService(); // to subscribe the newly checked in attendee
+
+    private String[] array;
+
+
     private boolean found = false;
 
     private Users user;
@@ -49,6 +54,8 @@ public class QRScanningActivity extends AppCompatActivity {
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      *
      */
+    private String activity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +67,7 @@ public class QRScanningActivity extends AppCompatActivity {
         // get the user object from the intent
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
+        activity = intent.getParcelableExtra("activity");
 
         checkUserDoc(user.getProfileUid());
 
@@ -106,11 +114,19 @@ public class QRScanningActivity extends AppCompatActivity {
 
 
             } else {
+                if (activity.equals("main")) {
 
 
-                Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(QRScanningActivity.this, MainActivity.class);
-                startActivity(intent);
+                    Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(QRScanningActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
+                else if (activity.equals("event")) {
+                    Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(QRScanningActivity.this, OtherEventHome.class);
+                    intent.putExtra("userObject", user);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -171,6 +187,13 @@ public class QRScanningActivity extends AppCompatActivity {
 
                         Toast.makeText(getBaseContext(), "Successfully checked into " + event.getEventTitle() + "!", Toast.LENGTH_LONG).show();
 
+                        // Notification: Subscribe current checked-in user to the event
+                        pushNotificationService.subscribeToEvent(event.getId(), new PushNotificationService.SubscribeCallback() {
+                            @Override
+                            public void onSubscriptionResult(String msg) {
+                                Toast.makeText(QRScanningActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
                         // if the user has geolocation enabled
                         if (user.getEnableGeolocation()) {
@@ -218,7 +241,7 @@ public class QRScanningActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EventDetailsActivity.class);
         intent.putExtra("eventId", event.getId());
         intent.putExtra("userObject", user);
-        intent.putExtra("privilege", user.getRole());
+        intent.putExtra("privilege", "0");
         startActivity(intent);
     }
 
