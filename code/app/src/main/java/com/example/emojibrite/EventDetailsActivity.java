@@ -245,7 +245,8 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
                             // Event has started - Show "Event already started" message and hide the sign-up button
 //                            signingup.setVisibility(View.GONE);
                             signingup.setText("Event Started");
-                            signingup.setBackgroundColor(Color.YELLOW);
+                            signingup.setBackgroundResource(R.drawable.signup_yellow_outline); // Change the background color to green
+                            signingup.setTextColor(Color.parseColor("#baa416"));
                             signingup.setEnabled(false);
                         } else {
                             // Event hasn't started yet - keep the sign-up button
