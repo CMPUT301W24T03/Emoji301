@@ -14,12 +14,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.text.SimpleDateFormat;
@@ -47,7 +51,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     String eventId;
     Users user;
-
+    PushNotificationService pushNotificationService = new PushNotificationService();
 
 
     /**
@@ -64,15 +68,20 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event_details);
 
+        ImageView notif = findViewById(R.id.notif_bell);
+        ImageView pfp = findViewById(R.id.profile_pic);
+
+        notif.setVisibility(View.GONE);
+        pfp.setVisibility(View.GONE);
         ImageView backButton = findViewById(R.id.imageView); //back button
         attendeesButton = findViewById(R.id.attendees_button);
         signingup=findViewById(R.id.sign_up_button);
         notificationButton = findViewById(R.id.Notification_button);
         deleteBtn = findViewById(R.id.delete_event);
         showMap = findViewById(R.id.show_map);
-        qrBtn = findViewById(R.id.qr_code);
+        qrBtn = findViewById(R.id.check_in_qr); // Double check!!!!!!!!! Put one for the event qr as well!!!!!
 
-        qrCodeEventDetails = findViewById(R.id.qr_code);
+        qrCodeEventDetails = findViewById(R.id.check_in_qr); // Double check!!!!!!!!!
 
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
@@ -112,8 +121,6 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             }
         });
 
-
-
         if (currentUser!=null){
             Log.d(TAG,"YEPPIEEEE "+currentUser);
         }
@@ -126,9 +133,28 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EventDetailsActivity.this, MapsActivity.class);
-                startActivity(intent);
+                database.getEventById(eventId, new Database.EventCallBack() {
+                    @Override
+                    public void onEventFetched(Event event) {
+                        if (event != null) {
+                            ArrayList<String> geolocationList = event.getGeolocationList();
+
+                            // Testing purpose only
+                            Log.d("GeolocationList", "GeolocationList: " + geolocationList);
+
+                            // Create an Intent to start the MapsActivity
+                            Intent intent = new Intent(EventDetailsActivity.this, MapsActivity.class);
+
+                            // Put the geolocationList into the Intent
+                            intent.putStringArrayListExtra("geolocationList", geolocationList);
+                            // Start the MapsActivity
+                            startActivity(intent);
+                        }
+                    }
+                });
             }
         });
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -166,6 +192,15 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // checking to see if we're from QR scanning
+                if (getIntent().getStringExtra("fromQRScanning") != null){
+                    Log.d("fromQRScanning", "we came from QR scanning event details");
+                    Intent intent = new Intent(EventDetailsActivity.this, OtherEventHome.class);
+                    intent.putExtra("userObject", user);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                }
 
                 finish();
             }
@@ -242,6 +277,12 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     private void signUpForEvent(String eventId) {
         signedAttendees.add(currentUser);
+        pushNotificationService.subscribeToEvent(eventId, new PushNotificationService.SubscribeCallback() {
+            @Override
+            public void onSubscriptionResult(String msg) {
+                Toast.makeText(EventDetailsActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
         database.addSignin(eventId, currentUser);
         signingup.setText("You have signed up"); // Set the text to indicate the user has signed up
         signingup.setBackgroundColor(Color.GREEN); // Change the background color to green
@@ -365,26 +406,18 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         }
     }
 
+    // Start of Notification stuff
+
     /**
      * method to handle the positive click of the dialog
      * @param message The message to be sent to the list of attendees
      */
     @Override
     public void onDialogPositiveClick(String message) {
-        // send the notification to all attendees of in the signedAttendees arrayList
-        for (String attendee : signedAttendees) {
-            sendNotification(attendee, message);
-        }
+        pushNotificationService.sendNotification(message, eventId);
+        database.storeNotification(message, eventId);
     }
 
-    /**
-     * This function is used to send a notification to the attendees of the event
-     * @param attendee The attendee to send the notification to
-     * @param message The message to be sent to the attendee
-     */
-    private void sendNotification(String attendee, String message) {
-        // send the notification to the attendee
-    }
 
     private void deleteAlertBuilder(){
 
@@ -394,6 +427,8 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         builder.setMessage("Are you sure you want to delete this event?");
         // Set the positive (Yes) button and its click listener
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 database.deleteEvent(eventId, new OnCompleteListener<Void>() {
@@ -401,6 +436,8 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "Event deleted successfully");
+                            database.deleteEventNotification(eventId);
+
                             Intent intent = new Intent(EventDetailsActivity.this, AdminEventActivity.class);
                             intent.putExtra("userObject", user);
                             startActivity(intent);
@@ -424,4 +461,5 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         // Create and show the dialog
         builder.create().show();
     }
+
 }

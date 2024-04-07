@@ -130,6 +130,7 @@ public class UploadImageScreenFragment extends Fragment {
 
                     @Override
                     public void onUploadFailure(Exception exception) {
+                        nextButtonText.setClickable(true);
 
                     }
                 });
@@ -140,6 +141,7 @@ public class UploadImageScreenFragment extends Fragment {
 
             } else {
                 Log.d("PhotoPicker", "No media selected");
+                nextButtonText.setClickable(true);
             }
         });
     }

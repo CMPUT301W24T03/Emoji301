@@ -135,6 +135,9 @@ public class QRCodeEventActivity extends AppCompatActivity {
             Bitmap bitmap = encoder.createBitmap(bitMatrix);
             qrCode.setImageBitmap(bitmap);
 
+            // disabling this button as it's no longer needed
+            generate_event.setVisibility(View.INVISIBLE);
+
             selectedImageUri = saveImage(bitmap, "qr_code_" + eventID + ".png");
 
         } catch (WriterException | IOException e) {

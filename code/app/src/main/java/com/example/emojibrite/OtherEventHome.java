@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -40,7 +41,11 @@ public class OtherEventHome extends AppCompatActivity {
 
     Context context = this;
 
+    FloatingActionButton QRCodeScanner;
+
     ImageView profileButton;
+
+    ImageView notifButton;
 
     private static final String TAG = "ProfileActivityTAG";
 
@@ -55,42 +60,71 @@ public class OtherEventHome extends AppCompatActivity {
         intent.putExtra("eventId", event.getId());
         if (user!=null){
             Log.d("TAG","CHECKING CHECKING CHECKING  "+ user.getProfileUid());}
-        intent.putExtra("userlol",user.getProfileUid()); //You send the current user profile id into the details section
+        intent.putExtra("userObject", user);
+        intent.putExtra("privilege", "1");//You send the current user profile id into the details section
         startActivity(intent);
     }
 
-    /**
-     * Called when the activity is created.
-     *
-     * @param savedInstanceState The saved instance state.
-     */
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_other_event_home);
+    private void checkUserDoc(String userUid){
+        database.getUserDocument(userUid, documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Log.d(TAG, "User document exists");
+                user = documentSnapshot.toObject(Users.class);
+                user.setEnableAdmin(false);
+                buttonListeners();
+                settingUpPfp();
 
-        eventList = findViewById(R.id.event_organizer_list);
-        dataList1 = new ArrayList<>();
+            } else {
+                Log.d(TAG, "User document does not exist");
 
-        eventAdapter = new EventAdapter(this, dataList1);
-        eventList.setAdapter(eventAdapter);
-
-        Button myEventButton = findViewById(R.id.my_events_button);
-
-        myEventButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
+                Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(OtherEventHome.this, MainActivity.class);
+                startActivity(intent);
             }
         });
 
 
+    }
+    private void buttonListeners(){
+        eventList.setOnItemClickListener(((parent, view, position, id) -> {
+            Event selectedEvent = dataList1.get(position);
 
-        Intent intent = getIntent();
-        user = intent.getParcelableExtra("userObject");
+            showEventDetails(selectedEvent,user);
+        }));
+        QRCodeScanner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(OtherEventHome.this, QRScanningActivity.class);
+                intent.putExtra("userObject", user);
+                startActivity(intent);
+            }
+        });
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        ImageView profileButton = findViewById(R.id.profile_pic);
+                // Go to the ProfileActivity page
+                Log.d(TAG, "Enter button clicked"); // for debugging
 
+                Intent intent = new Intent(OtherEventHome.this, ProfileActivity.class);
+
+                intent.putExtra("userObject", user);
+                startActivity(intent);
+            }
+        });
+
+
+    }
+
+    private void showNotifications(Users user){
+        Intent intent = new Intent(this, NotificationsActivity.class);
+        if (user!=null){
+            Log.d("TAG","CHECKING CHECKING CHECKING  "+ user.getProfileUid());}
+        intent.putExtra("userObject", user);
+        startActivity(intent);
+    }
+
+    private void settingUpPfp(){
         if (user.getUploadedImageUri() != null) {
             // User uploaded a picture, use that as the ImageView
             //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
@@ -112,11 +146,59 @@ public class OtherEventHome extends AppCompatActivity {
 
         }
 
-        eventList.setOnItemClickListener(((parent, view, position, id) -> {
-            Event selectedEvent = dataList1.get(position);
+    }
 
-            showEventDetails(selectedEvent,user);
-        }));
+    /**
+     * Called when the activity is created.
+     *
+     * @param savedInstanceState The saved instance state.
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_other_event_home);
+
+        eventList = findViewById(R.id.event_organizer_list);
+        dataList1 = new ArrayList<>();
+
+        eventAdapter = new EventAdapter(this, dataList1);
+        eventList.setAdapter(eventAdapter);
+
+        Button myEventButton = findViewById(R.id.my_events_button);
+
+        QRCodeScanner = findViewById(R.id.event_scan_btn);
+
+        notifButton = findViewById(R.id.notif_bell);
+
+        myEventButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+
+
+        Intent intent = getIntent();
+        user = intent.getParcelableExtra("userObject");
+
+        profileButton = findViewById(R.id.profile_pic);
+
+        checkUserDoc(user.getProfileUid());
+
+        notifButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showNotifications(user);
+
+            }
+        });
+
+
+
+
+
+
     }
 
     private void fetchAllEvents(){

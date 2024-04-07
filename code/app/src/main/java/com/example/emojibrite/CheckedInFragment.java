@@ -13,17 +13,17 @@ import androidx.fragment.app.Fragment;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class CheckedInFragment extends Fragment {
     // put your uninitialized attributes here
     ListView attendeesListView;
     AttendeesArrayAdapter attendeesArrayAdapter;
 
-    ArrayList<Users> attendeesList;
+    ArrayList<Integer> countOfAttendees;
 
-    HashMap<String, Integer> checkInCounts = new HashMap<>();
+    ArrayList<Users> attendeesList;
 
     private String eventId;
     /**
@@ -56,40 +56,45 @@ public class CheckedInFragment extends Fragment {
             Log.d("SignedUpFragment", "No bundle passed");
         }
 
-        attendeesList = new ArrayList<>();
-        ArrayList<Users> uniqueUidArray = new ArrayList<>();
-        attendeesArrayAdapter = new AttendeesArrayAdapter(getContext(), uniqueUidArray, "1", checkInCounts);
-        attendeesListView.setAdapter(attendeesArrayAdapter);
-        loadAttendees(eventId);
+            attendeesList = new ArrayList<>();
+            countOfAttendees = new ArrayList<>(); // Initialize countOfAttendees
+            attendeesArrayAdapter = new AttendeesArrayAdapter(getContext(), attendeesList, "1", countOfAttendees);
+            attendeesListView.setAdapter(attendeesArrayAdapter);
+            loadAttendees(eventId);
 
+            return checkedInLayout;
+        }
 
+    /**
+     *
+     * @param eventId
+     */
 
+    private void loadAttendees(String eventId){
+            Database db = new Database();
+            attendeesList.clear();
+            countOfAttendees.clear();
+            db.getEventById(eventId, new Database.EventCallBack() {
+                @Override
+                public void onEventFetched(Event event) {
+                    ArrayList<String> listAttendees = event.getAttendeesList();
 
-        return checkedInLayout;
-    }
+                    // Reset countOfAttendees before populating
+                    countOfAttendees.clear();
 
-
-    private void loadAttendees(String eventId) {
-        Database db = new Database();
-        ArrayList<Users> uniqueUidArray = new ArrayList<>();
-
-        db.getEventById(eventId, new Database.EventCallBack() {
-            @Override
-            public void onEventFetched(Event event) {
-                ArrayList<String> listAttendees = event.getAttendeesList();
-                for (String userId : listAttendees) {
-                    // Update check-in count
-                    checkInCounts.put(userId, checkInCounts.getOrDefault(userId, 0) + 1);
-
-                    // Load user details only if not already in the unique list
-                    if (!uniqueUidArray.stream().anyMatch(u -> u.getProfileUid().equals(userId))) {
+                    for (String userId : listAttendees) {
                         db.getUserDocument(userId, new Database.OnUserDocumentRetrievedListener() {
                             @Override
                             public void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot) {
                                 if (documentSnapshot.exists()) {
                                     Users user = documentSnapshot.toObject(Users.class);
                                     if (user != null) {
-                                        uniqueUidArray.add(user);
+                                        if (!attendeesList.contains(user)) {
+                                            attendeesList.add(user);
+                                            Log.d("ADDING USERS","checking how many times it adds");
+                                            Integer countOfUsers = countOfElements(listAttendees, userId);
+                                            countOfAttendees.add(countOfUsers); // Populate count list
+                                        }
                                         if (getActivity() != null) {
                                             getActivity().runOnUiThread(() -> attendeesArrayAdapter.notifyDataSetChanged());
                                         }
@@ -99,8 +104,24 @@ public class CheckedInFragment extends Fragment {
                         });
                     }
                 }
+            });
+        }
+
+
+    /**
+     *
+     * @param listAttendees
+     * @param userId
+     * @return
+     */
+    public Integer countOfElements(ArrayList<String> listAttendees, String userId) {
+        Integer counter = 0;
+        for (String user : listAttendees) {
+            if (Objects.equals(user, userId)) {
+                counter++;
             }
-        });
+        }
+        return counter;
     }
 
 

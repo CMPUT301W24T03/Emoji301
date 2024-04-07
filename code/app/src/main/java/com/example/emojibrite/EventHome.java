@@ -5,24 +5,21 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 
 import android.os.Handler;
 import android.os.Looper;
 
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,7 +37,13 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     private Users user;
     private Database database = new Database();
 
+    FloatingActionButton fab;
+
+    Button otherEvent;
+
 //    Button otherEvent = findViewById(R.id.other_events_button);
+
+    ImageView notifButton;
 
     ImageView profileButton;
 
@@ -58,6 +61,14 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
             Log.d("TAG","CHECKING CHECKING CHECKING  "+ user.getProfileUid());}
         intent.putExtra("userObject", user);
         intent.putExtra("privilege", "1");//You send the current user profile id into the details section
+        startActivity(intent);
+    }
+
+    private void showNotifications(Users user){
+        Intent intent = new Intent(this, NotificationsActivity.class);
+        if (user!=null){
+            Log.d("TAG","CHECKING CHECKING CHECKING  "+ user.getProfileUid());}
+        intent.putExtra("userObject", user);
         startActivity(intent);
     }
 
@@ -122,87 +133,49 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         eventAdapter.notifyDataSetChanged();
     }
 
-    /**
-     * Called when the activity is created.
-     *
-     * @param savedInstanceState The saved instance state.
-     */
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.event_home_page);
-
-        eventList = findViewById(R.id.event_organizer_list);
-        dataList = new ArrayList<>();
-
-        eventAdapter = new EventAdapter(this, dataList);
-        eventList.setAdapter(eventAdapter);
-
-        Button otherEvent = findViewById(R.id.other_events_button);
-
-        Intent intent = getIntent();
-//        user = intent.getParcelableExtra("userObject");
-//        //this allows the user to not be stuck on admin activity all the time
-//        user.setEnableAdmin(false);
-        if (intent.hasExtra("userObject"))
-        {
-            user = intent.getParcelableExtra("userObject");
-            if (user != null) {
+    private void checkUserDoc(String userUid){
+        database.getUserDocument(userUid, documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Log.d(TAG, "User document exists");
+                user = documentSnapshot.toObject(Users.class);
                 user.setEnableAdmin(false);
+                settingUpPfp();
+                buttonListeners();
             } else {
-                Log.e("EVENTHOME: PROFILE", "User object is null");
+                Log.d(TAG, "User document does not exist");
+
+                Toast.makeText(this, "User got deleted by admin", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(EventHome.this, MainActivity.class);
+                startActivity(intent);
             }
-        }
-        else {
-            Log.e(TAG, "No userObject passed in intent");
+        });
 
-        }
 
+    }
 
 
 
+    private void buttonListeners(){
 
-        Log.d(TAG, "PROFILE PIC EVENT HOME "+user.getUploadedImageUri());
         if(user!=null) {
             Log.d(TAG, "user name for EventHome: " + user.getName() + user.getProfileUid() + user.getUploadedImageUri() + user.getAutoGenImageUri() + user.getHomePage());
             Log.d(TAG, "user id for EventHome: " + user.getProfileUid());
 
-            FloatingActionButton fab = findViewById(R.id.event_add_btn);
+            fab = findViewById(R.id.event_scan_btn);
             fab.setOnClickListener(view -> showAddEventDialog());
         }
 
-        ImageView profileButton = findViewById(R.id.profile_pic);
-
-
-
-        if (user.getUploadedImageUri() != null) {
-            // User uploaded a picture, use that as the ImageView
-            //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    Glide.with(EventHome.this).load(user.getUploadedImageUri()).into(profileButton);
-                }
-            });
-
-        } else if (user.getUploadedImageUri() == null) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    Glide.with(EventHome.this).load(user.getAutoGenImageUri()).into(profileButton);
-                }
-            });
-
-//            fetchEventsForCurrentUser();
-//            fetchSignedUpEvents();
-        }
         eventList.setOnItemClickListener(((parent, view, position, id) -> {
             Event selectedEvent = dataList.get(position);
 
             showEventDetails(selectedEvent, user);
 
         }));
-        // When profile is clicked, go to profile activity
+
+
+
+
+
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -228,6 +201,97 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
             }
         });
 
+
+
+
+
+
+    }
+
+
+
+    /**
+     * Called when the activity is created.
+     *
+     * @param savedInstanceState The saved instance state.
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.event_home_page);
+
+        eventList = findViewById(R.id.event_organizer_list);
+        dataList = new ArrayList<>();
+
+        eventAdapter = new EventAdapter(this, dataList);
+        eventList.setAdapter(eventAdapter);
+
+        otherEvent = findViewById(R.id.other_events_button);
+
+        notifButton = findViewById(R.id.notif_bell);
+
+        Intent intent = getIntent();
+//        user = intent.getParcelableExtra("userObject");
+//        //this allows the user to not be stuck on admin activity all the time
+//        user.setEnableAdmin(false);
+        if (intent.hasExtra("userObject"))
+        {
+            user = intent.getParcelableExtra("userObject");
+            if (user != null) {
+                user.setEnableAdmin(false);
+            } else {
+                Log.e("EVENTHOME: PROFILE", "User object is null");
+            }
+        }
+        else {
+            Log.e(TAG, "No userObject passed in intent");
+
+        }
+
+        profileButton = findViewById(R.id.profile_pic);
+        checkUserDoc(user.getProfileUid());
+
+        Log.d(TAG, "PROFILE PIC EVENT HOME "+user.getUploadedImageUri());
+
+//        notifButton.setOnClickListener();
+
+        notifButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showNotifications(user);
+
+            }
+        });
+
+
+
+
+
+        // When profile is clicked, go to profile activity
+    }
+
+    private void settingUpPfp(){
+        if (user.getUploadedImageUri() != null) {
+            // User uploaded a picture, use that as the ImageView
+            //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(EventHome.this).load(user.getUploadedImageUri()).into(profileButton);
+                }
+            });
+
+        } else if (user.getUploadedImageUri() == null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(EventHome.this).load(user.getAutoGenImageUri()).into(profileButton);
+                }
+            });
+
+//            fetchEventsForCurrentUser();
+//            fetchSignedUpEvents();
+        }
 
     }
 
