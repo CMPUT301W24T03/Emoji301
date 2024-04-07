@@ -34,6 +34,9 @@
             android:name=".DisplayEventQRCode"
             android:exported="false" />
         <activity
+            android:name=".DisplayCheckInQRCode"
+            android:exported="false" />
+        <activity
             android:name=".QRScanningActivity"
             android:exported="false" />
         <activity

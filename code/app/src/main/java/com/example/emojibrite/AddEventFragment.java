@@ -323,7 +323,7 @@ public class AddEventFragment extends DialogFragment{
                 Log.d(TAG, "CHECK IN QR CODE ID: " + checkInID);
 
 //            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
-                Event newEvent = new Event(eventId, imageUriString, title, eventDate, timeString, description, milestone, location, checkInUriString, eventUriString, capacity, user.getProfileUid(), checkInID); //ADDING USER WHICH WE GET AS AN ARGUMENT
+                Event newEvent = new Event(eventId, imageUriString, title, eventDate, timeString, description, milestone, location, checkInUriString, eventUriString, capacity, user.getProfileUid(), checkInID, 0); //ADDING USER WHICH WE GET AS AN ARGUMENT
                 listener.onEventAdded(newEvent);
 
             /*
