@@ -229,70 +229,45 @@ public class PushNotificationService extends FirebaseMessagingService {
         notificationManager.notify(0/*ID of notification*/, notificationBuilder.build());
     }
     /**
-     * This function is used to send a notification to the attendees of the event
+     * This function is used to send a notification to the attendees of the event via topic
      * @param notifBody The message to be sent to the attendee.
      * @param eventId The id of the event to send the notification to.
-     * reference: <a href="https://firebase.google.com/docs/cloud-messaging/android/send-multiple#build_send_requests">Here</a>
-     *                  <a href="https://www.youtube.com/watch?v=G9TO6J_i3LU&list=WL&index=6">here2</a>
-     *                  <a href="https://www.youtube.com/watch?v=6_t87WW6_Gc&list=WL&index=7">here3</a>
-     *                  <a href="https://www.youtube.com/watch?v=oNoRw69ro2k&list=WL&index=8">here4</a>
+     * references:
+     * <a href="https://firebase.google.com/docs/cloud-messaging/android/send-multiple#build_send_requests">build_send_requests</a>
+     * <a href="https://www.youtube.com/watch?v=G9TO6J_i3LU&list=WL&index=6">#13 Android Notification Tutorial - Sending Notification using HTTP V1</a>
+     * <a href="https://www.youtube.com/watch?v=6_t87WW6_Gc&list=WL&index=7">Send Notification from One Device to Another Device</a>
+     * <a href="https://www.youtube.com/watch?v=oNoRw69ro2k&list=WL&index=8">Firebase Cloud Messaging API (V1) Tutorial</a>
      */
-    public void sendNotification(String notifBody, String eventId) {
-        Log.d("Notify", "SendNotification is called " + eventId );
-
-        OkHttpClient client = new OkHttpClient();
-        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
-
-        // Message creation
-        JSONObject message = new JSONObject();
-        JSONObject notification = new JSONObject();
+    public void sendNotificationToTopic(String notifBody, String eventId) {
+        Log.d("Notify", "SendNotificationToTopic is called " + eventId );
 
         database.getEventById(eventId, new Database.EventCallBack() {
             @Override
             public void onEventFetched(Event event) {
-                try{
-                    message.put("to","/topics/" + eventId);
-                    notification.put("title", event.getEventTitle());
-                    notification.put("body", notifBody);
-                    message.put("notification", notification);
-                    Log.d("Notify", message.toString());
-
-                    // send message to firebase API
-                    RequestBody rBody = RequestBody.create(message.toString(), mediaType);
-                    Log.d("Notify", "rBody: "+ rBody);
-                    Request request = new Request.Builder()
-                            .url("https://fcm.googleapis.com/fcm/send")
-                            .post(rBody)
-                            .addHeader("Authorization", "key=AAAAiYm6-Io:APA91bE8KQIhhQ7C3QeqISXSEfWcyr_p9-QWvquKJoHrTqHknOfjLdLGopi88PqhDdLkU2Il1vbG9NLLK7TkfqAZytcnxm48Ux2hdlPOhwnh4GHWip2KEqE346t2y2wOcNexz9djZrb7")
-                            .addHeader("Content-Type", "application/json")
-                            .build();
-                    Log.d("Notify", "Request " +  request);
-
-                    client.newCall(request).enqueue(new Callback() {
-                        @Override
-                        public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                            // This is where you would handle a request failure
-                            Log.d("Notify", "IOException error: " + e);
-                        }
-
-                        @Override
-                        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                            // This is where you would handle the response
-                            String responseBody = response.body().string();
-                            if(response.isSuccessful()) {
-                                Log.d("Notify", "Successful Response: " + responseBody);
-                            } else {
-                                Log.d("Notify", "Unsuccessful Response: " + responseBody);
-                            }
-                        }
-                    });
-
-                } catch (JSONException e){
-                    Log.d("Notify", "JSONException error: " + e);
-                }
+                String title = event.getEventTitle();
+                createAndSendNotification(title, notifBody, "/topics/" + eventId);
             }
         });
     }
+
+    /**
+     * This function is used to send a notification to a specific device
+     * @param notifBody The message to be sent to the attendee.
+     * @param deviceToken The token of the device to send the notification to.
+     */
+    public void sendNotificationToDevice(String notifBody, String deviceToken) {
+        Log.d("Notify", "SendNotificationToDevice is called for device: " + deviceToken);
+
+        database.getEventById(deviceToken, new Database.EventCallBack() {
+            @Override
+            public void onEventFetched(Event event) {
+                String title = event.getEventTitle() + " Milestone";
+                createAndSendNotification(title, notifBody, deviceToken);
+            }
+        });
+    }
+
+
 
     /**
      * This function is used to subscribe the user to the event via the event ID.
@@ -326,5 +301,61 @@ public class PushNotificationService extends FirebaseMessagingService {
                     Log.d(TAG, msg);
                     callback.onSubscriptionResult(msg);
                 });
+    }
+
+    /**
+     * Creates the json object for the notification and sends it to the target
+     * @param title The title of the notification
+     * @param body The body of the notification
+     * @param target The target of the notification
+     */
+    private void createAndSendNotification(String title, String body, String target) {
+        OkHttpClient client = new OkHttpClient();
+        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+
+        // Message creation
+        JSONObject message = new JSONObject();
+        JSONObject notification = new JSONObject();
+
+        try {
+            message.put("to", target);
+            notification.put("title", title);
+            notification.put("body", body);
+            message.put("notification", notification);
+            Log.d("Notify", message.toString());
+
+            // send message to firebase API
+            RequestBody rBody = RequestBody.create(message.toString(), mediaType);
+            Log.d("Notify", "rBody: "+ rBody);
+            Request request = new Request.Builder()
+                    .url("https://fcm.googleapis.com/fcm/send")
+                    .post(rBody)
+                    .addHeader("Authorization", "key=AAAAiYm6-Io:APA91bE8KQIhhQ7C3QeqISXSEfWcyr_p9-QWvquKJoHrTqHknOfjLdLGopi88PqhDdLkU2Il1vbG9NLLK7TkfqAZytcnxm48Ux2hdlPOhwnh4GHWip2KEqE346t2y2wOcNexz9djZrb7")
+                    .addHeader("Content-Type", "application/json")
+                    .build();
+            Log.d("Notify", "Request " +  request);
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    // This is where you would handle a request failure
+                    Log.d("Notify", "IOException error: " + e);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    // This is where you would handle the response
+                    String responseBody = response.body().string();
+                    if(response.isSuccessful()) {
+                        Log.d("Notify", "Successful Response: " + responseBody);
+                    } else {
+                        Log.d("Notify", "Unsuccessful Response: " + responseBody);
+                    }
+                }
+            });
+
+        } catch (JSONException e){
+            Log.d("Notify", "JSONException error: " + e);
+        }
     }
 }

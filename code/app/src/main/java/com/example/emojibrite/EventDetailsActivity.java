@@ -425,7 +425,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
      */
     @Override
     public void onDialogPositiveClick(String message) {
-        pushNotificationService.sendNotification(message, eventId);
+        pushNotificationService.sendNotificationToTopic(message, eventId);
         database.storeNotification(message, eventId);
     }
 

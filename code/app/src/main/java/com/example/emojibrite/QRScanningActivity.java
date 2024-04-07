@@ -184,6 +184,24 @@ public class QRScanningActivity extends AppCompatActivity {
                             Integer totalParticipant = event.getcurrentAttendance();
                             totalParticipant += 1;
                             database.updatecurrentAttendance(event.getId(), totalParticipant);
+
+                            Log.d("Notify", "There are " + totalParticipant + " unique participants");
+                            // for milestone notif. Send it to organizer when total participants % milestone == 0
+                            if (event.getMilestone() != null && totalParticipant % event.getMilestone() == 0) {
+                                // get the organizer's id
+                                String organizerId = event.getOrganizer();
+                                // find the organizer in database User collection
+                                database.getUserDocument(organizerId, documentSnapshot -> {
+                                    if (documentSnapshot.exists()) {
+                                        Users organizer = documentSnapshot.toObject(Users.class);
+                                        if (organizer != null && organizer.getFcmToken() != null) {
+                                            String notifBody = "Congratulations! Your event " + event.getEventTitle() + " reached its milestone";
+                                            String organizerFCMToken = organizer.getFcmToken();
+                                            pushNotificationService.sendNotificationToDevice(notifBody, organizerFCMToken);
+                                        }
+                                    }
+                                });
+                            }
                         }
 
                         attendees.add(user.getProfileUid()); //I WANT USERS TO REPEAT
