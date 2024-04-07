@@ -44,7 +44,7 @@ public class AdminEventActivity extends AppCompatActivity {
 
         eventList = findViewById(R.id.admin_event_list);
         dataList = new ArrayList<>();
-        eventAdapter = new EventAdapter(this, dataList);
+        eventAdapter = new EventAdapter(this, dataList, null);
         eventList.setAdapter(eventAdapter);
         backBtn = findViewById(R.id.backButton);
 

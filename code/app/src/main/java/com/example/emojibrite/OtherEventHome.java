@@ -161,7 +161,7 @@ public class OtherEventHome extends AppCompatActivity {
         eventList = findViewById(R.id.event_organizer_list);
         dataList1 = new ArrayList<>();
 
-        eventAdapter = new EventAdapter(this, dataList1);
+        eventAdapter = new EventAdapter(this, dataList1, null);
         eventList.setAdapter(eventAdapter);
 
         Button myEventButton = findViewById(R.id.my_events_button);
