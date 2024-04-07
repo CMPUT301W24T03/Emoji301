@@ -19,7 +19,7 @@ import java.util.List;
 public class AdminAccountActivity extends AppCompatActivity {
     ListView profileList;
     ArrayList<Users> dataList;
-    Users user;
+    static Users user;
     Database database = new Database();
     AttendeesArrayAdapter profileAdapter;
 
@@ -30,12 +30,19 @@ public class AdminAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.admin_profile_view);
 
+
         Intent intent1 = getIntent();
         user = intent1.getParcelableExtra("userObject");
 
         profileList = findViewById(R.id.profile_list);
         dataList = new ArrayList<>();
-        profileAdapter = new AttendeesArrayAdapter(this, dataList, user.getRole(), null);
+
+        if (user != null){
+            profileAdapter = new AttendeesArrayAdapter(this, dataList, user.getRole(), null);
+        } else {
+            profileAdapter = new AttendeesArrayAdapter(this, dataList, null, null);
+        }
+
         profileList.setAdapter(profileAdapter);
         FloatingActionButton backBtn = findViewById(R.id.backButton);
 

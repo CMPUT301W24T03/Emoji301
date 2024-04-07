@@ -428,6 +428,9 @@ once created, u can call getuseruid to get the user id and use it to get user da
         eventMap.put("attendeesList", event.getAttendeesList());
         eventMap.put("geolocationList", event.getGeolocationList());
 
+        //currentAttendees
+        eventMap.put("currentAttendance",event.getcurrentAttendance());
+
         if (event.getImageUri()!=null){
             Log.d(TAG, event.getImageUri().toString()); //testing
         }
@@ -536,11 +539,12 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
     public void getEventsByOrganizer(String organizerId, OnEventsRetrievedListener listener) {
         // Querying Firestore for events organized by the specified user.
+        List<Event> events = new ArrayList<>();
         eventRef.whereEqualTo("organizer", organizerId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     // List to hold the retrieved events.
-                    List<Event> events = new ArrayList<>();
+//                    List<Event> events = new ArrayList<>();
                     for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
                         Event event = snapshot.toObject(Event.class);
                         Log.d(TAG,"Event ID " + event.getId());
@@ -557,6 +561,29 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     listener.onEventsRetrieved(events);
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Error fetching events", e));
+    }
+
+    /**
+     * Fetches events of users whose milestones have been complete
+     * @param organizerId the user who wants to check if their milestones have been complete
+     * @param listener the receiver
+     */
+    public void getEventsForOrganizerMilestoneCompletion(String organizerId, OnEventsRetrievedListener listener){
+        eventRef.whereEqualTo("organizer",organizerId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Event> events = new ArrayList<>();
+                    for (DocumentSnapshot snapshot: queryDocumentSnapshots){
+                        Event event=snapshot.toObject(Event.class);
+                        if (event.getMilestone()!=null){
+                        if (event.getcurrentAttendance()>=event.getMilestone()){
+                            events.add(event);
+                        }}
+
+                    }
+                    listener.onEventsRetrieved(events);
+                })
+                .addOnFailureListener(e->Log.e(TAG,"Error fetching events",e));
     }
 
 
@@ -831,7 +858,12 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
 
 
-
+    /**
+     * THIS CHECKS IF
+     * @param userUid
+     * @param eventId
+     * @param callback
+     */
     public void checkUserInEvent(String userUid, String eventId, CheckUserInEventCallback callback) {
 
         getSignedAttendees(eventId, attendees -> {
@@ -860,6 +892,14 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Event attendee list successfully updated!"))
                 .addOnFailureListener(e -> Log.e(TAG, "Error updating event attendee list", e));
     }
+
+    public void updatecurrentAttendance(String eventId, Integer currentAttendance){
+        eventRef.document(eventId).update("currentAttendance",currentAttendance)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Current Attendance successfully updated!"))
+                .addOnFailureListener(e -> Log.e(TAG, "Error updating event attendee list", e));
+    }
+
+
 
     /**
      * Method to update an event's list of where attendees are checking in from.

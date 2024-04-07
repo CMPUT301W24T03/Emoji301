@@ -178,14 +178,40 @@ public class QRScanningActivity extends AppCompatActivity {
                         Log.d("QRScanningActivity", "Attendees List: " + attendees.toString());
 
                         // Check if the current user is already in the attendees list
+                        // Update attendance count only if the user is not already in the list
+                        if (!attendees.contains(user.getProfileUid())) {
+                            Integer totalParticipant = event.getcurrentAttendance();
+                            totalParticipant += 1;
+                            database.updatecurrentAttendance(event.getId(), totalParticipant);
 
-                        attendees.add(user.getProfileUid());
+                            Log.d("Notify", "There are " + totalParticipant + " unique participants");
+                            // for milestone notif. Send it to organizer when total participants == milestone
+                            if (event.getMilestone() != null && event.getMilestone() != 0 && totalParticipant.equals(event.getMilestone())) {
+                                // get the organizer's id
+                                String organizerId = event.getOrganizer();
+                                // find the organizer in database User collection
+                                database.getUserDocument(organizerId, documentSnapshot -> {
+                                    if (documentSnapshot.exists()) {
+                                        Users organizer = documentSnapshot.toObject(Users.class);
+                                        if (organizer != null && organizer.getFcmToken() != null) {
+                                            String notifBody = "Congratulations! Your event " + event.getEventTitle() + " reached its milestone";
+                                            String organizerFCMToken = organizer.getFcmToken();
+                                            pushNotificationService.sendNotificationToDevice(event.getId(), notifBody, organizerFCMToken);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+
+                        attendees.add(user.getProfileUid()); //I WANT USERS TO REPEAT
                         Log.d("QRScanningActivity", "Attendees List: " + attendees.toString());
                         database.updateEventAttendees(event.getId(), attendees);
 
                         found = true;
 
                         Toast.makeText(getBaseContext(), "Successfully checked into " + event.getEventTitle() + "!", Toast.LENGTH_LONG).show();
+
+
 
                         // Notification: Subscribe current checked-in user to the event
                         pushNotificationService.subscribeToEvent(event.getId(), new PushNotificationService.SubscribeCallback() {
@@ -202,7 +228,7 @@ public class QRScanningActivity extends AppCompatActivity {
 
                         // going to other event home after checking in
                         if (found){
-                            Intent intent = new Intent(QRScanningActivity.this, OtherEventHome.class);
+                            Intent intent = new Intent(QRScanningActivity.this, EventHome.class); //IMPLEMENTED THIS CUZ OTHER EVENT HOME IS A BAD IMPLEMENTATION
                             intent.putExtra("userObject", user);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);

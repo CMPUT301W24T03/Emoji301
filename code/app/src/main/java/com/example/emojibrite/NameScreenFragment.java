@@ -26,7 +26,6 @@ import android.widget.Toast;
 public class NameScreenFragment extends Fragment {
     // attributes
     EditText inputName;
-    TextView generateNameText;
     FloatingActionButton backButton;
     TextView nextButtonText;
     Users user;
@@ -48,7 +47,6 @@ public class NameScreenFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View nameScreenLayout = inflater.inflate(R.layout.fragment_name_screen, container, false);
         inputName = nameScreenLayout.findViewById(R.id.inputNameEditText);
-        generateNameText = nameScreenLayout.findViewById(R.id.generateNameTextView);
         backButton = nameScreenLayout.findViewById(R.id.nameScreenBackButton);
         nextButtonText = nameScreenLayout.findViewById(R.id.nameScreenBackNext);
 

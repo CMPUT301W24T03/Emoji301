@@ -64,6 +64,8 @@ public class NotificationsActivity extends AppCompatActivity {
             //fetch events checked into the same array as seen above in fetchSignedUpEvents
             fetchCheckedInEvents();
 
+            fetchMilestoneCompletionEvents();
+
 //            fetchEventNotifications();
         }
 
@@ -84,6 +86,8 @@ public class NotificationsActivity extends AppCompatActivity {
     private void fetchCheckedInEvents() {
         database.getCheckedInEvents(currentUser, this::processEvents);
     }
+
+
 
     /**
      * Processes a list of events by fetching notifications for each event and updating the UI.
@@ -128,6 +132,31 @@ public class NotificationsActivity extends AppCompatActivity {
             });
         }
     }
+
+    /**
+     * this fetches events where users' current Milestones have finished
+     */
+    private void fetchMilestoneCompletionEvents() { //ADDING THIS COMMENT CUZ ITS MARKING THE 150TH PULL REQUEST
+        if (user != null) {
+            database.getEventsForOrganizerMilestoneCompletion(user.getProfileUid(), this::processMilestoneEvents);
+        }
+    }
+
+    /**
+     * This processes into the set and then passes into the adapter but it also hardcodes the congratulations message
+     * @param events the event whose milestone is up
+     */
+    private void processMilestoneEvents(List<Event> events) {
+        for (Event event : events) {
+            String milestoneMessage = "Congratulations! Your event '" + event.getEventTitle() + "' reached its milestone.";
+            EventNotifications newNotification = new EventNotifications(event.getEventTitle(), milestoneMessage, event.getImageUri());
+            if (!allEventNotifications.contains(newNotification)) {
+                allEventNotifications.add(newNotification);
+            }
+        }
+        updateUI();
+    }
+
 
     // Update the UI with the list of event notifications
     /**
