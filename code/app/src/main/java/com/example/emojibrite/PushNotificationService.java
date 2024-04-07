@@ -255,10 +255,10 @@ public class PushNotificationService extends FirebaseMessagingService {
      * @param notifBody The message to be sent to the attendee.
      * @param deviceToken The token of the device to send the notification to.
      */
-    public void sendNotificationToDevice(String notifBody, String deviceToken) {
+    public void sendNotificationToDevice(String eventId, String notifBody, String deviceToken) {
         Log.d("Notify", "SendNotificationToDevice is called for device: " + deviceToken);
 
-        database.getEventById(deviceToken, new Database.EventCallBack() {
+        database.getEventById(eventId, new Database.EventCallBack() {
             @Override
             public void onEventFetched(Event event) {
                 String title = event.getEventTitle() + " Milestone";

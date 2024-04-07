@@ -178,7 +178,6 @@ public class QRScanningActivity extends AppCompatActivity {
                         Log.d("QRScanningActivity", "Attendees List: " + attendees.toString());
 
                         // Check if the current user is already in the attendees list
-
                         // Update attendance count only if the user is not already in the list
                         if (!attendees.contains(user.getProfileUid())) {
                             Integer totalParticipant = event.getcurrentAttendance();
@@ -186,8 +185,8 @@ public class QRScanningActivity extends AppCompatActivity {
                             database.updatecurrentAttendance(event.getId(), totalParticipant);
 
                             Log.d("Notify", "There are " + totalParticipant + " unique participants");
-                            // for milestone notif. Send it to organizer when total participants % milestone == 0
-                            if (event.getMilestone() != null && totalParticipant % event.getMilestone() == 0) {
+                            // for milestone notif. Send it to organizer when total participants == milestone
+                            if (event.getMilestone() != null && event.getMilestone() != 0 && totalParticipant.equals(event.getMilestone())) {
                                 // get the organizer's id
                                 String organizerId = event.getOrganizer();
                                 // find the organizer in database User collection
@@ -197,7 +196,7 @@ public class QRScanningActivity extends AppCompatActivity {
                                         if (organizer != null && organizer.getFcmToken() != null) {
                                             String notifBody = "Congratulations! Your event " + event.getEventTitle() + " reached its milestone";
                                             String organizerFCMToken = organizer.getFcmToken();
-                                            pushNotificationService.sendNotificationToDevice(notifBody, organizerFCMToken);
+                                            pushNotificationService.sendNotificationToDevice(event.getId(), notifBody, organizerFCMToken);
                                         }
                                     }
                                 });
