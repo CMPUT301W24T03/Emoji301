@@ -215,7 +215,7 @@ public class QRScanningActivity extends AppCompatActivity {
 
         // if we did not find anything at all
         else if (!found){
-            Toast.makeText(this,"The scanned QR is not associated with any events.", Toast.LENGTH_LONG);
+            Toast.makeText(this,"The scanned QR is not associated with any events.", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(QRScanningActivity.this, OtherEventHome.class);
             intent.putExtra("userObject", user);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -242,6 +242,7 @@ public class QRScanningActivity extends AppCompatActivity {
         intent.putExtra("eventId", event.getId());
         intent.putExtra("userObject", user);
         intent.putExtra("privilege", "0");
+        intent.putExtra("fromQRScanning", "true");
         startActivity(intent);
     }
 
