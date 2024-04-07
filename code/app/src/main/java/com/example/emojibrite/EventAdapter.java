@@ -82,7 +82,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
         if (Boolean.TRUE.equals(isOrganizer)) {
             eventTitle.setText(event.getEventTitle() + " \uD83D\uDC51"); // Append crown emoji
         } else {
-            eventTitle.setText(event.getEventTitle());
+            eventTitle.setText(event.getEventTitle() + " \u2705");
         }}
         else {
             eventTitle.setText(event.getEventTitle());

@@ -26,8 +26,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 
 
@@ -239,7 +241,17 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
                     setupViews(event);
                     database.getSignedAttendees(eventId, attendees -> {
                         signedAttendees = new ArrayList<>(attendees);
-                        updateSignUpStatus(eventId, event.getCapacity());
+                        if (isEventStarted(event.getDate(), event.getTime())) {
+                            // Event has started - Show "Event already started" message and hide the sign-up button
+//                            signingup.setVisibility(View.GONE);
+                            signingup.setText("Event Started");
+                            signingup.setBackgroundColor(Color.YELLOW);
+                            signingup.setEnabled(false);
+                        } else {
+                            // Event hasn't started yet - keep the sign-up button
+                            updateSignUpStatus(event.getId(), event.getCapacity());
+                        }
+//                        updateSignUpStatus(eventId, event.getCapacity());
                     });
                 } else {
                     // Handle the case where event is null
@@ -255,6 +267,29 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         });
     }
 
+    private boolean isEventStarted(Date eventDate, String eventTime) {
+        if (eventDate == null || eventTime == null) {
+            return false; // Event date or time is not set
+        }
+
+        try {
+            SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault());
+            String eventDateTimeString = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).format(eventDate) + " " + eventTime;
+            Date eventDateTime = dateTimeFormat.parse(eventDateTimeString);
+
+            Log.d("checkingTime", "Event DateTime: " + eventDateTime);
+            Log.d("checkingTime", "Current DateTime: " + new Date());
+
+            if (eventDateTime != null) {
+                return eventDateTime.before(new Date()); // Check if the event date-time is before the current date-time
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
     /**
      * This function is to handle the view as well the signing up part of events
      * @param eventId this uses the event ID where users will be setting it up
@@ -265,9 +300,10 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
         boolean isCapacityFull = capacity != null && signedAttendees.size() >= capacity;
         boolean isUserSignedUp = signedAttendees.contains(currentUser);
+//        boolean NotPastDate = isEventStarted(, String eventTime);
 
         if (isCapacityFull){
-            signingup.setText("Event has reached capacity"); // Set the text to indicate the user has signed up
+            signingup.setText("Event is full"); // Set the text to indicate the user has signed up
             signingup.setBackgroundColor(Color.RED); // Change the background color to green
             signingup.setEnabled(false);
         }
