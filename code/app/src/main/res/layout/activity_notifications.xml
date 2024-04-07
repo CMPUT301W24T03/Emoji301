@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="80dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="25dp"
             android:fontFamily="@font/belleza"
             android:text="Notifications"
             android:textColor="@color/black"
@@ -40,5 +40,10 @@
         android:id="@+id/attendee_view_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/notifications_list"/>
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        tools:listitem="@layout/notifications_list"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="5dp"/>
 </LinearLayout>
