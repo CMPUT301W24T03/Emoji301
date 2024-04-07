@@ -257,12 +257,14 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
         if (isCapacityFull){
             signingup.setText("Event has reached capacity"); // Set the text to indicate the user has signed up
-            signingup.setBackgroundColor(Color.RED); // Change the background color to green
+            signingup.setBackgroundResource(R.drawable.signup_red_outline); // Change the background color to green
+            signingup.setTextColor(Color.RED);
             signingup.setEnabled(false);
         }
         else if (isUserSignedUp){
             signingup.setText("You have signed up"); // Set the text to indicate the user has signed up
-            signingup.setBackgroundColor(Color.GREEN); // Change the background color to green
+            signingup.setBackgroundResource(R.drawable.signup_green_outline); // Change the background color to green
+            signingup.setTextColor(Color.parseColor("#376141"));
             signingup.setEnabled(false);
         }
         else{

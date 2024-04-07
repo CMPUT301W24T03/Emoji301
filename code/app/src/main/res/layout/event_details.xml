@@ -12,11 +12,11 @@
 
 
         <include
-            layout="@layout/appbar"
             android:id="@+id/toolbar"
-            app:layout_constraintTop_toTopOf="parent"
+            layout="@layout/appbar"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -125,7 +125,7 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="300dp"
+                    android:layout_width="247dp"
                     android:layout_height="wrap_content"
                     android:background="@color/ivory"
                     android:orientation="horizontal">
@@ -159,8 +159,8 @@
 
                     <Button
                         android:id="@+id/attendees_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="20dp"
+                        android:layout_width="150dp"
+                        android:layout_height="30dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="20dp"
                         android:background="@drawable/eventdetails_button"
@@ -180,7 +180,7 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="290dp"
+                    android:layout_width="247dp"
                     android:layout_height="wrap_content"
                     android:background="@color/ivory"
                     android:orientation="horizontal">
@@ -211,9 +211,10 @@
                     android:orientation="horizontal">
                     <Button
                         android:id="@+id/Notification_button"
-                        android:layout_width="110dp"
-                        android:layout_height="20dp"
+                        android:layout_width="150dp"
+                        android:layout_height="30dp"
                         android:layout_marginEnd="20dp"
+                        android:layout_marginTop="12dp"
                         android:background="@drawable/eventdetails_button"
                         android:text="Send Notification"
                         android:textAllCaps="false"
@@ -229,8 +230,9 @@
                 android:layout_height="wrap_content"
                 android:background="@color/ivory"
                 android:orientation="horizontal">
+
                 <LinearLayout
-                    android:layout_width="300dp"
+                    android:layout_width="249dp"
                     android:layout_height="wrap_content"
                     android:background="@color/ivory"
                     android:orientation="horizontal">
@@ -244,7 +246,7 @@
 
                     <TextView
                         android:id="@+id/capacity"
-                        android:layout_width="200dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="12dp"
@@ -256,18 +258,19 @@
 
                 <Button
                     android:id="@+id/sign_up_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:background="@drawable/eventdetails_button"
-                    android:paddingEnd="0dp"
+                    android:layout_width="150dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/signup_brown_outline"
                     android:text="Sign Up"
                     android:textAllCaps="false"
                     android:textColor="@color/black"
-                    android:textSize="12sp" />
+                    android:textSize="10sp" />
 
             </LinearLayout>
 
             <View
+                android:layout_marginTop="12dp"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray" />
@@ -316,7 +319,7 @@
                     android:fontFamily="@font/arimo"
                     android:text="Location"
                     android:textColor="@color/black"
-                    android:textSize="15sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -328,7 +331,7 @@
                     android:fontFamily="@font/arimo"
                     android:text="Show map"
                     android:textColor="#3E76B8"
-                    android:textSize="11sp"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -366,8 +369,8 @@
 
                 <Button
                     android:id="@+id/check_in_qr"
-                    android:layout_width="145dp"
-                    android:layout_height="35dp"
+                    android:layout_width="150dp"
+                    android:layout_height="50dp"
                     android:layout_marginEnd="10dp"
                     android:layout_margin="10dp"
                     android:background="@drawable/event_button_outlined"
@@ -379,8 +382,8 @@
 
                 <Button
                     android:id="@+id/event_qr"
-                    android:layout_width="145dp"
-                    android:layout_height="35dp"
+                    android:layout_width="150dp"
+                    android:layout_height="50dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/event_button_outlined"
                     android:fontFamily="@font/alegreya_sc"
