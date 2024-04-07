@@ -428,6 +428,9 @@ once created, u can call getuseruid to get the user id and use it to get user da
         eventMap.put("attendeesList", event.getAttendeesList());
         eventMap.put("geolocationList", event.getGeolocationList());
 
+        //currentAttendees
+        eventMap.put("currentAttendance",event.getcurrentAttendance());
+
         if (event.getImageUri()!=null){
             Log.d(TAG, event.getImageUri().toString()); //testing
         }
@@ -831,7 +834,12 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
 
 
-
+    /**
+     * THIS CHECKS IF
+     * @param userUid
+     * @param eventId
+     * @param callback
+     */
     public void checkUserInEvent(String userUid, String eventId, CheckUserInEventCallback callback) {
 
         getSignedAttendees(eventId, attendees -> {
@@ -858,6 +866,12 @@ once created, u can call getuseruid to get the user id and use it to get user da
     public void updateEventAttendees(String eventID, ArrayList<String> attendees) {
         eventRef.document(eventID).update("attendeesList", attendees)
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Event attendee list successfully updated!"))
+                .addOnFailureListener(e -> Log.e(TAG, "Error updating event attendee list", e));
+    }
+
+    public void updatecurrentAttendance(String eventId, Integer currentAttendance){
+        eventRef.document(eventId).update("currentAttendance",currentAttendance)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Current Attendance successfully updated!"))
                 .addOnFailureListener(e -> Log.e(TAG, "Error updating event attendee list", e));
     }
 

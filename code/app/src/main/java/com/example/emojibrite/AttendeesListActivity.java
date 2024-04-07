@@ -56,10 +56,6 @@ public class AttendeesListActivity extends AppCompatActivity {
 
 
 
-        //YOU HAVE TO CHANGE THIS PART OF THE CODE
-        // I JUST WROTE RANDOM STUFF
-        // TODO FIX AND INTEGRATE THE LOGIC OF THE CHECKINBUTTON
-
         checkInBtn.setOnClickListener(view -> {openCheckedUpFragment();});
         signedUpBtn.setOnClickListener(view -> {openSignedUpFragment();});
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -68,6 +64,12 @@ public class AttendeesListActivity extends AppCompatActivity {
                 // go back to the event details activity
                 finish();
             }
+        });
+
+        Database database = new Database();
+
+        database.getEventById(eventId, event -> {
+            checkInBtn.setText("CheckIn:"+event.getcurrentAttendance()+"users");
         });
     }
 
