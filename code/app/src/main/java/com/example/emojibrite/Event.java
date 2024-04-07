@@ -172,11 +172,11 @@ public class Event implements Serializable {
         return id;
     }
 
-    public void setId(){
+    public void setId(String id){
         this.id=id;
     }
 
-    public void setCapacity(){this.capacity=capacity;}
+    public void setCapacity(Integer capacity){this.capacity=capacity;}
 
     public void setCheckInID(){this.checkInID=checkInID;}
 

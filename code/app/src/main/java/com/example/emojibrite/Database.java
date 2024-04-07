@@ -28,12 +28,14 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +55,7 @@ public class Database {
 
     private final CollectionReference signedUpRef = db.collection("SignedUp");
 
-
+    private final CollectionReference notificationRef = db.collection("Notifications");
 
     private String firestoreDebugTag = "Firestore";
 
@@ -215,12 +217,16 @@ once created, u can call getuseruid to get the user id and use it to get user da
         void onUsersRetrieved(List<Users> users);
     }
 
-    public void deleteUser(String userId){
+    public void deleteUser(String userId, String imageUri){
         profileRef.document(userId).delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(firestoreDebugTag, "DocumentSnapshot successfully deleted!");
+                        deleteUserFromSignedUp(userId);
+                        deleteUserFromAttendeeList(userId);
+                        deleteEventIfOrganizerDeleted(userId);
+                        deleteUserUploadedImageFromStorage(imageUri);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -230,6 +236,91 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     }
                 });
     }
+
+    public void deleteUserUploadedImageFromStorage(String imageUri){
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference imageRef = storage.getReferenceFromUrl(imageUri);
+        imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Image successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting image", e);
+                    }
+                });
+    }
+
+    public void deleteEventIfOrganizerDeleted(String userId){
+        eventRef.whereEqualTo("organizer", userId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    String eventId = document.getId();
+                    deleteEvent(eventId, null);
+
+                }
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
+            }
+        });
+
+    }
+
+    public void deleteUserFromSignedUp(String userId){
+
+        signedUpRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    List<String> signedAttendees = (List<String>) document.get("signedAttendees");
+                    if (signedAttendees != null && signedAttendees.contains(userId)) {
+                        signedAttendees.remove(userId);
+                        document.getReference().update("signedAttendees", signedAttendees);
+                    }
+                }
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
+            }
+        });
+
+    }
+    public void deleteUserFromAttendeeList(String userId){
+        eventRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    List<String> attendeeList = (List<String>) document.get("attendeesList");
+                    if (attendeeList != null && attendeeList.contains(userId)) {
+                        attendeeList.remove(userId);
+                        document.getReference().update("attendeesList", attendeeList);
+                    }
+                }
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
+            }
+        });
+
+    }
+
+    public void deleteEventNotification(String eventId){
+        notificationRef.document(eventId).delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Notification successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting notification", e);
+                    }
+                });
+
+    }
+
+
 
 
 
@@ -364,6 +455,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 Log.d(TAG, "Deleting Image URI: " + imageUri);
 
                 deleteQrEventPoster(qrCheckUri, qrEventUri, imageUri);
+                deleteEventNotification(eventId);
 
                 eventRef.document(eventId).delete()
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Event successfully deleted!"))
@@ -720,6 +812,25 @@ once created, u can call getuseruid to get the user id and use it to get user da
         });
     }
 
+    public void getCheckedInEvents(String userId, OnEventsRetrievedListener listener){
+        eventRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Event> checkedInEvents = new ArrayList<>();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Event event = document.toObject(Event.class);
+                    ArrayList<String> attendeesList = event.getAttendeesList();
+                    if (attendeesList != null && attendeesList.contains(userId)) {
+                        checkedInEvents.add(event);
+                    }
+                }
+                listener.onEventsRetrieved(checkedInEvents);
+            } else {
+                Log.d(TAG, "Error getting checked-in events: ", task.getException());
+            }
+        });
+    }
+
+
 
     public void checkUserInEvent(String userUid, String eventId, CheckUserInEventCallback callback) {
 
@@ -766,5 +877,83 @@ once created, u can call getuseruid to get the user id and use it to get user da
             Log.e(TAG, "Error updating event geolocation check-ins", e);
         });
     }
+
+    // Notification Database Section //
+    public void storeNotification(String message, String eventId) {
+        // Get a reference to the 'Notifications' collection
+
+        // Get a reference to the document that represents the event
+        DocumentReference eventDocRef = notificationRef.document(eventId);
+
+        // Use the Firestore transaction feature to safely update the array
+        db.runTransaction((Transaction.Function<Void>) transaction -> {
+                    // Get the current state of the document
+                    DocumentSnapshot snapshot = transaction.get(eventDocRef);
+
+                    // If the document does not exist, create a new document with the message
+                    if (!snapshot.exists()) {
+                        Map<String, Object> data = new HashMap<>();
+                        data.put("messages", Arrays.asList(message));
+                        transaction.set(eventDocRef, data);
+                    } else {
+                        // If the document exists, add the new message to the array of messages
+                        List<String> messages = (List<String>) snapshot.get("messages");
+                        messages.add(message);
+                        transaction.update(eventDocRef, "messages", messages);
+                    }
+
+                    // Return null because the function is of type Void
+                    return null;
+                }).addOnSuccessListener(aVoid -> Log.d(TAG, "Notification successfully written!"))
+                .addOnFailureListener(e -> Log.w(TAG, "Error writing notification", e));
+    }
+
+    // Notification Database Section //
+
+    /**
+     * Retrieves a list of notification messages for a specific event.
+     *
+     * @param eventId  The unique ID of the event for which to retrieve the notifications.
+     * @param listener A listener that is called when the notifications are successfully retrieved.
+     */
+    public void getNotificationsForEvent(String eventId, OnNotificationsRetrievedListener listener) {
+        // Get a reference to the document that represents the event in the 'Notifications' collection
+        DocumentReference eventNotificationRef = notificationRef.document(eventId);
+
+        // Fetch the document
+        eventNotificationRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                // Extract the list of notification messages
+                List<String> messages = (List<String>) documentSnapshot.get("messages");
+                if (messages != null) {
+                    // Pass the list to the listener
+                    listener.onNotificationsRetrieved(messages);
+                } else {
+                    // Handle the case where the 'messages' field is null or doesn't exist
+                    listener.onNotificationsRetrieved(new ArrayList<>());
+                }
+            } else {
+                // Handle the case where the event has no notifications
+                listener.onNotificationsRetrieved(new ArrayList<>());
+            }
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Error fetching notifications for event", e);
+            // In case of an error, return an empty list or handle the error as appropriate
+            listener.onNotificationsRetrieved(new ArrayList<>());
+        });
+    }
+
+    /**
+     * An interface for listeners that handle the retrieval of notification messages.
+     */
+    public interface OnNotificationsRetrievedListener {
+        /**
+         * Method called when a list of notification messages is successfully retrieved.
+         *
+         * @param notifications A list of notification message strings.
+         */
+        void onNotificationsRetrieved(List<String> notifications);
+    }
+
 
 }

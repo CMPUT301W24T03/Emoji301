@@ -152,6 +152,10 @@ public class QRCodeCheckActivity extends AppCompatActivity {
             Bitmap bitmap = encoder.createBitmap(bitMatrix);
             qrCode.setImageBitmap(bitmap);
 
+            // disabling these buttons as they are no longer needed
+            generateQRButton.setVisibility(View.INVISIBLE);
+            uploadButton.setVisibility(View.INVISIBLE);
+
             selectedImageUri = saveImage(bitmap, "qr_code_" + checkInID + ".png");
 
         } catch (WriterException | IOException e) {

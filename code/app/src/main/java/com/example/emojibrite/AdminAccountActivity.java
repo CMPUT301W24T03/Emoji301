@@ -3,6 +3,7 @@ package com.example.emojibrite;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ToggleButton;
 
@@ -45,6 +46,11 @@ public class AdminAccountActivity extends AppCompatActivity {
         profileList.setAdapter(profileAdapter);
         FloatingActionButton backBtn = findViewById(R.id.backButton);
 
+        ImageView profilePic = findViewById(R.id.profile_pic);
+        ImageView notifBell = findViewById(R.id.notif_bell);
+        profilePic.setVisibility(ImageView.GONE);
+        notifBell.setVisibility(ImageView.GONE);
+
         backBtn.setOnClickListener(v -> {
             Intent intent = new Intent(AdminAccountActivity.this, AdminActivity.class);
             intent.putExtra("userObject", user);
@@ -84,9 +90,11 @@ public class AdminAccountActivity extends AppCompatActivity {
                 iterator.remove();
 
                 // Remove the user from the iterator and dataList
-
             }
             else if (user.getProfileUid().equals(this.user.getProfileUid())){
+                iterator.remove();
+            }
+            else if (user.getRole().equals("2") && (!this.user.getRole().equals("3"))){
                 iterator.remove();
             }
         }
