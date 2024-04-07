@@ -136,7 +136,7 @@ public class NotificationsActivity extends AppCompatActivity {
     /**
      * this fetches events where users' current Milestones have finished
      */
-    private void fetchMilestoneCompletionEvents() {
+    private void fetchMilestoneCompletionEvents() { //ADDING THIS COMMENT CUZ ITS MARKING THE 150TH PULL REQUEST
         if (user != null) {
             database.getEventsForOrganizerMilestoneCompletion(user.getProfileUid(), this::processMilestoneEvents);
         }
