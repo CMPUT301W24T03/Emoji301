@@ -104,7 +104,7 @@ public class EventDatabaseTesting {
      */
     @Test
     public void TestAddEvent() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
+        final CountDownLatch latch = new CountDownLatch(1); //
 
         database.addEvent(testEvent, task -> {
             if (task.isSuccessful()) {
