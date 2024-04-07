@@ -539,11 +539,12 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
     public void getEventsByOrganizer(String organizerId, OnEventsRetrievedListener listener) {
         // Querying Firestore for events organized by the specified user.
+        List<Event> events = new ArrayList<>();
         eventRef.whereEqualTo("organizer", organizerId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     // List to hold the retrieved events.
-                    List<Event> events = new ArrayList<>();
+//                    List<Event> events = new ArrayList<>();
                     for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
                         Event event = snapshot.toObject(Event.class);
                         Log.d(TAG,"Event ID " + event.getId());

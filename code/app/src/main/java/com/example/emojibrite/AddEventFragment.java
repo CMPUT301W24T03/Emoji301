@@ -292,9 +292,14 @@ public class AddEventFragment extends DialogFragment{
         Button buttonNext = view.findViewById(R.id.button_next);
         buttonNext.setOnClickListener(v -> {
 
-            if (!isCheckInQRGenerated || !isEventQRGenerated) {
-                // Prompt user to generate QR codes first
-                Toast.makeText(getContext(), "Please generate both QR codes before proceeding.", Toast.LENGTH_LONG).show();
+            boolean invalidQrCode = (qrCodeCheckinURI != null && qrCodeCheckinURI.toString().startsWith("content://")) ||
+                    (qrCodeEventURI != null && qrCodeEventURI.toString().startsWith("content://"));
+
+            if (!isCheckInQRGenerated || !isEventQRGenerated || invalidQrCode) {
+                // Either QR codes not generated or invalid QR code format
+                String message = invalidQrCode ? "QR Code not properly generated. Try again." :
+                        "Please generate both QR codes before proceeding.";
+                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
             }
             else {
                 String title = editTitle.getText().toString();

@@ -100,6 +100,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
             database.addEvent(event, task -> {
                 if (task.isSuccessful()) {
                     Log.d(TAG, "Event added successfully into database");
+                    eventMap.put(event, true);
                     updateLocalEventList(event);
                 } else {
                     Log.e(TAG, "ERROR IN ADDING TO THE DATABASE", task.getException());
