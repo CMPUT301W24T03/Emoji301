@@ -308,7 +308,6 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             signingup.setBackgroundResource(R.drawable.signup_red_outline); // Change the background color to green
             signingup.setTextColor(Color.RED);
             signingup.setText("Event is full"); // Set the text to indicate the user has signed up
-            signingup.setBackgroundColor(Color.RED); // Change the background color to green
             signingup.setEnabled(false);
         }
         else if (isUserSignedUp){
