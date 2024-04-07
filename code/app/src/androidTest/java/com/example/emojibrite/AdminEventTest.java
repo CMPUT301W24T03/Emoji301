@@ -5,6 +5,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.view.View;
 import android.widget.AdapterView;
@@ -96,7 +97,9 @@ public class AdminEventTest {
     public void testdeleteEvent() {
         onView(withId(R.id.admin_event_list)).perform(testClickEventItemAtPosition());
         onView(withId(R.id.delete_event)).perform(click());
-        onView(withId(R.id.admin_event_list)).check(matches(isDisplayed()));
+        onView(withText("Yes")).check(matches(isDisplayed()));
+//        onView(withText("Yes")).perform(click());
+//        onView(withId(R.id.backButton)).check(matches(isDisplayed()));
     }
 
 
