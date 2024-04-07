@@ -42,7 +42,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     ArrayList<String> signedAttendees;
 
-    Button signingup, attendeesButton, notificationButton,  deleteBtn, qrBtn, qrCodeEventDetails;
+    Button signingup, attendeesButton, notificationButton,  deleteBtn, qrBtn, qrCodeEventDetails, qrCodeCheckInDetails;
     TextView showMap;
 
     Database database;
@@ -81,7 +81,8 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         showMap = findViewById(R.id.show_map);
         qrBtn = findViewById(R.id.check_in_qr); // Double check!!!!!!!!! Put one for the event qr as well!!!!!
 
-        qrCodeEventDetails = findViewById(R.id.check_in_qr); // Double check!!!!!!!!!
+        qrCodeEventDetails = findViewById(R.id.event_qr); // Double check!!!!!!!!!
+        qrCodeCheckInDetails = findViewById(R.id.check_in_qr);
 
         Intent intent = getIntent();
         user = intent.getParcelableExtra("userObject");
@@ -170,6 +171,16 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             public void onClick(View v) {
                 String var = "true";
                 Intent intent = new Intent(EventDetailsActivity.this, DisplayEventQRCode.class);
+                intent.putExtra("eventId", eventId);
+                startActivity(intent);
+            }
+        });
+
+        qrCodeCheckInDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String var = "true";
+                Intent intent = new Intent(EventDetailsActivity.this, DisplayCheckInQRCode.class);
                 intent.putExtra("eventId", eventId);
                 startActivity(intent);
             }
