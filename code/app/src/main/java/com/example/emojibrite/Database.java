@@ -562,6 +562,29 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 .addOnFailureListener(e -> Log.e(TAG, "Error fetching events", e));
     }
 
+    /**
+     * Fetches events of users whose milestones have been complete
+     * @param organizerId the user who wants to check if their milestones have been complete
+     * @param listener the receiver
+     */
+    public void getEventsForOrganizerMilestoneCompletion(String organizerId, OnEventsRetrievedListener listener){
+        eventRef.whereEqualTo("organizer",organizerId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Event> events = new ArrayList<>();
+                    for (DocumentSnapshot snapshot: queryDocumentSnapshots){
+                        Event event=snapshot.toObject(Event.class);
+                        if (event.getMilestone()!=null){
+                        if (event.getcurrentAttendance()>=event.getMilestone()){
+                            events.add(event);
+                        }}
+
+                    }
+                    listener.onEventsRetrieved(events);
+                })
+                .addOnFailureListener(e->Log.e(TAG,"Error fetching events",e));
+    }
+
 
     /**
      * An interface for listeners that handle the retrieval of a list of events.
@@ -874,6 +897,8 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Current Attendance successfully updated!"))
                 .addOnFailureListener(e -> Log.e(TAG, "Error updating event attendee list", e));
     }
+
+
 
     /**
      * Method to update an event's list of where attendees are checking in from.
