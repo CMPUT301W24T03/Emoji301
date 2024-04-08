@@ -243,5 +243,26 @@ public class EventDatabaseTesting {
         deleteLatch.await(10, TimeUnit.SECONDS);
     }
 
+    @Test
+    public void testAddSignin() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        // Call addSignin method to register user1 for testEvent1
+        database.addSignin(testEvent1.getId(), user1.getProfileUid());
+
+        // Retrieve data from the SignedUp collection
+        database.getSignedAttendees(testEvent1.getId(), attendees -> {
+            assertNotNull("Attendees list should not be null", attendees);
+            assertTrue("Attendees list should contain user1 ID", attendees.contains(user1.getProfileUid()));
+
+            latch.countDown();
+        });
+
+        latch.await(10, TimeUnit.SECONDS);
+    }
+
+
+
+
 
 }
