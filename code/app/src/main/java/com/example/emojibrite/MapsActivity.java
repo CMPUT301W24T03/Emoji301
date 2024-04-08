@@ -18,6 +18,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
+/**
+ * Activity for displaying the locations of attendees who have checked in to an event.
+ */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
 //    private ActivityMapsBinding binding;
@@ -100,7 +103,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
+    /**
+     * Returns the GoogleMap object.
+     * @return The GoogleMap object
+     */
     public GoogleMap getMap() {
         return mMap;
     }
