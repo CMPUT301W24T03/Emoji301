@@ -16,6 +16,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -26,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.google.firebase.firestore.util.Assert.fail;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -34,36 +38,87 @@ import static org.junit.Assert.assertTrue;
 public class MapsTesting {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference eventRef = db.collection("Events");
-    Event event;
+    private Database database;
+    private Event testEvent;
+    private Users user;
 
-    @Test
-    public void testGetGeolocationsList() {
-        // Define an arbitrary event ID for the test
-        String testEventId = "ma5dRouZTb1v";
+    @Before
+    public void setUp() throws InterruptedException {
+        db = FirebaseFirestore.getInstance();
+        database = new Database(db);
 
-        try {
-            // Fetch the document from Firestore based on the event ID
-            Task<DocumentSnapshot> task = eventRef.document(testEventId).get();
+        user = new Users();
+        user.setProfileUid("testUid");
+        user.setName("testName");
 
-            // Wait for the Firestore operation to complete
-            DocumentSnapshot documentSnapshot = Tasks.await(task);
+        testEvent = new Event();
+        ArrayList<String> geolocationList = new ArrayList<>();
+        geolocationList.add("37.421998333333335,-122.084");
+        testEvent.setGeolocationList(geolocationList);
+        testEvent.setId("MapTest1");
+        testEvent.setEventTitle("EVENT TEST 1");
+        testEvent.setCapacity(12);
+        testEvent.setLocation("Location 1");
+        testEvent.setOrganizer(user.getProfileUid());
 
-            // Check if the document exists
-            if (documentSnapshot.exists()) {
-                // Retrieve the geolocations list from the document
-                ArrayList<String> geolocationsList = (ArrayList<String>) documentSnapshot.get("geolocationList");
-                assertNotNull("Geolocations list should not be null", geolocationsList);
-                Log.d("Geolocations", Objects.requireNonNull(geolocationsList).toString());
+        // Latch for waiting the event to be added
+        CountDownLatch addLatch = new CountDownLatch(2);
+
+        // Add event
+        database.addEvent(testEvent, task -> {
+            if (task.isSuccessful()) {
+                addLatch.countDown(); // Decrement count
             } else {
-                // If document does not exist, fail the test
-                fail("Document with ID " + testEventId + " does not exist");
+                Assert.fail("Setup failed: Unable to add testEvent");
             }
-        } catch (Exception e) {
-            // If any exception occurs, fail the test
-            fail("Error occurred: " + e.getMessage());
-        }
+        });
+
+        addLatch.await(10, TimeUnit.SECONDS);
     }
 
+
+    /**
+     * Verifies that the event document is created with the correct title, ID, capacity, organizer, and geolocation list.
+     *
+     * Preconditions:
+     * - The Firestore database is accessible and writable.
+     *
+     * Postconditions:
+     * - An event document corresponding to testEvent is created in the database.
+     * - The fields of the created event document match those of testEvent.
+     */
+    @Test
+    public void testGetGeolocationsList() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        database.addEvent(testEvent, task -> {
+            if (task.isSuccessful()) {
+                db.collection("Events").document(testEvent.getId()).get()
+                        .addOnCompleteListener(fetchTask -> {
+                            if (fetchTask.isSuccessful()) {
+                                DocumentSnapshot document = fetchTask.getResult();
+                                assertTrue(document.exists());
+                                assertEquals(testEvent.getEventTitle(), document.getString("eventTitle"));
+                                assertEquals(testEvent.getId(),document.getString("id"));
+                                assertEquals(testEvent.getLocation(),document.getString("location"));
+                                assertEquals(testEvent.getOrganizer(),document.getString("organizer"));
+                                assertEquals(testEvent.getGeolocationList(),document.get("geolocationList"));
+                            } else {
+                                task.getException().printStackTrace();
+                                Assert.fail("Add event failed with exception: " + task.getException().getMessage());
+                                latch.countDown();
+                            }
+                            latch.countDown();
+                        });
+            } else {
+                Assert.fail("Add event failed");
+                latch.countDown();
+            }
+        });
+
+        // Wait for the Firestore operation to complete or timeout
+        latch.await(10, TimeUnit.SECONDS);
+    }
 
     @Test
     public void testShowMaps() {
@@ -107,4 +162,32 @@ public class MapsTesting {
             }
         });
     }
+
+    /**
+     * Deletes the event after the testing of it
+     * @throws InterruptedException
+     */
+    @After
+    public void tearDown() throws InterruptedException {
+        // Set CountDownLatch for two delete operations
+        CountDownLatch deleteLatch = new CountDownLatch(2);
+
+        // Delete event
+        db.collection("Events").document(testEvent.getId()).delete()
+                .addOnSuccessListener(aVoid -> {
+                    System.out.println("Document successfully deleted!");
+                    deleteLatch.countDown(); // Decrement count
+                })
+                .addOnFailureListener(e -> {
+                    e.printStackTrace();
+                    Assert.fail("Deletion failed: " + e.getMessage());
+                    deleteLatch.countDown(); // Decrement count
+                });
+
+        // Wait for both delete operations to complete
+        deleteLatch.await(10, TimeUnit.SECONDS);
+    }
+
+
+
 }
