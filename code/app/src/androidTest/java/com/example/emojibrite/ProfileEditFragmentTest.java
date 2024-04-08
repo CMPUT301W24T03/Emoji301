@@ -1,93 +1,104 @@
 package com.example.emojibrite;
-import android.content.Context;
-import android.widget.EditText;
 
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import android.content.Intent;
+
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.UiDevice;
 
-import com.example.emojibrite.ProfileEditFragment;
-import com.example.emojibrite.Users;
-
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static org.hamcrest.CoreMatchers.equalTo;
+import java.io.IOException;
+
 
 @RunWith(AndroidJUnit4.class)
 public class ProfileEditFragmentTest {
 
-    private ProfileEditFragment profileEditFragment;
-    private boolean listenerCalled = false;
+    public static Users mockUser;
+
 
     @Before
-    public void setUp() {
-        // Create a mock user profile for testing
-        Users mockProfile = new Users("123456", "John Doe", "john@example.com", "https://example.com", "path_to_image", "123456789");
+    public void setup() throws IOException {
 
-        // Initialize the fragment with the mock profile
-        profileEditFragment = new ProfileEditFragment(mockProfile);
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        device.executeShellCommand("settings put global window_animation_scale 0");
+        device.executeShellCommand("settings put global transition_animation_scale 0");
+        device.executeShellCommand("settings put global animator_duration_scale 0");
 
-        // Start the fragment to test its behavior
-        startFragment(profileEditFragment);
+        // Mock user data
+        mockUser = new Users();
+
+        mockUser.setName("John Doe");
+        mockUser.setEmail("johndoe@example.com");
+        mockUser.setNumber("1234567890");
+        mockUser.setRole("3");
+        mockUser.setProfileUid("SroGuirZdhfbwcectKhBJkpJpdl2");
+        mockUser.setEnableNotification(true);
+        mockUser.setEnableGeolocation(true);
+        mockUser.setAutoGenImageUri("https://ui-avatars.com/api/?name=John+Doe/");
+        mockUser.setUploadedImageUri(null);
+        mockUser.setHomePage("homepage");
+        mockUser.setFcmToken("cXEdjvR2RRGFnwzJRgW0nj:APA91bGr5XYv7AhDGX6MqFKBwUxnKTwQUbIEg0u9IE1pitS2N9oi_jFPpPmz1VkYLpAF_HbS4W2YYlsOADlGc32fRVvCRgoMgiBxvQxCl4EoYVlqoI5yUn3qnDk_ZTLaOCG2mKaV_GqF");
+
+
+        // Mock the intent used to start the activity
+
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), ProfileActivity.class);
+        intent.putExtra("userObject", mockUser);
+        ActivityScenario.launch(intent);
     }
 
     @Test
-    public void testProfileEditFragmentInitialState() {
-        // Check if the initial values are correctly set in the EditText fields
-        onView(withId(R.id.editEmail)).check(matches(isEditTextValueEqualTo("john@example.com")));
-        onView(withId(R.id.editPhoneNumber)).check(matches(isEditTextValueEqualTo("123456789")));
-        onView(withId(R.id.editName)).check(matches(isEditTextValueEqualTo("John Doe")));
-        onView(withId(R.id.editHomePage)).check(matches(isEditTextValueEqualTo("https://example.com")));
+    public void testEditTextFields() {
+        onView(withId(R.id.editButton)).perform(click());
+
+        onView(withId(R.id.editEmail)).check(matches(isDisplayed()));
+        onView(withId(R.id.editPhoneNumber)).check(matches(isDisplayed()));
+        onView(withId(R.id.editName)).check(matches(isDisplayed()));
+        onView(withId(R.id.editHomePage)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.editEmail)).check(matches(withText(mockUser.getEmail())));
+        onView(withId(R.id.editPhoneNumber)).check(matches(withText(mockUser.getNumber())));
+        onView(withId(R.id.editName)).check(matches(withText(mockUser.getName())));
+        onView(withId(R.id.editHomePage)).check(matches(withText(mockUser.getHomePage())));
     }
+
 
     @Test
-    public void testProfileEditFragmentUpdateProfile() {
-        // Perform actions to update the profile
-        onView(withId(R.id.editEmail)).perform(typeText("newemail@example.com"));
-        onView(withId(R.id.editPhoneNumber)).perform(typeText("987654321"));
-        onView(withId(R.id.editName)).perform(typeText("New Name"));
-        onView(withId(R.id.editHomePage)).perform(typeText("https://newexample.com"));
+    public void testSaveButton() {
+        onView(withId(R.id.editButton)).perform(click());
 
-        // Save the changes by clicking the save button
-        onView(withId(R.id.saveButton)).perform(click());
-
-        // Verify if the listener is notified with the correct updated values
-        assert (listenerCalled);
+        onView(withId(R.id.saveButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.saveButton)).check(matches(isClickable()));
     }
 
 
-    // Helper method to start a fragment for testing
-    private void startFragment(ProfileEditFragment fragment) {
-        FragmentManager fragmentManager = fragment.requireFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(fragment, null);
-        transaction.commit();
+    @Test
+    public void testRemoveImageButton() {
+        onView(withId(R.id.editButton)).perform(click());
+
+        onView(withId(R.id.removeImageButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.removeImageButton)).check(matches(isClickable()));
     }
 
-    // Helper method to check if the text in an EditText matches a given value
-    private static Matcher<Object> isEditTextValueEqualTo(String value) {
-        return new BoundedMatcher<Object, EditText>(EditText.class) {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Value should be equal to: " + value);
-            }
 
-            @Override
-            protected boolean matchesSafely(EditText item) {
-                return item.getText().toString().equals(value);
-            }
-        };
+    @Test
+    public void testUploadImageButton() {
+        onView(withId(R.id.editButton)).perform(click());
+
+        onView(withId(R.id.uploadImageButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.uploadImageButton)).check(matches(isClickable()));
     }
 }

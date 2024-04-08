@@ -1,5 +1,8 @@
 package com.example.emojibrite;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -11,6 +14,7 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -24,12 +28,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.firebase.Firebase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * AddEventFragment is a DialogFragment used to create a new event or edit an existing one.
@@ -54,12 +64,26 @@ public class AddEventFragment extends DialogFragment{
 
     private ImageView imageEventPoster;
     private Button buttonSelectPic, switchCheckInQR, switchEventPageQR;
-
     private Uri selectedImageUri; // Image Uri for the event poster
+    private Users user;
+
+    private Uri qrCodeCheckinURI, qrCodeEventURI;
+
+
+    private String eventId, checkInID;
+
+    ImageUploader imageUploader = new ImageUploader("images");
+    ImageUploader imageUploaderQR = new ImageUploader("QRCode");
+
+    private boolean isCheckInQRGenerated = false;
+    private boolean isEventQRGenerated = false;
 
 
 
     private static final int PICK_FROM_GALLERY = 1; // Constant for gallery pick request
+
+
+
 
 
 
@@ -91,23 +115,121 @@ public class AddEventFragment extends DialogFragment{
     /**
      * This is responsible for dealing with launching and retreiving a picture
      */
-    private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
+
+    private final ActivityResultLauncher<String> mediaGetContent = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
-                if (uri != null) {
-                    selectedImageUri = uri; // Save the selected image Uri.
-                    try {
-                        // Use MediaStore to fetch the selected image as a Bitmap
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
-                        // Set the bitmap to the ImageView for display
-                        imageEventPoster.setImageBitmap(bitmap);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Toast.makeText(getActivity(), "Failed to load image", Toast.LENGTH_SHORT).show();
+
+                if (uri!=null){
+                    imageUploader.uploadImage(uri, new ImageUploader.UploadCallback() {
+                        @Override
+                        public void onUploadSuccess(Uri downloadUri) {
+                            imageEventPoster.setImageURI(null);
+                            imageEventPoster.setImageURI(uri); // TO DISPLAY THE IMAGE INTO THE IMAGEVIEW
+                            selectedImageUri = downloadUri; // CHANGING THE SELECTED IMAGE URI TO THE DOWNLOADED URI RETREIVED AND THIS IS YOUR ANSWER
+                            Log.d(TAG,"DOWNLOADED URI STRING" + selectedImageUri.toString());
+                        }
+
+                        @Override
+                        public void onUploadFailure(Exception exception) {
+                            Toast.makeText(getContext(), "Upload failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+    );
+
+    private final ActivityResultLauncher<Intent> startForResultCheckIn = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null) {
+                        String qrCodeUriString = data.getStringExtra("QR_CODE_URI");
+                        qrCodeCheckinURI = Uri.parse(qrCodeUriString);
+
+
+                        //DOING THE CONVERSIONS:
+                        imageUploaderQR.uploadImage(qrCodeCheckinURI, new ImageUploader.UploadCallback() {
+                            @Override
+                            public void onUploadSuccess(Uri downloadUri) {
+                                qrCodeCheckinURI = downloadUri;
+                            }
+
+                            @Override
+                            public void onUploadFailure(Exception exception) {
+                                Toast.makeText(getContext(), "Upload failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        checkInID = data.getStringExtra("Check_In_ID");
+                        isCheckInQRGenerated=true;
+
                     }
                 }
             }
     );
+
+
+    private final ActivityResultLauncher<Intent> startForResultEventDetails = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null) {
+                        String qrCodeUriString = data.getStringExtra("QR_CODE_URI");
+                        qrCodeEventURI = Uri.parse(qrCodeUriString);
+                        eventId = data.getStringExtra("EventId");
+
+                        imageUploaderQR.uploadImage(qrCodeEventURI, new ImageUploader.UploadCallback() {
+                            @Override
+                            public void onUploadSuccess(Uri downloadUri) {
+                                qrCodeEventURI = downloadUri;
+                            }
+
+                            @Override
+                            public void onUploadFailure(Exception exception) {
+                                Toast.makeText(getContext(), "Upload failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                        isEventQRGenerated=true;
+
+                    }
+                }
+            }
+    );
+
+
+    /**
+     * Static factory method to create a new instance of AddEventFragment.
+     * This method encapsulates the creation of the fragment and the setting of its arguments,
+     * particularly the {@link Users} object to be passed to the fragment.
+     *
+     * @param user The {@link Users} object to be passed to the fragment. It should contain user-specific data
+     *             needed for event creation.
+     * @return A new instance of AddEventFragment with the given {@link Users} object included in its arguments.
+     */
+    public static AddEventFragment newInstance(Users user) {
+        AddEventFragment fragment = new AddEventFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("user", user);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        // Check if the fragment has any arguments passed to it
+        if (getArguments() != null) {
+            // Retrieve the Users object from the fragment's arguments.
+            // It's used for operations within the fragment, like populating user-specific information.
+            user = getArguments().getParcelable("user");
+        }
+    }
+
+
 
 
     /**
@@ -134,7 +256,7 @@ public class AddEventFragment extends DialogFragment{
         imageEventPoster = view.findViewById(R.id.image_event_poster);
         buttonSelectPic = view.findViewById(R.id.button_select_picture);
 
-        buttonSelectPic.setOnClickListener(v -> openGallery());
+//        buttonSelectPic.setOnClickListener(v -> openGallery());
 
         buttonSelectPic = view.findViewById(R.id.button_select_picture);
 
@@ -150,7 +272,7 @@ public class AddEventFragment extends DialogFragment{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), QRCodeEventActivity.class);
-                startActivity(intent);
+                startForResultEventDetails.launch(intent);
             }
         });
 
@@ -159,7 +281,7 @@ public class AddEventFragment extends DialogFragment{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), QRCodeCheckActivity.class);
-                startActivity(intent);
+                startForResultCheckIn.launch(intent);
             }
         });
 
@@ -169,26 +291,80 @@ public class AddEventFragment extends DialogFragment{
 
         Button buttonNext = view.findViewById(R.id.button_next);
         buttonNext.setOnClickListener(v -> {
-            String title = editTitle.getText().toString();
-            String description = editDescription.getText().toString();
-            Integer milestone = editMilestone.getText().toString().isEmpty() ? null : Integer.parseInt(editMilestone.getText().toString());
-            String location = editLocation.getText().toString();
-            Integer capacity = editCapacity.getText().toString().isEmpty() ? null : Integer.parseInt(editCapacity.getText().toString());
+
+            boolean invalidQrCode = (qrCodeCheckinURI != null && qrCodeCheckinURI.toString().startsWith("content://")) ||
+                    (qrCodeEventURI != null && qrCodeEventURI.toString().startsWith("content://"));
+
+
+
+            if (!isCheckInQRGenerated || !isEventQRGenerated || invalidQrCode) {
+                // Either QR codes not generated or invalid QR code format
+                String message = invalidQrCode ? "QR Code not properly generated. Try again." :
+                        "Please generate both QR codes before proceeding.";
+                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+            }
+            else {
+                String title = editTitle.getText().toString();
+                String description = editDescription.getText().toString();
+                Integer milestone = editMilestone.getText().toString().isEmpty() ? null : Integer.parseInt(editMilestone.getText().toString());
+                String location = editLocation.getText().toString();
+                Integer capacity = editCapacity.getText().toString().isEmpty() ? null : Integer.parseInt(editCapacity.getText().toString());
 //            Boolean checkInQR = switchCheckInQR.isChecked();
 //            Boolean eventPageQR = switchEventPageQR.isChecked();
 
-            String dateString = editEventDate.getText().toString();
-            String timeString = editEventTime.getText().toString();
-            Date eventDate = null;
-            try {
-                eventDate = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).parse(dateString);
-            } catch (ParseException e) {
-                e.printStackTrace();
+                String dateString = editEventDate.getText().toString();
+                String timeString = editEventTime.getText().toString();
+                Date eventDate = null;
+                try {
+                    eventDate = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).parse(dateString);
+                } catch (ParseException e) {
+                    e.printStackTrace();
 
+                }
+
+                String imageUriString = selectedImageUri != null ? selectedImageUri.toString() : null;
+                String checkInUriString = qrCodeCheckinURI != null ? qrCodeCheckinURI.toString() : null;
+                String eventUriString = qrCodeEventURI != null ? qrCodeEventURI.toString() : null;
+
+                Log.d(TAG, "EVENT DERIVED QR CODE ID: " + eventId);
+                Log.d(TAG, "CHECK IN QR CODE ID: " + checkInID);
+
+                // Check if location is not entered
+                if (location.trim().isEmpty()) {
+                    Toast.makeText(getContext(), "Please enter a location for the event.", Toast.LENGTH_SHORT).show();
+                    return; // Stop further execution if location is not entered
+                }
+
+                if (timeString.trim().isEmpty()) {
+                    Toast.makeText(getContext(), "Please enter a time for the event.", Toast.LENGTH_SHORT).show();
+                    return; // Stop further execution if time is not entered
+                }
+
+                if (eventDate==null){
+                    Toast.makeText(getContext(), "Please enter a Date for the event.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+//            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
+                Event newEvent = new Event(eventId, imageUriString, title, eventDate, timeString, description, milestone, location, checkInUriString, eventUriString, capacity, user.getProfileUid(), checkInID, 0); //ADDING USER WHICH WE GET AS AN ARGUMENT
+                listener.onEventAdded(newEvent);
+
+            /*
+            creating meta data aka adding information to storage of the image so that I can use it for admin stuff later
+            essentially adding new fields for me to trace back to
+             */
+                if (selectedImageUri != null) {
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference imageRef = storage.getReferenceFromUrl(imageUriString);
+
+                    StorageMetadata metadata = new StorageMetadata.Builder()
+                            .setCustomMetadata("event_id", newEvent.getId())
+                            .setCustomMetadata("user_id", null)
+                            .build();
+
+                    imageRef.updateMetadata(metadata);
+                }
             }
-
-            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, capacity);
-            listener.onEventAdded(newEvent);
 
             dismiss();
         });
@@ -219,10 +395,12 @@ public class AddEventFragment extends DialogFragment{
      * Called to launch the gallery instance
      */
 //    @AfterPermissionGranted(PICK_FROM_GALLERY)
-private void openGallery() {
+    private void openGallery() {
 
-    mGetContent.launch("image/*"); // "image/*" indicates that only image types are selectable
+
+    mediaGetContent.launch("image/*"); // "image/*" indicates that only image types are selectable
 }
+
 
 
     /**

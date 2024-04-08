@@ -1,9 +1,14 @@
 package com.example.emojibrite;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Adapter class for displaying Event objects in a ListView.
@@ -26,14 +32,18 @@ import java.util.Locale;
 
 public class EventAdapter extends ArrayAdapter<Event> {
 
+    private Map<Event, Boolean> eventMap;
+
     /**
      * Constructor for the EventAdapter.
      * @param context The current context.
      * @param events An ArrayList of Event objects to be displayed.
+     * @param eventMap keeps track on if you are the organizer, signee or no one
      */
 
-    public EventAdapter(Context context, ArrayList<Event> events){
+    public EventAdapter(Context context, ArrayList<Event> events, Map<Event, Boolean> eventMap){
         super(context, 0, events);
+        this.eventMap = eventMap;
     }
 
 
@@ -67,7 +77,19 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         //setting the retrieved data
 
-        eventTitle.setText(event.getEventTitle());
+//        eventTitle.setText(event.getEventTitle());
+        if (eventMap!=null){
+        Boolean isOrganizer = eventMap.get(event);
+        if (Boolean.TRUE.equals(isOrganizer)) {
+            eventTitle.setText(event.getEventTitle() + " \uD83D\uDC51"); // Append crown emoji
+        } else {
+            eventTitle.setText(event.getEventTitle() + " \u2705");
+        }}
+        else {
+            eventTitle.setText(event.getEventTitle());
+        }
+//        Log.d(TAG, event.getEventTitle());
+//        Log.d(TAG, event.getEventTitle());
         eventDescription.setText(event.getDescription());
 
 
@@ -81,10 +103,18 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         eventTime.setText(event.getTime());
 
-        if (event.getImagePath() != null) {
-            Glide.with(getContext()).load(event.getImagePath()).into(eventImage);
+        if (event.getImageUri() != null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Glide.with(getContext()).load(event.getImageUri()).into(eventImage);
+                }
+            });
+//            Glide.with(getContext()).load(event.getImageUri()).into(eventImage);
+            Log.d(TAG, "PICTURE LOOOOAAADDING");
         } else {
-            eventImage.setImageResource(R.drawable.placeholder); 
+            eventImage.setImageResource(R.drawable.placeholder);
+            Log.d(TAG, "PICTURE NOOOOOOOT LOOOOAAADDING");
         }
 
 

@@ -3,17 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.emojibrite">
 
-
-    <!-- Devices running Android 12L (API level 32) or lower  -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
-    <!-- Devices running Android 13 (API level 33) or higher -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <!-- To handle the reselection within the app on Android 14 (API level 34) -->
-    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
-
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" /> <!-- Devices running Android 13 (API level 33) or higher -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" /> <!-- To handle the reselection within the app on Android 14 (API level 34) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-feature android:name="android.hardware.location.network" />
 
     <application
         android:allowBackup="true"
@@ -25,6 +27,41 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EmojiBrite"
         tools:targetApi="31">
+        <activity
+            android:name=".NotificationsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DisplayEventQRCode"
+            android:exported="false" />
+        <activity
+            android:name=".DisplayCheckInQRCode"
+            android:exported="false" />
+        <activity
+            android:name=".QRScanningActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="screenOrientation" />
+        <!--
+             TODO: Before you run your application, you need a Google Maps API key.
+
+             To get one, follow the directions here:
+
+                https://developers.google.com/maps/documentation/android-sdk/get-api-key
+
+             Once you have your API key (it starts with "AIza"), define a new property in your
+             project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
+             "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/my_map_API" />
+
+        <activity
+            android:name=".MapsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_maps" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -34,12 +71,10 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/paths" />
-        </provider>
-
-        <!-- SplashLogoActivity + Main -->
+        </provider> <!-- SplashLogoActivity + Main -->
         <activity
-        android:name=".SplashLogoActivity"
-        android:exported="true">
+            android:name=".SplashLogoActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,44 +82,73 @@
             </intent-filter>
         </activity>
         <activity
-        android:name=".MainActivity"
-        android:exported="true">
-        </activity>
-
-        <!-- Account Creation Activity-->
+            android:name=".MainActivity"
+            android:exported="true" /> <!-- Account Creation Activity -->
         <activity
             android:name=".AccountCreationActivity"
-            android:exported="false"/>
-
-        <!--Fragments dont belong here. Also, the Continuous Integration(CI) flagged this, thus "x" beside your branch-->
-        <!--        &lt;!&ndash; AddEventFragment &ndash;&gt;-->
-        <!--        <activity-->
-        <!--            android:name=".AddEventFragment"-->
-        <!--            android:exported="false" />-->
-
-
+            android:exported="false" /> <!-- Fragments dont belong here. Also, the Continuous Integration(CI) flagged this, thus "x" beside your branch -->
         <activity
-        android:name=".ProfileActivity"
-        android:exported="false" />
-
-        <!-- Event related -->
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminAccountActivity"
+            android:exported="false" /> <!-- Event related -->
         <activity
             android:name=".EventHome"
             android:exported="false" />
         <activity
             android:name=".EventDetailsActivity"
-            android:exported="false"/>
+            android:exported="false" />
+        <activity
+            android:name=".AttendeesListActivity"
+            android:exported="false" />
         <activity
             android:name=".QRCodeEventActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".QRCodeCheckActivity"
-            android:exported="false"/>
+            android:exported="false" />
 
         <meta-data
-        android:name="preloaded_fonts"
-        android:resource="@array/preloaded_fonts" />
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
 
+        <activity
+            android:name=".OtherEventHome"
+            android:exported="false" />
+        <activity
+            android:name=".AdminActivity"
+            android:exported="false"></activity>
+        <activity
+            android:name=".AdminEventActivity"
+            android:exported="false" /> <!-- Admin images related -->
+        <activity
+            android:name=".AdminImagesHome"
+            android:exported="false" /> <!-- Notifications related -->
+        <service
+            android:name=".PushNotificationService"
+            android:exported="false">
+            <intent-filter>
+
+                <!-- This service will only listen to incoming messaging events -->
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service> <!-- Set custom default icon, This is used when no icon is set for incoming notification messages -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/emoji_brite_logo2" /> <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/ivory" /> <!-- FCM provides default notification channel with basic settings. Use below to create your own channel by setting the default_notification_channel_id to ID of the notification channel object -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" /> <!-- Prevent auto initialization of FCM registration token -->
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
     </application>
 
 </manifest>

@@ -2,9 +2,10 @@ package com.example.emojibrite;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Base64;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,86 +14,63 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-import java.io.ByteArrayOutputStream;
-
+/**
+ * PreviewScreenFragment is the fragment that displays the user's profile picture and name
+ * before the user is taken to the EventHome Activity.
+ */
 public class PreviewScreenFragment extends Fragment {
     //attributes
     ImageView picture;
-    TextView name;
     FloatingActionButton backButton;
     TextView nextButtonText;
+    TextView nameText;
 
     Database database = new Database();
-    Bitmap autoGenprofileImage;
 
     Users user;
-    ImageUpload imageUpload = new ImageUpload();
+
     private static final String TAG = "PreviewScreenFragment";
 
-    /**
-     * Called to have the fragment instantiate its user interface view.
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
-     *
-     * @return The View for the fragment's UI, or null.
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View previewScreenLayout = inflater.inflate(R.layout.fragment_preview_screen, container, false);
-        Bundle userBundle = getArguments();
-        user = userBundle.getParcelable("userObject");
-        Log.d(TAG, "onCreateView for preview screen fragment: " + user.getProfileUid());
-        picture = previewScreenLayout.findViewById(R.id.uploadImageImage);
-        database.setUserUid();
-        Log.d(TAG, "User UID: " + user.getUploadedImage());
-        if ( user.getUploadedImage() == null) {
-            Log.d(TAG, "The user's uploaded image is null");
-            ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator(user.getProfileUid(), user.getName());
-            Log.d(TAG, "instance of imagegenerator");
-            profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Bitmap>() {
-                public void onComplete(Bitmap bitmap) {
-                    Log.d(TAG, "inside oncomplete");
-                    autoGenprofileImage = bitmap;
-                    user.setAutoGenImage(autoGenprofileImage);
-                    Log.d(TAG, "half check");
-                    byte[] decodedString = Base64.decode(user.getAutoGenImage(), Base64.DEFAULT);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                    Log.d(TAG, "full check");
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            picture.setImageBitmap(decodedByte);
-                        }
-                    });
 
-                }
-            });
-
-            }
-        else {
-            byte[] decodedString = Base64.decode(user.getUploadedImage(), Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            picture.setImageBitmap(decodedByte);
-        }
-
-        name = previewScreenLayout.findViewById(R.id.usernameTextView);
-        name.setText(user.getName());
+        initializeUser(previewScreenLayout);
+        initializeImageView(previewScreenLayout);
 
         backButton = previewScreenLayout.findViewById(R.id.uploadImageBackButton);
         nextButtonText = previewScreenLayout.findViewById(R.id.uploadImageScreenNext);
+        nameText = previewScreenLayout.findViewById(R.id.usernameTextView);
+        nameText.setText(user.getName());
 
         return previewScreenLayout;
+    }
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * from a previous saved state as given here.
+     */
+    private void deletingStorageUpImage(){
+        if (user.getUploadedImageUri() != null) {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            Log.d(TAG, "Deleting image at: " + user.getUploadedImageUri());
+            StorageReference imageRef = storage.getReferenceFromUrl(user.getUploadedImageUri());
+            imageRef.delete();
+        }
     }
 
     /**
@@ -103,68 +81,136 @@ public class PreviewScreenFragment extends Fragment {
      */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // this is were you want to get the thigns that are passed
+        // This is where you want to setup your buttons or other view's listeners
 
-        // when the next button is clicked, go to EventHome Activity.
+        // when the next button is clicked, call navigateToEventHomeNoReturn() function
         nextButtonText.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Log.d(TAG, "Next button clicked");
-                // go to the EventHome Activity and finish the current activity which is the AccountCreationActivity
-                // on which the fragments are hosted
-                user.setUploadedImage(null);
-                Intent intent = new Intent(getActivity(), EventHome.class);
-                intent.putExtra("userObject", user); // pass the user object to the EventHomeActivity
+            public void onClick(View view) {
 
-                // if you want to pass data from the fragments to EventHomeActivity,
-                // use the putExtra method. Then, in the EventHomeActivity, use the
-                // getIntent method to get the data
-                // intent.putExtra("name", name.getText().toString()); key-value pair
-                startActivity(intent);
-                requireActivity().finish();
+                navigateToEventHomeNoReturn(view);
 
             }
         });
         // when the back button is clicked, go back to the previous fragment - UploadImageScreenFragment
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Log.d(TAG, "Back button clicked");
-                NavController navController = Navigation.findNavController(view);
-                user.setUploadedImage(null);
-                user.setAutoGenImage(null);
-
-
-                PreviewScreenFragmentDirections.ActionPreviewScreenToUploadImageScreen action =
-                        PreviewScreenFragmentDirections.actionPreviewScreenToUploadImageScreen(user);
-                navController.navigate(action);
+            public void onClick(View view) {
+                deletingStorageUpImage();
+                navigateBackToUploadImage(view);
             }
         });
     }
 
+    /**
+     * Initializes the user object from the arguments bundle
+     * @param view The view that will be used to find view elements
+     */
+    private void initializeUser(View view) {
+        Bundle userBundle = getArguments();
+        assert userBundle != null;
+        user = userBundle.getParcelable("userObject");
+        Log.d(TAG, "onCreateView for preview screen fragment: " + user.getProfileUid());
+        Log.d(TAG, "User UID: " + user.getProfileUid());
+        Log.d(TAG, "User name: " + user.getName());
+    }
+
+    /**
+     * Initializes the ImageView for the user's profile picture
+     * If the user has not uploaded a picture, call the generateProfileImage function
+     * If the user has uploaded a picture, call loadUploadedProfileImage function
+     * @param view The view that will be used to find view elements
+     */
+    private void initializeImageView(View view) {
+        picture = view.findViewById(R.id.uploadImageImage);
+        if (user.getUploadedImageUri() == null) {
+            generateProfileImage();
+        } else {
+            loadUploadedProfileImage();
+        }
+    }
+
+    /**
+     * Generates a profile image for the user based on their username.
+     * Sets the generated image as the ImageView and updates the user's auto-generated image URI.
+     */
+    private void generateProfileImage() {
+        Log.d(TAG, "User didn't upload a picture");
+        // User didn't upload a picture, generate one based on the username
+        ProfileImageGenerator profileImageGenerator = new ProfileImageGenerator( user.getProfileUid(), user.getName());
+        profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(Uri result) {
+                // Set the generated image as the ImageView
+                Log.d(TAG, "Generated image URI: " + result);
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(getContext()).load(result).into(picture);
+                    }
+                });
+                user.setAutoGenImageUri(result.toString());
+            }
+        });
+    }
+
+    /**
+     * Loads the user's uploaded profile image into the ImageView.
+     */
+    private void loadUploadedProfileImage() {
+        // User uploaded a picture, use that as the ImageView
+        Log.d(TAG, "User uploaded a picture");
+        //Uri uploadedImageUri = Uri.parse(user.getUploadedImageUri());
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                Glide.with(getContext()).load(user.getUploadedImageUri()).into(picture);
+            }
+        });
+    }
+
+    /**
+     * Called when the Next Button is clicked
+     * Transitions the user to the EventHome Activity along with the data (user Object).
+     * After starting the EventHome activity, it finishes the current activity therefore
+     * you won't be able to go back
+     * @param view The view that was clicked to trigger navigation
+     */
+    protected void navigateToEventHomeNoReturn(View view) {
+        user.setRole("1");
+        database.setUserObject(user);
+
+        Log.d(TAG, "Next button clicked");
+        // go to the EventHome Activity and finish the current activity which is the AccountCreationActivity
+        // on which the fragments are hosted
+
+        Intent intent = new Intent(getActivity(), EventHome.class);
+        Log.d(TAG, "User name for EventHome: " + user.getName() + user.getProfileUid() + user.getUploadedImageUri()+user.getAutoGenImageUri());
+        intent.putExtra("userObject", user); // pass the user object to the EventHomeActivity
+
+        // if you want to pass data from the fragments to EventHomeActivity,
+        // use the putExtra method. Then, in the EventHomeActivity, use the
+        // getIntent method to get the data
+        // intent.putExtra("name", name.getText().toString()); key-value pair
+        startActivity(intent);
+        requireActivity().finish();
+    }
+
+    /**
+     * Called when the Back Button is clicked
+     * navigates the user back to the UploadImage fragment using
+     * the NavController associated with the clicked view
+     * It resets the user's uploaded and auto-generated URIs,
+     * @param view The view that was clicked to trigger navigation
+     */
+    protected void navigateBackToUploadImage(View view) {
+        Log.d(TAG, "Back button clicked");
+        NavController navController = Navigation.findNavController(view);
+        user.setUploadedImageUri(null);
+        user.setAutoGenImageUri(null);
+
+        PreviewScreenFragmentDirections.ActionPreviewScreenToUploadImageScreen action =
+                PreviewScreenFragmentDirections.actionPreviewScreenToUploadImageScreen(user);
+        navController.navigate(action);
+    }
 }
-
-
-/*
-profileImageGenerator.getProfileImage(new ProfileImageGenerator.OnCompleteListener<Void>() {
-                public void onComplete(Void aVoid) {
-                    // After getProfileImage() is complete, call getProfileImageFromDatabase()
-                    Log.d(TAG, "inside oncomplete");
-                    database.getAutoGenProfileImageFromDatabase(new Database.ProfileImageCallBack(){
-                        @Override
-                        public void onProfileImageComplete(Bitmap profileImageFromDatabase) {
-                            Log.d(TAG, "inside onProfileImageComplete");
-                            Log.d(TAG, "ProfileImageFromDatabase: " + profileImageFromDatabase);
-                            // Use the profileImageFromDatabase bitmap here
-                            autoGenprofileImage = profileImageFromDatabase;
-                            user.setAutoGenImage(autoGenprofileImage);
-                            Log.d(TAG, "half check");
-                            byte[] decodedString = Base64.decode(user.getAutoGenImage(), Base64.DEFAULT);
-                            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                            Log.d(TAG, "full check");
-                            picture.setImageBitmap(autoGenprofileImage);
-                        }
-                    });
-                }
-            });
- */

@@ -1,131 +1,359 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ivory">
+
+    <LinearLayout
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
-    <include
-        layout="@layout/appbar"
-        android:id="@+id/toolbar"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <ImageView
-            android:id="@+id/back_arrow_eventdetails"
-            android:layout_width="27dp"
-            android:layout_height="29dp"
-            android:src="@drawable/back_arrow" />
-        <ImageView
-            android:id="@+id/image_event_poster"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:src="@drawable/placeholder" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/event_card_shape"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/Event_DateandTime"
-            android:layout_width="280dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:fontFamily="@font/frank_ruhl_libre"
-            android:text="Event date and time"
-            android:textSize="10sp" />
-
-        <TextView
-            android:id="@+id/Event_Title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:fontFamily="@font/frank_ruhl_libre"
-            android:text="Event Title"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/ivory"
-        android:orientation="vertical">
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/appbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/ivory"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/EmojiBriteLogo"
-                android:layout_width="39dp"
-                android:layout_height="55dp"
-                android:layout_marginStart="30dp"
-                android:src="@drawable/profile_pic_two" />
+                android:id="@+id/back_arrow_eventdetails"
+                android:layout_width="27dp"
+                android:layout_height="29dp"
+                android:src="@drawable/back_arrow" />
 
-            <TextView
-                android:id="@+id/organizer_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="15dp"
-                android:fontFamily="@font/frank_ruhl_libre"
-                android:text="Organizer's Name"
-                android:textColor="@color/black"
-                android:textSize="13.78sp" />
-
-            <Switch
-                android:id="@+id/switch_checkin_qr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="110dp"
-                android:layout_marginTop="20dp"
-                android:checked="true"
-                android:fontFamily="@font/source_sans_pro_semibold"
-                android:text="Signup" />
+            <ImageView
+                android:id="@+id/image_event_poster"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/placeholder" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/event_card_shape"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/Event_DateandTime"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/frank_ruhl_libre"
+                android:text="Event date and time"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/Event_Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/frank_ruhl_libre"
+                android:text="Event Title"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@color/ivory"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/ivory"
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/EmojiBriteLogo"
+                    android:layout_width="39dp"
+                    android:layout_height="55dp"
+                    android:layout_marginStart="30dp"
+                    android:src="@drawable/profile_pic_two" />
 
-                    android:id="@+id/map_icon"
-                    android:layout_width="20dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="40dp"
-                    android:layout_marginTop="2dp"
+                <TextView
+                    android:id="@+id/organizer_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="15dp"
+                    android:fontFamily="@font/frank_ruhl_libre"
+                    android:text="Organizer's Name"
+                    android:textColor="@color/black"
+                    android:textSize="13.78sp" />
+
+                <TextView
+                    android:layout_width="108dp"
+                    android:layout_height="34dp"
+                    android:background="@color/ivory"
+                    android:text=""
+                    android:visibility="invisible" />
+
+                <Button
+                    android:id="@+id/delete_event"
+                    android:layout_width="101dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/signup_red_outline"
+                    android:text="Delete Event"
+                    android:textAllCaps="false"
+                    android:textColor="@color/red"
+                    android:textSize="12sp"
+                    android:visibility="gone"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/ivory"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="247dp"
+                    android:layout_height="wrap_content"
+                    android:background="@color/ivory"
+                    android:orientation="horizontal">
+
+                    <ImageView
+
+                        android:id="@+id/map_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="40dp"
+                        android:layout_marginTop="2dp"
+                        android:src="@drawable/map_pin" />
+
+                    <TextView
+                        android:id="@+id/location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/arimo"
+                        android:text="Location"
+                        android:textColor="@color/black"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/ivory"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/attendees_button"
+                        android:layout_width="150dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:background="@drawable/eventdetails_button"
+                        android:paddingEnd="0dp"
+                        android:text="Attendees"
+                        android:textAllCaps="false"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/ivory"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="247dp"
+                    android:layout_height="wrap_content"
+                    android:background="@color/ivory"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/milestone_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="40dp"
+                        android:src="@drawable/milestone_icon" />
+
+                    <TextView
+                        android:id="@+id/milestone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/arimo"
+                        android:text="Milestone"
+                        android:textColor="@color/black"
+                        android:textSize="11sp" />
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/ivory"
+                    android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/Notification_button"
+                        android:layout_width="150dp"
+                        android:layout_height="30dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/eventdetails_button"
+                        android:text="Send Notification"
+                        android:textAllCaps="false"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/ivory"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="249dp"
+                    android:layout_height="wrap_content"
+                    android:background="@color/ivory"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/capactiy_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="40dp"
+                        android:src="@drawable/capacity_icon" />
+
+                    <TextView
+                        android:id="@+id/capacity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="@font/arimo"
+                        android:text="Capacity"
+                        android:textColor="@color/black"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/sign_up_button"
+                    android:layout_width="150dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/signup_brown_outline"
+                    android:text="Sign Up"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    android:textSize="10sp" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_marginTop="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray" />
+
+            <TextView
+                android:id="@+id/about_event"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/arimo"
+                android:text="About this event"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/more_details_Event"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="15dp"
+                android:fontFamily="@font/arimo"
+                android:text="More..." />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/ivory"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/location_main"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/arimo"
+                    android:text="Location"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/show_map"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:fontFamily="@font/arimo"
+                    android:text="Show map"
+                    android:textColor="#3E76B8"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/ivory"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
                     android:src="@drawable/map_pin" />
 
                 <TextView
-                    android:id="@+id/location"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/location_details"
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="30dp"
                     android:fontFamily="@font/arimo"
                     android:text="Location"
                     android:textColor="@color/black"
@@ -133,212 +361,39 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/ivory"
+                android:gravity="center"
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/attendees_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:background="@drawable/eventdetails_button"
-                    android:paddingEnd="0dp"
-                    android:text="Attendees"
+                    android:id="@+id/check_in_qr"
+                    android:layout_width="150dp"
+                    android:layout_height="45dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/event_button_outlined"
+                    android:fontFamily="@font/alegreya_sc"
+                    android:text="Check-in QR"
                     android:textAllCaps="false"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+                <Button
+                    android:id="@+id/event_qr"
+                    android:layout_width="150dp"
+                    android:layout_height="45dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/event_button_outlined"
+                    android:fontFamily="@font/alegreya_sc"
+                    android:text="Event QR"
+                    android:textAllCaps="false"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
             </LinearLayout>
 
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/ivory"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:background="@color/ivory"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/milestone_icon"
-                    android:layout_width="20dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="40dp"
-                    android:src="@drawable/milestone_icon" />
-
-                <TextView
-                    android:id="@+id/milestone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
-                    android:fontFamily="@font/arimo"
-                    android:text="Milestone"
-                    android:textColor="@color/black"
-                    android:textSize="11sp" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/Notification_button"
-                android:layout_width="102dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:layout_weight="1"
-                android:background="@drawable/eventdetails_button"
-                android:text="Notification"
-                android:textAllCaps="false"
-                android:textColor="@color/black"
-                android:textSize="12sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/ivory"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/capactiy_icon"
-                android:layout_width="20dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="40dp"
-                android:src="@drawable/capacity_icon" />
-
-            <TextView
-                android:id="@+id/capacity"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="12dp"
-                android:fontFamily="@font/arimo"
-                android:text="Capacity"
-                android:textColor="@color/black"
-                android:textSize="11sp" />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
-
-        <TextView
-            android:id="@+id/about_event"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="5dp"
-            android:fontFamily="@font/arimo"
-            android:text="About this event"
-            android:textColor="@color/black"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/more_details_Event"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginBottom="15dp"
-            android:fontFamily="@font/arimo"
-            android:text="More..." />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/ivory"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/location_main"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="10dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/arimo"
-                android:text="Location"
-                android:textColor="@color/black"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/show_map"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="12dp"
-                android:fontFamily="@font/arimo"
-                android:text="Show map"
-                android:textColor="#3E76B8"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="@color/ivory"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:src="@drawable/map_pin" />
-
-            <TextView
-                android:id="@+id/location_details"
-                android:layout_width="280dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="30dp"
-                android:fontFamily="@font/arimo"
-                android:text="Location"
-                android:textColor="@color/black"
-                android:textSize="11sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/ivory"
-            android:gravity="bottom|right"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/qr_code"
-                android:layout_width="145dp"
-                android:layout_height="35dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="5dp"
-                android:background="@drawable/event_button_outlined"
-                android:fontFamily="@font/alegreya_sc"
-                android:text="QR codes"
-                android:textAllCaps="false"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/toolbar" />
-
-        </LinearLayout>
-
     </LinearLayout>
-
-
-</LinearLayout>
+</ScrollView>

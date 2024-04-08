@@ -14,13 +14,26 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+// This test is implemented using the following resources as reference:
+// https://developer.android.com/guide/navigation/navigation-testing
+// https://developer.android.com/guide/fragments/communicate
+// https://developer.android.com/reference/androidx/test/ext/junit/rules/ActivityScenarioRule
+
+/**
+ * Test class for the AccountCreationActivity
+ */
 @RunWith(AndroidJUnit4.class)
 public class AccountCreationActivityTest {
-    // Launch the AccountCreationActivity using Rule. Bypassing MainActivity
+    /**
+     * Launch the AccountCreationActivity using Rule. Bypassing MainActivity
+     */
     @Rule
     public ActivityScenarioRule<AccountCreationActivity> activityRule =
             new ActivityScenarioRule<>(AccountCreationActivity.class);
 
+    /**
+     * Test to verify that the NavController is setup correctly
+     */
     @Test
     public void NavControllerSetupTest() {
         activityRule.getScenario().onActivity(activity -> {
@@ -32,6 +45,10 @@ public class AccountCreationActivityTest {
         });
     }
 
+    /**
+     * Test to verify that the user object or some other data
+     * is passed from the activity to the fragment
+     */
     @Test
     public void ActivityToFragmentDataTest() {
         // user is parcelable and is passed to the fragment. user = new Users(Uid);

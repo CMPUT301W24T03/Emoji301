@@ -1,100 +1,95 @@
 package com.example.emojibrite;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.widget.TextView;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import android.content.Intent;
 
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.UiDevice;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.content.Context.MODE_PRIVATE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import java.io.IOException;
+
+
 
 @RunWith(AndroidJUnit4.class)
 public class ProfileActivityTest {
 
-    private ProfileActivity profileActivity;
+    public static Users mockUser;
 
     @Before
-    public void setUp() {
-        // Launch the ProfileActivity using ActivityScenario
-        ActivityScenario<ProfileActivity> scenario = ActivityScenario.launch(ProfileActivity.class);
-        scenario.onActivity(activity -> {
-            profileActivity = activity;
-        });
-    }
+    public void setup() throws IOException {
 
-    @After
-    public void tearDown() {
-        // Finish the activity after each test
-        ActivityScenario.launch(ProfileActivity.class).onActivity(activity -> {
-            activity.finish();
-        });
-    }
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        device.executeShellCommand("settings put global window_animation_scale 0");
+        device.executeShellCommand("settings put global transition_animation_scale 0");
+        device.executeShellCommand("settings put global animator_duration_scale 0");
 
-    @Test
-    public void activityNotNull() {
-        // Verify that the activity is not null
-        assertNotNull(profileActivity);
-    }
+        // Mock user data
+        mockUser = new Users();
 
-    @Test
-    public void backButtonClick() {
-        // Simulate a click on the back button
-        profileActivity.findViewById(R.id.backButton).performClick();
+        mockUser.setName("John Doe");
+        mockUser.setEmail("johndoe@example.com");
+        mockUser.setNumber("1234567890");
+        mockUser.setRole("3");
+        mockUser.setProfileUid("SroGuirZdhfbwcectKhBJkpJpdl2");
+        mockUser.setEnableNotification(true);
+        mockUser.setEnableGeolocation(true);
+        mockUser.setAutoGenImageUri("https://ui-avatars.com/api/?name=John+Doe/");
+        mockUser.setUploadedImageUri(null);
+        mockUser.setHomePage("homepage");
+        mockUser.setFcmToken("cXEdjvR2RRGFnwzJRgW0nj:APA91bGr5XYv7AhDGX6MqFKBwUxnKTwQUbIEg0u9IE1pitS2N9oi_jFPpPmz1VkYLpAF_HbS4W2YYlsOADlGc32fRVvCRgoMgiBxvQxCl4EoYVlqoI5yUn3qnDk_ZTLaOCG2mKaV_GqF");
 
-        // Verify that the activity is finished
-        assertTrue(profileActivity.isFinishing());
-    }
 
-    @Test
-    public void editButtonClick() {
-        // Simulate a click on the edit button
-        profileActivity.findViewById(R.id.editButton).performClick();
+        // Mock the intent used to start the activity
 
-        // Verify that the ProfileEditFragment is shown
-        assertTrue(profileActivity.getSupportFragmentManager().findFragmentByTag("profile_edit_fragment") != null);
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), ProfileActivity.class);
+        intent.putExtra("userObject", mockUser);
+        ActivityScenario.launch(intent);
     }
 
     @Test
-    public void profileDataUpdate() {
-        // Simulate the update of profile data
-        String newEmail = "newemail@example.com";
-        String newPhoneNumber = "1234567890";
-        String newImagePath = "new_image_path";
-        String newName = "New User";
-        String newHomePage = "https://newhomepage.com";
+    public void testProfileActivityInView() {
+        onView(withId(R.id.userEmail)).check(matches(isDisplayed()));
+        onView(withId(R.id.userPhoneNumber)).check(matches(isDisplayed()));
+        onView(withId(R.id.userName)).check(matches(isDisplayed()));
+        onView(withId(R.id.userHomePage)).check(matches(isDisplayed()));
+        onView(withId(R.id.profilePicture)).check(matches(isDisplayed()));
+    }
 
-        profileActivity.onProfileUpdate(newEmail, newPhoneNumber, newImagePath, newName, newHomePage);
 
-        // Verify that the UI elements are updated
-        assertEquals(newEmail, ((TextView) profileActivity.findViewById(R.id.userEmail)).getText().toString());
-        assertEquals(newPhoneNumber, ((TextView) profileActivity.findViewById(R.id.userPhoneNumber)).getText().toString());
-        assertEquals(newName, ((TextView) profileActivity.findViewById(R.id.userName)).getText().toString());
-        assertEquals(newHomePage, ((TextView) profileActivity.findViewById(R.id.userHomePage)).getText().toString());
+    @Test
+    public void testBackButton() {
+        onView(withId(R.id.backButton)).perform(click());
+    }
 
-        // Verify that the currentProfile is updated
-        assertEquals(newEmail, profileActivity.currentProfile.getEmail());
-        assertEquals(newPhoneNumber, profileActivity.currentProfile.getNumber());
-        assertEquals(newName, profileActivity.currentProfile.getName());
-        assertEquals(newHomePage, profileActivity.currentProfile.getHomePage());
-        assertEquals(newImagePath, profileActivity.currentProfile.getImagePath());
 
-        // Verify that the data is saved in SharedPreferences
-        SharedPreferences preferences = profileActivity.getSharedPreferences("ProfilePrefs", MODE_PRIVATE);
-        assertEquals(newEmail, preferences.getString("email", ""));
-        assertEquals(newPhoneNumber, preferences.getString("phoneNumber", ""));
-        assertEquals(newImagePath, preferences.getString("imagePath", ""));
-        assertEquals(newName, preferences.getString("name", ""));
-        assertEquals(newHomePage, preferences.getString("homePage", ""));
+    @Test
+    public void testEditButton() {
+        onView(withId(R.id.editButton)).perform(click());
+        onView(withText("Account Settings")).check(matches(isDisplayed()));
+    }
+
+
+    @Test
+    public void testGeoToggle() {
+        onView(withId(R.id.geolocationSwitch)).check(matches(isDisplayed()));
+    }
+
+
+    @Test
+    public void testNotifToggle() {
+        onView(withId(R.id.notificationSwitch)).check(matches(isDisplayed()));
     }
 }
-
-

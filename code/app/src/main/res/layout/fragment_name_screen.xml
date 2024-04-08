@@ -29,36 +29,29 @@
             android:hint="                   " />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/generateNameLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/nameLinearLayout"
-        android:orientation="horizontal"
-        android:layout_centerHorizontal="true"
-        >
-
-        <TextView
-            android:id="@+id/generateNameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Generate name" />
-    </LinearLayout>
-
-
-    <!--TODO: add the arrow back to fab-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:theme="@style/Theme.MaterialComponents.Light"
         android:id="@+id/nameScreenBackButton"
+        app:tint="@null"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/transparent"
         android:clickable="true"
-        android:layout_margin="10dp"
         android:focusable="true"
-        app:maxImageSize="38dp"
         android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
         app:fabSize="mini"
-        android:src="@drawable/back_button" />
+        app:maxImageSize="38dp"
+        app:srcCompat="@drawable/back_button"
+        android:contentDescription="@string/nameScreenButton" />
+
+<!--    <Button-->
+<!--        android:id="@+id/nameScreenBackButton"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:clickable="true"-->
+<!--        android:layout_margin="10dp"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:text="Button" />-->
 
     <TextView
         android:id="@+id/nameScreenBackNext"
@@ -68,6 +61,11 @@
         android:layout_alignParentEnd="true"
         android:padding="15dp"
         android:text="Next"
-        android:textSize="18dp"/>
+        android:textSize="18dp"
+        android:clickable="true"
+        android:focusable="true"
+        />
+
+
 
 </RelativeLayout>

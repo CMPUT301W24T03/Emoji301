@@ -1,36 +1,43 @@
 package com.example.emojibrite;
 
-import static android.content.ContentValues.TAG;
-
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.Base64;
-import android.util.Log;
-import android.widget.Toast;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.ActivityResultRegistryOwner;
-import androidx.activity.result.contract.ActivityResultContracts;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
+/**
+ * ImageUpload class is responsible for handling the image upload functionality
+ */
 public class ImageUpload {
+    //most likely useless
     private Bitmap selectedImageBitmap = null;
 
+    /**
+     * Method to set the selected image bitmap
+     * @return selectedImageBitmap
+     */
     public Bitmap getSelectedImageBitmap() {
 
         return selectedImageBitmap;
     }
+
+    /**
+     * Method to convert a bitmap to an encoded string
+     * @param bitmap bitmap
+     * @return encoded string
+     */
     public String bitmapToEncodedString(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
+
+    /**
+     * Method to convert an encoded string to a bitmap
+     * @param encodedString encoded string
+     * @return bitmap
+     */
     public Bitmap encodedStringToBitmap(String encodedString) {
         byte[] decodedString = Base64.decode(encodedString, Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);

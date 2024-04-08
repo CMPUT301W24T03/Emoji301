@@ -1,7 +1,6 @@
 package com.example.emojibrite;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -14,24 +13,53 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+/**
+ * This class is used to generate a profile image for a user
+ * using the ui-avatars.com API. The image is then stored in
+ * the Firestore database.
+ */
 public class ProfileImageGenerator {
     OkHttpClient client = new OkHttpClient();
     String name;
 
     String Uid;
+
+    /**
+     * This interface is used to create a callback for when the
+     * profile image is generated and stored in the database.
+     * @param <T> The type of the result
+     */
     public interface OnCompleteListener <T> {
+        /**
+         * This method is called when the profile image is generated
+         * and stored in the database.
+         * @param result The result of the operation
+         */
         void onComplete(T result);
     }
-
+    /**
+     * This constructor is used to create a ProfileImageGenerator
+     * object with the user's name and Uid.
+     * @param Uid The user's unique ID
+     * @param name The user's name
+     */
     public ProfileImageGenerator(String Uid, String name) {
         this.name = name;
 
         this.Uid = Uid;
     }
+
+    /**
+     * This method is used to set the user's name.
+     * @param name The user's name
+     */
     public void  setProfileImageName(String name) {
         this.name = name;
     }
-
+    /**
+     * This method is used to get the user's name.
+     * @return The user's name
+     */
     private void addingPlusToName() {
         String[] nameArray = name.split(" ");
         String newName = "";
@@ -52,7 +80,14 @@ public class ProfileImageGenerator {
     we put a listener to check if data insertion to the database is successful
     NOT TOO SURE ABOUT THE ONCOMPLETE PART but it is for callback purposes
      */
-    public void getProfileImage( final OnCompleteListener<Bitmap> onCompleteListener) {
+    /**
+     * This method is used to get the user's profile image from the
+     * ui-avatars.com API and store it in the Firestore database.
+     * @param onCompleteListener The callback for when the profile
+     *                           image is generated and stored in the
+     *                           database
+     */
+    public void getProfileImage( final OnCompleteListener<Uri> onCompleteListener) {
         addingPlusToName();
         String url = "https://ui-avatars.com/api/?name=" + name;
 
@@ -66,7 +101,6 @@ public class ProfileImageGenerator {
                 Log.d("ProfileImageGenerator", "Failed to get profile image");
                 e.printStackTrace();
             }
-
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (!response.isSuccessful()) {
@@ -74,39 +108,27 @@ public class ProfileImageGenerator {
                 } else {
                     Log.d("ProfileImageGenerator", "Response is successful");
 
-                    Database database = new Database();
-                    byte[] bytes = response.body().bytes();
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    onCompleteListener.onComplete(bitmap);
+                    // Convert the response to a URI
+                    Uri imageUri = Uri.parse(response.request().url().toString());
+                    Log.d("ProfileImageGenerator", "URI is parsed" + imageUri.toString());
 
-                    Log.d("ProfileImageGenerator", "Bitmap is sent to database");
+                    // Convert the URI to a string and adding / cuz it is somehow needed. idk why
+                    String change = imageUri.toString() + "/";
 
+                    // Store the URI in the database
+                    //we aren't goign to store uri in database in this part.
                     /*
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("autoGenImage", encodedImage);
-                    db.collection("Users").document(Uid).set(data)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.d("Firestore", "DocumentSnapshot successfully written!");
-                                    onCompleteListener.onComplete(null);
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w("Firestore", "Error writing document", e);
-                                    onCompleteListener.onComplete(null);
-                                }
-                            });
+                    Database database = new Database();
+                    database.storeImageUri(Uid, imageUri.toString(), "autoGenImage");
 
                      */
+
+                    // Notify the onCompleteListener after the database operation is done
+                    onCompleteListener.onComplete(Uri.parse(change));
+
+                    Log.d("ProfileImageGenerator", "URI is sent to database");
                 }
             }
         });
     }
 }
-
-
-
-
