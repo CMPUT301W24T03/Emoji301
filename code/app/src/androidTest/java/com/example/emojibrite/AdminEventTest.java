@@ -24,23 +24,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 
-/**
- * Test class for the AdminEventActivity
- */
 @RunWith(AndroidJUnit4.class)
 public class AdminEventTest {
 
-    /**
-     * Launch the AdminEventActivity using Rule. Bypassing MainActivity
-     */
+
     @Rule
     public ActivityScenarioRule<AdminEventActivity> activityRule = new ActivityScenarioRule<>(AdminEventActivity.class);
 
     public static Users mockUser;
 
-    /**
-     * Setup the mock user data
-     */
     @Before
     public void setup() {
         // Mock user data
@@ -64,26 +56,18 @@ public class AdminEventTest {
         AdminEventActivity.user = mockUser;
     }
 
-    /**
-     * Test the event and Back buttons
-     */
     @Test
     public void testBackandEventButton() {
         Espresso.onView(withId(R.id.backButton)).perform(click());
     }
 
 
-    /**
-     * Test the list of events displayed
-     */
     @Test
     public void testEventListDisplayed() {
         onView(withId(R.id.admin_event_list)).check(matches(isDisplayed()));
     }
 
-    /**
-     * Test the event details
-     */
+
     @Test
     public void testClickEventToEventDetails() {
         SystemClock.sleep(2000);
@@ -92,9 +76,6 @@ public class AdminEventTest {
 
     }
 
-    /**
-     * Test the delete event button
-     */
     @Test
     public void testDeleteEvent() {
         SystemClock.sleep(2000);
@@ -105,10 +86,6 @@ public class AdminEventTest {
     }
 
 
-    /**
-     * Custom ViewAction to click on an item at a specific position
-     * @return ViewAction
-     */
     private ViewAction testClickEventItemAtPosition() {
         return new ViewAction() {
             @Override

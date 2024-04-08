@@ -22,17 +22,12 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 
 
-/**
- * Test class for the ProfileActivity
- */
+
 @RunWith(AndroidJUnit4.class)
 public class ProfileActivityTest {
 
     public static Users mockUser;
 
-    /**
-     * Setup the mock user data
-     */
     @Before
     public void setup() throws IOException {
 
@@ -74,34 +69,25 @@ public class ProfileActivityTest {
     }
 
 
-    /**
-     * Test the Back button
-     */
     @Test
     public void testBackButton() {
         onView(withId(R.id.backButton)).perform(click());
     }
 
-    /**
-     * Test the Edit button
-     */
+
     @Test
     public void testEditButton() {
         onView(withId(R.id.editButton)).perform(click());
         onView(withText("Account Settings")).check(matches(isDisplayed()));
     }
 
-    /**
-     * Test the geolocation toggle
-     */
+
     @Test
     public void testGeoToggle() {
         onView(withId(R.id.geolocationSwitch)).check(matches(isDisplayed()));
     }
 
-    /**
-     * Test the notification toggle
-     */
+
     @Test
     public void testNotifToggle() {
         onView(withId(R.id.notificationSwitch)).check(matches(isDisplayed()));
