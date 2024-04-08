@@ -28,15 +28,16 @@ import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
-    private ActivityMapsBinding binding;
+//    private ActivityMapsBinding binding;
     private Event event;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityMapsBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+//        binding = ActivityMapsBinding.inflate(getLayoutInflater());
+//        setContentView(binding.getRoot());
+        setContentView(R.layout.activity_maps);
 
         // Retrieve the Event object from the Intent
         event = (Event) getIntent().getSerializableExtra("geolocationsList");
