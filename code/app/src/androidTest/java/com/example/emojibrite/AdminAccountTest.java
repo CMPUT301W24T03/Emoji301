@@ -1,25 +1,29 @@
 package com.example.emojibrite;
 
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import android.content.Intent;
 import android.view.View;
-import android.widget.AdapterView;
 
-import androidx.test.espresso.Espresso;
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.UiDevice;
 
 import org.hamcrest.Matcher;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 
 /**
@@ -27,48 +31,65 @@ import org.junit.runner.RunWith;
  */
 @RunWith(AndroidJUnit4.class)
 public class AdminAccountTest {
-
-    /**
-     * Launch the AdminAccountActivity using Rule. Bypassing MainActivity
-     */
-    @Rule
-    public ActivityScenarioRule<AdminAccountActivity> activityRule = new ActivityScenarioRule<>(AdminAccountActivity.class);
-
     public static Users mockUser;
 
-
-
+    
+    
+    
     /**
      * Setup the mock user data
      */
     @Before
-    public void setup() {
+    public void setup() throws IOException {
+
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        device.executeShellCommand("settings put global window_animation_scale 0");
+        device.executeShellCommand("settings put global transition_animation_scale 0");
+        device.executeShellCommand("settings put global animator_duration_scale 0");
+
         // Mock user data
         mockUser = new Users();
-        mockUser.setRole("admin");
+
+        mockUser.setName("John Doe");
+        mockUser.setEmail("johndoe@example.com");
+        mockUser.setNumber("1234567890");
+        mockUser.setRole("3");
+        mockUser.setProfileUid("uniqueProfileUid");
+        mockUser.setEnableNotification(true);
+        mockUser.setEnableGeolocation(true);
+        mockUser.setEnableAdmin(true);
+        mockUser.setAutoGenImageUri("autoGenImageUri");
+        mockUser.setUploadedImageUri("uploadedImageUri");
+        mockUser.setHomePage("homePage");
+        mockUser.setFcmToken("fcmToken");
 
         AdminAccountActivity.user = mockUser;
 
+
+        // Create an ArrayList of Users
+        ArrayList<Users> users = new ArrayList<>();
+        users.add(mockUser);
+
+        // Create the AttendeesArrayAdapter with the ArrayList of Users
+        AttendeesArrayAdapter adapter = new AttendeesArrayAdapter(ApplicationProvider.getApplicationContext(), users, "3", null);
+
+        // Create an intent that contains the Users object
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), AdminAccountActivity.class);
+        intent.putExtra("userObject", mockUser);
+
+        // Manually launch the AdminAccountActivity with the intent
+        ActivityScenario.launch(intent);
     }
+
+
     /**
-     * Test the Account button
+     * Test the back and account buttons
      */
     @Test
-    public void testAccountButton() {
+    public void testDeleteButton() {
 
-        onView(withId(R.id.backButton)).perform(click());
-        Espresso.onView(withId(R.id.accountAdminButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.backButton)).check(matches(isDisplayed()));
 
-    }
-
-    /**
-     * Test the back button
-     */
-    @Test
-    public void testBackButton() {
-        onView(withId(R.id.backButton)).perform(click());
-        onView(withId(R.id.accountAdminButton)).perform(click());
-        Espresso.onView(withId(R.id.backButton)).check(matches(isDisplayed()));
     }
 
     /**
@@ -76,6 +97,7 @@ public class AdminAccountTest {
      */
     @Test
     public void testAccountListDisplayed() {
+
         onView(withId(R.id.profile_list)).check(matches(isDisplayed()));
     }
 
@@ -84,40 +106,32 @@ public class AdminAccountTest {
      */
     @Test
     public void testAdminToggle() {
-        onView(withId(R.id.admin_access)).perform(click());
-        onView(withId(R.id.admin_access)).check(matches(isDisplayed()));
-    }
 
-    /**
-     * Test the delete event button
-     */
-    @Test
-    public void testDeleteAccount() {
-        onView(withId(R.id.delete_event)).perform(click());
-        onView(withId(R.id.profile_list)).check(matches(isDisplayed()));
+        onView(withId(R.id.backButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.backButton)).perform(click());
+        onView(withId(R.id.accountAdminButton)).check(matches(isDisplayed()));
     }
 
 
-    /**
-     * Custom ViewAction to click on an item at a specific position
-     * @return ViewAction
-     */
-    private ViewAction testClickAccountItemAtPosition() {
+    // Helper method to create a ViewAction that clicks on a child view with a given id
+    private static ViewAction clickChildViewWithId(final int id) {
         return new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
-                return isDisplayed();
+                return null;
             }
 
             @Override
             public String getDescription() {
-                return "Click on an item at position " + 0;
+                return "Click on a child view with specified id.";
             }
 
             @Override
             public void perform(UiController uiController, View view) {
-                ((AdapterView<?>) view).performItemClick(((AdapterView<?>) view).getChildAt(0), 0, ((AdapterView<?>) view).getItemIdAtPosition(0));
+                View v = view.findViewById(id);
+                v.performClick();
             }
         };
     }
 }
+

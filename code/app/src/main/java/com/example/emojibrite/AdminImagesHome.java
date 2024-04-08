@@ -1,24 +1,15 @@
 package com.example.emojibrite;
 
-import static android.content.ContentValues.TAG;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +17,7 @@ import java.util.List;
  * Activity for the admin images view
  */
 public class AdminImagesHome extends AppCompatActivity {
-    private Users user;
+    public static Users user;
 
     ListView imageList;
     ImageAdapter imageAdapter;
