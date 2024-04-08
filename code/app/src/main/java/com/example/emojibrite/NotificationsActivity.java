@@ -42,6 +42,12 @@ public class NotificationsActivity extends AppCompatActivity {
     private int eventsToProcess;
 
 
+    /**
+     * Called when the activity is created. Sets up the UI components, retrieves the current user data,
+     * and initiates the fetching of event notifications.
+     *
+     * @param savedInstanceState Contains data supplied if the activity is re-initialized after being shut down.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +126,10 @@ public class NotificationsActivity extends AppCompatActivity {
 
     // Call this method inside processEvents after fetching all events the user is signed up for or checked into
 
+    /**
+     * Fetches and processes notifications for each event in the set of events the user is involved in.
+     * It updates the UI once all notifications have been fetched.
+     */
     private void fetchEventNotifications() {
         for (Event event : eventSet) {
             database.getNotificationsForEvent(event.getId(), notifications -> {

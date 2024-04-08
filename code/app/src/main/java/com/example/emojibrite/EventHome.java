@@ -138,6 +138,11 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         eventAdapter.notifyDataSetChanged();
     }
 
+    /**
+     *
+     * @param userUid
+     */
+
     private void checkUserDoc(String userUid){
         database.getUserDocument(userUid, documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -159,6 +164,9 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     }
 
 
+    /**
+     * In charge of all the button listeners
+     */
 
     private void buttonListeners(){
 
@@ -272,6 +280,9 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         // When profile is clicked, go to profile activity
     }
 
+    /**
+     * In charge of setting up the profile picture on top right
+     */
     private void settingUpPfp(){
         if (user.getUploadedImageUri() != null) {
             // User uploaded a picture, use that as the ImageView
@@ -323,6 +334,11 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         }
     }
 
+    /**
+     * Fetches events from the Firestore database that are signed up by the current user.
+     * This method queries the database for events where the current user is the signee and updates
+     * the local list to reflect these events. This is typically used to populate the UI with relevant data.
+     */
     private void fetchSignedUpEvents(){
         if (user!=null){
             String currentUserId = user.getProfileUid();
@@ -334,6 +350,11 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         }
     }
 
+    /**
+     * Fetches events from the Firestore database that are organized by the current user as well as the events signed up by user.
+     * This method queries the database for events where the current user is the organizer and updates
+     * the local list to reflect these events. This is typically used to populate the UI with relevant data.
+     */
     private void fetchMyEventsPage() {
         if (user != null) {
             String currentUserId = user.getProfileUid();
@@ -363,6 +384,9 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         }
     }
 
+    /**
+     * In charge of updating the adapter
+     */
     private void updateAdapter() {
         dataList.addAll(eventMap.keySet()); // Add all the events from the map
         eventAdapter.notifyDataSetChanged();

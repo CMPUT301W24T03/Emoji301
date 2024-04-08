@@ -274,8 +274,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
     /**
      * A method to get the user object from the database
-     * @param userUid the user id
-     * @param listener the listener
+     * @param userId the user id
      */
     public void deleteEventIfOrganizerDeleted(String userId){
         eventRef.whereEqualTo("organizer", userId).get().addOnCompleteListener(task -> {
@@ -887,15 +886,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
             Log.e(TAG, "Error fetching event", e);
         });
     }
-    /**
-     * Fetches a single event from the Firestore database using the check-in QR ID.
-     * If the event is found, the provided {@link EventCallBack} is invoked with the retrieved event.
-     *
-     * @param QRCheckinID
-     * The ID of the check-in QR code.
-     * @param callBack
-     * The callback that will handle the event once it is fetched.
-     */
+
     public void getSignedUpEvents(String userId, OnEventsRetrievedListener listener){
         fetchAllEventsDatabase(events -> {
             List<Event> signedUpEvents = new ArrayList<>();
@@ -914,14 +905,12 @@ once created, u can call getuseruid to get the user id and use it to get user da
             }
         });
     }
+
+
     /**
-     * Fetches a single event from the Firestore database using the check-in QR ID.
-     * If the event is found, the provided {@link EventCallBack} is invoked with the retrieved event.
-     *
-     * @param QRCheckinID
-     * The ID of the check-in QR code.
-     * @param callBack
-     * The callback that will handle the event once it is fetched.
+     * This method retreives checked in eventsa when a uid is passed onto it
+     * @param userId the user ID which basically checks events it is in
+     * @param listener returns the array
      */
     public void getCheckedInEvents(String userId, OnEventsRetrievedListener listener){
         eventRef.get().addOnCompleteListener(task -> {
@@ -943,10 +932,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
 
     /**
-     * THIS CHECKS IF
-     * @param userUid
-     * @param eventId
-     * @param callback
+     * THIS CHECKS IF user id is in event
+     * @param userUid user id we are checking
+     * @param eventId event id we are searching
+     * @param callback returns boolean
      */
     public void checkUserInEvent(String userUid, String eventId, CheckUserInEventCallback callback) {
 
@@ -979,13 +968,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Event attendee list successfully updated!"))
                 .addOnFailureListener(e -> Log.e(TAG, "Error updating event attendee list", e));
     }
-    /**
-     * Method to update an event's attendee's list.
-     * @param eventID
-     * The event that's meant to be updated.
-     * @param attendees
-     * A 2D ArrayList containing the attendees and the number of times they have checked in.
-     */
+
     public void updatecurrentAttendance(String eventId, Integer currentAttendance){
         eventRef.document(eventId).update("currentAttendance",currentAttendance)
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Current Attendance successfully updated!"))
@@ -1010,13 +993,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
             Log.e(TAG, "Error updating event geolocation check-ins", e);
         });
     }
-    /**
-     * Method to update an event's list of where attendees are checking in from.
-     * @param eventID
-     * The event that's meant to be updated.
-     * @param checkInLocations
-     * A 2D ArrayList containing the locations that attendees checked in from.
-     */
+
     // Notification Database Section //
     public void storeNotification(String message, String eventId) {
         // Get a reference to the 'Notifications' collection

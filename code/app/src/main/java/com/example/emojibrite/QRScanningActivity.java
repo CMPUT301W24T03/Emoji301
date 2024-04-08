@@ -98,6 +98,8 @@ public class QRScanningActivity extends AppCompatActivity {
 
     }
 
+
+
     private void checkUserDoc(String userUid){
         database.getUserDocument(userUid, documentSnapshot -> {
             if (documentSnapshot.exists()) {
