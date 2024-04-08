@@ -23,10 +23,7 @@ public class AdminImagesHome extends AppCompatActivity {
     ImageAdapter imageAdapter;
     ArrayList<Image> dataList;
 
-    /**
-     * onCreate method to handle the creation of the admin images activity
-     * @param savedInstanceState
-     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

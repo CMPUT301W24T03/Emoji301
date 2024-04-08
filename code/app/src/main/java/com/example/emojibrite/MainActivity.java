@@ -37,10 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     //u can include String Fid to pass the firebase installation id
     @Override
-    /**
-     * onCreate method to handle the creation of the main activity
-     * @param savedInstanceState
-     */
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

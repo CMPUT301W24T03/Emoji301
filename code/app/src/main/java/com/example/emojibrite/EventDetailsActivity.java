@@ -56,15 +56,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
     PushNotificationService pushNotificationService = new PushNotificationService();
 
 
-    /**
-     * Called when the activity is starting. This is where most initialization should go:
-     * calling setContentView(int) to inflate the activity's UI, using findViewById(int)
-     * to programmatically interact with widgets in the UI, etc.
-     *
-     * @param savedInstanceState If the activity is being re-initialized after being shut down,
-     *                           then this Bundle contains the data it most recently supplied
-     *                           in onSaveInstanceState(Bundle). Note: Otherwise it is null.
-     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -431,6 +423,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
     /**
      * The function is to generate real time organizer's data such as their username and profile picture
      * @param organizer The organizer as the user object contains all the organizer's information
+     * @param eventId The event ID to be used to store the notification
      */
     private void setOrganizerViews(Users organizer, String eventId) {
         ImageView organizerProfilePic = findViewById(R.id.EmojiBriteLogo);

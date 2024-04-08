@@ -219,9 +219,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     }
 
 
-    /**
-     * Called when the activity is resumed.
-     */
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -236,6 +234,7 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
 
     /**
      * Called when the user clicks the "Edit" button to edit their profile.
+     * @param input The updated user profile data
      */
     @Override
     public void sendInput(Users input) {
@@ -453,6 +452,9 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     // Geolocation Tracking area //
     /**
      * Request location permission from the user.
+     * @param requestCode : the request code for the permission request
+     * @param permissions  permissions : the permissions to request
+     *  @param grantResults grantResults : the results of the permission request
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
