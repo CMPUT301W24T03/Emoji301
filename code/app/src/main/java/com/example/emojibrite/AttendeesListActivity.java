@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -22,6 +23,8 @@ public class AttendeesListActivity extends AppCompatActivity {
     Button checkInBtn;
     Button signedUpBtn;
     FloatingActionButton backBtn;
+
+    TextView numberOfTotalAttendees;
 
     String eventId;
 
@@ -56,9 +59,7 @@ public class AttendeesListActivity extends AppCompatActivity {
 
 
 
-        //YOU HAVE TO CHANGE THIS PART OF THE CODE
-        // I JUST WROTE RANDOM STUFF
-        // TODO FIX AND INTEGRATE THE LOGIC OF THE CHECKINBUTTON
+
 
         checkInBtn.setOnClickListener(view -> {openCheckedUpFragment();});
         signedUpBtn.setOnClickListener(view -> {openSignedUpFragment();});
@@ -68,6 +69,12 @@ public class AttendeesListActivity extends AppCompatActivity {
                 // go back to the event details activity
                 finish();
             }
+        });
+
+        Database database = new Database();
+
+        database.getEventById(eventId, event -> {
+            checkInBtn.setText("CheckIn:"+event.getcurrentAttendance()+"users");
         });
     }
 

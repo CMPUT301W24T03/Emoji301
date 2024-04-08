@@ -29,22 +29,6 @@
             android:hint="                   " />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/generateNameLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/nameLinearLayout"
-        android:orientation="horizontal"
-        android:layout_centerHorizontal="true"
-        >
-
-        <TextView
-            android:id="@+id/generateNameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Generate name" />
-    </LinearLayout>
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:theme="@style/Theme.MaterialComponents.Light"
         android:id="@+id/nameScreenBackButton"

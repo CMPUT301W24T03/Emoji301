@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" /> <!-- To handle the reselection within the app on Android 14 (API level 34) -->
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <uses-feature android:name="android.hardware.location.gps" />
     <uses-feature android:name="android.hardware.location.network" />
 
@@ -27,7 +28,13 @@
         android:theme="@style/Theme.EmojiBrite"
         tools:targetApi="31">
         <activity
+            android:name=".NotificationsActivity"
+            android:exported="false" />
+        <activity
             android:name=".DisplayEventQRCode"
+            android:exported="false" />
+        <activity
+            android:name=".DisplayCheckInQRCode"
             android:exported="false" />
         <activity
             android:name=".QRScanningActivity"
@@ -77,7 +84,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" /> <!-- Account Creation Activity -->
-
         <activity
             android:name=".AccountCreationActivity"
             android:exported="false" /> <!-- Fragments dont belong here. Also, the Continuous Integration(CI) flagged this, thus "x" beside your branch -->
@@ -86,9 +92,7 @@
             android:exported="false" />
         <activity
             android:name=".AdminAccountActivity"
-            android:exported="false" />
-
-        <!-- Event related -->
+            android:exported="false" /> <!-- Event related -->
         <activity
             android:name=".EventHome"
             android:exported="false" />
@@ -113,23 +117,14 @@
             android:name=".OtherEventHome"
             android:exported="false" />
         <activity
-            android:name = "AdminActivity"
-            android:exported="false">
-        </activity>
-
-
+            android:name=".AdminActivity"
+            android:exported="false"></activity>
         <activity
-            android:name= "AdminEventActivity"
-            android:exported="false" />
-
-        <!--Admin images related-->
+            android:name=".AdminEventActivity"
+            android:exported="false" /> <!-- Admin images related -->
         <activity
             android:name=".AdminImagesHome"
-            android:exported="false"/>
-
-
-        <!--Notifications related-->
-
+            android:exported="false" /> <!-- Notifications related -->
         <service
             android:name=".PushNotificationService"
             android:exported="false">
@@ -138,20 +133,16 @@
                 <!-- This service will only listen to incoming messaging events -->
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service>
-        <!--Set custom default icon, This is used when no icon is set for incoming notification messages-->
+        </service> <!-- Set custom default icon, This is used when no icon is set for incoming notification messages -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/emoji_brite_logo2"/>
-        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming-->
+            android:resource="@drawable/emoji_brite_logo2" /> <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/ivory"/>
-        <!--FCM provides default notification channel with basic settings. Use below to create your own channel by setting the default_notification_channel_id to ID of the notification channel object-->
+            android:resource="@color/ivory" /> <!-- FCM provides default notification channel with basic settings. Use below to create your own channel by setting the default_notification_channel_id to ID of the notification channel object -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_notification_channel_id"/>
-        <!--Prevent auto initialization of FCM registration token-->
+            android:value="@string/default_notification_channel_id" /> <!-- Prevent auto initialization of FCM registration token -->
         <meta-data
             android:name="firebase_messaging_auto_init_enabled"
             android:value="false" />

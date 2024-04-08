@@ -37,6 +37,8 @@ public class Event implements Serializable {
 
     private ArrayList<String> geolocationList = new ArrayList<>();
 
+    private Integer currentAttendance;
+
 
     /**
      * This is a construction class for events
@@ -54,7 +56,7 @@ public class Event implements Serializable {
      * @param organizer This is the organizer id
      */
 
-    public Event(String id, String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity, String organizer, String checkInID){
+    public Event(String id, String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity, String organizer, String checkInID, Integer currentAttendance){
 
         this.imageUri=imageUri;
         this.eventTitle=eventTitle;
@@ -69,6 +71,7 @@ public class Event implements Serializable {
         this.capacity = capacity;
         this.organizer = organizer;
         this.checkInID = checkInID;
+        this.currentAttendance=currentAttendance;
 
     }
 
@@ -172,11 +175,11 @@ public class Event implements Serializable {
         return id;
     }
 
-    public void setId(){
+    public void setId(String id){
         this.id=id;
     }
 
-    public void setCapacity(){this.capacity=capacity;}
+    public void setCapacity(Integer capacity){this.capacity=capacity;}
 
     public void setCheckInID(){this.checkInID=checkInID;}
 
@@ -288,5 +291,9 @@ public class Event implements Serializable {
     public void setGeolocationList(ArrayList<String> geolocationList) {
         this.geolocationList = geolocationList;
     }
+
+    public Integer getcurrentAttendance(){return this.currentAttendance;}
+
+    public void setCurrentAttendance(Integer currentAttendance){this.currentAttendance=currentAttendance;}
 
 }

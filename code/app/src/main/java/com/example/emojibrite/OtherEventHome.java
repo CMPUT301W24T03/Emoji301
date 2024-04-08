@@ -45,6 +45,8 @@ public class OtherEventHome extends AppCompatActivity {
 
     ImageView profileButton;
 
+    ImageView notifButton;
+
     private static final String TAG = "ProfileActivityTAG";
 
     /**
@@ -114,6 +116,14 @@ public class OtherEventHome extends AppCompatActivity {
 
     }
 
+    private void showNotifications(Users user){
+        Intent intent = new Intent(this, NotificationsActivity.class);
+        if (user!=null){
+            Log.d("TAG","CHECKING CHECKING CHECKING  "+ user.getProfileUid());}
+        intent.putExtra("userObject", user);
+        startActivity(intent);
+    }
+
     private void settingUpPfp(){
         if (user.getUploadedImageUri() != null) {
             // User uploaded a picture, use that as the ImageView
@@ -151,12 +161,14 @@ public class OtherEventHome extends AppCompatActivity {
         eventList = findViewById(R.id.event_organizer_list);
         dataList1 = new ArrayList<>();
 
-        eventAdapter = new EventAdapter(this, dataList1);
+        eventAdapter = new EventAdapter(this, dataList1, null);
         eventList.setAdapter(eventAdapter);
 
         Button myEventButton = findViewById(R.id.my_events_button);
 
         QRCodeScanner = findViewById(R.id.event_scan_btn);
+
+        notifButton = findViewById(R.id.notif_bell);
 
         myEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,6 +185,14 @@ public class OtherEventHome extends AppCompatActivity {
         profileButton = findViewById(R.id.profile_pic);
 
         checkUserDoc(user.getProfileUid());
+
+        notifButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showNotifications(user);
+
+            }
+        });
 
 
 

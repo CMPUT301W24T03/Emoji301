@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -183,13 +184,18 @@ public class QRCodeCheckActivity extends AppCompatActivity {
                     try {
                         // Load the bitmap from the gallery
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                        qrCode.setImageBitmap(bitmap);
+
 
                         // Optionally, decode the QR code if you need to retrieve information from it
                         String decodedCheckInId = decodeQRCode(bitmap);
                         if(decodedCheckInId != null) {
                             checkInID = decodedCheckInId;
+                            qrCode.setImageBitmap(bitmap);
+                            Log.d("Upload",decodedCheckInId);
                             // If decoded successfully, handle the event ID
+                        }
+                        else {
+                            Toast.makeText(this, "Invalid QR code. Add another one", Toast.LENGTH_SHORT).show();
                         }
                     } catch (IOException e) {
                         e.printStackTrace();

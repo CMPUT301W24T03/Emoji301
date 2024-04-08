@@ -109,10 +109,31 @@
             android:hint="Description"
             android:inputType="textMultiLine"
             android:minHeight="100dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/capacity_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/frank_ruhl_libre"
+            android:text="Capacity:"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/edittext_event_capacity"
+            android:layout_width="62dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/frank_ruhl_libre"
+            android:inputType="number" />
+    </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="65dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <TextView
@@ -129,29 +150,20 @@
                 android:layout_width="62dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/frank_ruhl_libre"
-                android:inputType="number" />
-
+                android:inputType="number"/>
             <TextView
-                android:id="@+id/capacity_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:fontFamily="@font/frank_ruhl_libre"
-                android:text="Capacity:"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
-
-            <EditText
-                android:id="@+id/edittext_event_capacity"
-                android:layout_width="62dp"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/frank_ruhl_libre"
-                android:inputType="number" />
+            android:id="@+id/attendee_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/frank_ruhl_libre"
+            android:text="attendees"
+            android:textColor="@color/black"
+            android:textSize="18sp"/>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <TextView

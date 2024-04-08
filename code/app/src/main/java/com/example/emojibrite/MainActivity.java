@@ -27,7 +27,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class MainActivity extends AppCompatActivity {
     Button enterButton;
     TextView scanQRCode;
-    TextView adminAccess;
     private static final String TAG = "MainActivityTAG";
     private Users user;
     private Database database = new Database();
@@ -52,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         // Initialize the button and text view
         enterButton = findViewById(R.id.enterButton);
         scanQRCode = findViewById(R.id.qrCodeText);
-        adminAccess = findViewById(R.id.adminAccessText);
         loggedIn = false;
         userDocExist = false;
         user = null;
@@ -121,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.default_notification_channel_name);
             String description = "Default notification channel for EmojiBrite";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel(getString(R.string.default_notification_channel_id), name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
