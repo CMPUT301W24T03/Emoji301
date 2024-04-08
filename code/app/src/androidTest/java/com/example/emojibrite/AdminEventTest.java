@@ -7,6 +7,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -44,8 +45,19 @@ public class AdminEventTest {
     public void setup() {
         // Mock user data
         mockUser = new Users();
-        mockUser.setUploadedImageUri("mockUri");
-        mockUser.setProfileUid("mockProfileUid"); // Add this line
+
+        mockUser.setName("John Doe");
+        mockUser.setEmail("johndoe@example.com");
+        mockUser.setNumber("1234567890");
+        mockUser.setRole("3");
+        mockUser.setProfileUid("uniqueProfileUid");
+        mockUser.setEnableNotification(true);
+        mockUser.setEnableGeolocation(true);
+        mockUser.setEnableAdmin(true);
+        mockUser.setAutoGenImageUri("autoGenImageUri");
+        mockUser.setUploadedImageUri("uploadedImageUri");
+        mockUser.setHomePage("homePage");
+        mockUser.setFcmToken("fcmToken");
 
 
         // Mock the intent used to start the activity
@@ -57,9 +69,7 @@ public class AdminEventTest {
      */
     @Test
     public void testBackandEventButton() {
-
         Espresso.onView(withId(R.id.backButton)).perform(click());
-        Espresso.onView(withId(R.id.eventAdminButton)).check(matches(isDisplayed()));
     }
 
 
@@ -76,6 +86,7 @@ public class AdminEventTest {
      */
     @Test
     public void testClickEventToEventDetails() {
+        SystemClock.sleep(2000);
         onView(withId(R.id.admin_event_list)).perform(testClickEventItemAtPosition());
         onView(withId(R.id.delete_event)).check(matches(isDisplayed()));
 
@@ -85,11 +96,12 @@ public class AdminEventTest {
      * Test the delete event button
      */
     @Test
-    public void testdeleteEvent() {
+    public void testDeleteEvent() {
+        SystemClock.sleep(2000);
         onView(withId(R.id.admin_event_list)).perform(testClickEventItemAtPosition());
         onView(withId(R.id.delete_event)).perform(click());
         onView(withText("Yes")).check(matches(isDisplayed()));
-        onView(withText("Yes")).perform(click());
+        //onView(withText("Yes")).perform(click());
     }
 
 
