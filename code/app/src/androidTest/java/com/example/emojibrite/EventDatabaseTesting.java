@@ -1,6 +1,7 @@
 package com.example.emojibrite;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -260,6 +261,63 @@ public class EventDatabaseTesting {
 
         latch.await(10, TimeUnit.SECONDS);
     }
+
+    @Test
+    public void testGetSignedAttendees() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        // Register user1 for testEvent1
+        database.addSignin(testEvent1.getId(), user1.getProfileUid());
+
+        // Allow time for the registration to process
+        Thread.sleep(2000); // Adjust time if needed
+
+        // Now test getSignedAttendees
+        database.getSignedAttendees(testEvent1.getId(), attendees -> {
+            assertNotNull("Attendees list should not be null", attendees);
+            assertTrue("Attendees list should contain user1 ID", attendees.contains(user1.getProfileUid()));
+            latch.countDown();
+        });
+
+        latch.await(10, TimeUnit.SECONDS);
+    }
+
+    @Test
+    public void testGetSignedUpEvents() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        // Add user1 as an attendee to testEvent1
+        database.addSignin(testEvent1.getId(), user1.getProfileUid());
+
+        // Allow time for addSignin to complete
+        Thread.sleep(2000); // Adjust time as needed
+
+        // Now test getSignedUpEvents for user1
+        database.getSignedUpEvents(user1.getProfileUid(), events -> {
+            assertNotNull("List of events should not be null", events);
+            assertFalse("List of events should not be empty", events.isEmpty());
+
+            // Check if testEvent1 is in the list
+            boolean foundTestEvent1 = false;
+            for (Event event : events) {
+                if (event.getId().equals(testEvent1.getId())) {
+                    foundTestEvent1 = true;
+                    break;
+                }
+            }
+
+            assertTrue("testEvent1 should be in the list of signed-up events for user1", foundTestEvent1);
+            latch.countDown();
+        });
+
+        latch.await(10, TimeUnit.SECONDS);
+    }
+
+
+
+
+
+
 
 
 
