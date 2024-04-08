@@ -238,6 +238,9 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
 
     public void deleteUserUploadedImageFromStorage(String imageUri){
+        if (imageUri == null) {
+            return;
+        }
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference imageRef = storage.getReferenceFromUrl(imageUri);
         imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
