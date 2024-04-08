@@ -107,11 +107,11 @@
                     android:id="@+id/delete_event"
                     android:layout_width="101dp"
                     android:layout_height="22dp"
-                    android:background="@drawable/eventdetails_button"
-                    android:paddingEnd="0dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/signup_red_outline"
                     android:text="Delete Event"
                     android:textAllCaps="false"
-                    android:textColor="@color/black"
+                    android:textColor="@color/red"
                     android:textSize="12sp"
                     android:visibility="gone"/>
 
@@ -370,7 +370,7 @@
                 <Button
                     android:id="@+id/check_in_qr"
                     android:layout_width="150dp"
-                    android:layout_height="50dp"
+                    android:layout_height="45dp"
                     android:layout_marginEnd="10dp"
                     android:layout_margin="10dp"
                     android:background="@drawable/event_button_outlined"
@@ -383,7 +383,7 @@
                 <Button
                     android:id="@+id/event_qr"
                     android:layout_width="150dp"
-                    android:layout_height="50dp"
+                    android:layout_height="45dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/event_button_outlined"
                     android:fontFamily="@font/alegreya_sc"
