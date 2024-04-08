@@ -295,6 +295,8 @@ public class AddEventFragment extends DialogFragment{
             boolean invalidQrCode = (qrCodeCheckinURI != null && qrCodeCheckinURI.toString().startsWith("content://")) ||
                     (qrCodeEventURI != null && qrCodeEventURI.toString().startsWith("content://"));
 
+
+
             if (!isCheckInQRGenerated || !isEventQRGenerated || invalidQrCode) {
                 // Either QR codes not generated or invalid QR code format
                 String message = invalidQrCode ? "QR Code not properly generated. Try again." :
@@ -326,6 +328,22 @@ public class AddEventFragment extends DialogFragment{
 
                 Log.d(TAG, "EVENT DERIVED QR CODE ID: " + eventId);
                 Log.d(TAG, "CHECK IN QR CODE ID: " + checkInID);
+
+                // Check if location is not entered
+                if (location.trim().isEmpty()) {
+                    Toast.makeText(getContext(), "Please enter a location for the event.", Toast.LENGTH_SHORT).show();
+                    return; // Stop further execution if location is not entered
+                }
+
+                if (timeString.trim().isEmpty()) {
+                    Toast.makeText(getContext(), "Please enter a time for the event.", Toast.LENGTH_SHORT).show();
+                    return; // Stop further execution if time is not entered
+                }
+
+                if (eventDate==null){
+                    Toast.makeText(getContext(), "Please enter a Date for the event.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
 //            Event newEvent = new Event(selectedImageUri, title, eventDate, timeString, description, milestone, location, capacity, user); //ADDING USER WHICH WE GET AS AN ARGUMENT
                 Event newEvent = new Event(eventId, imageUriString, title, eventDate, timeString, description, milestone, location, checkInUriString, eventUriString, capacity, user.getProfileUid(), checkInID, 0); //ADDING USER WHICH WE GET AS AN ARGUMENT
