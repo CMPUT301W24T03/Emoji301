@@ -1,5 +1,20 @@
 package com.example.emojibrite;
 
+import android.Manifest;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.Settings;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -9,31 +24,13 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.provider.Settings;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-
 import com.google.firebase.firestore.DocumentSnapshot;
-
-import android.Manifest;
-import android.widget.Toast;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * The main activity for displaying and editing user profiles.
@@ -44,7 +41,7 @@ import android.widget.Toast;
 public class ProfileActivity extends AppCompatActivity implements ProfileEditFragment.OnInputSelected {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 101;
-    Users user;
+    static Users user;
     ImageView profilePictureImageView;
     SwitchCompat adminToggle;
     SwitchCompat geoToggle;

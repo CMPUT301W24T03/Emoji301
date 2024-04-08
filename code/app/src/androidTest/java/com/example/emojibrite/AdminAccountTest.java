@@ -7,6 +7,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import android.content.Intent;
+import android.os.SystemClock;
 import android.view.View;
 
 import androidx.test.core.app.ActivityScenario;
@@ -106,7 +107,7 @@ public class AdminAccountTest {
      */
     @Test
     public void testAdminToggle() {
-
+        SystemClock.sleep(3000);
         onView(withId(R.id.backButton)).check(matches(isDisplayed()));
         onView(withId(R.id.backButton)).perform(click());
         onView(withId(R.id.accountAdminButton)).check(matches(isDisplayed()));
