@@ -78,6 +78,20 @@ public class Event implements Serializable {
     }
 
 
+    /**
+     * This is a construction class for events
+     * @param imageUri imageuri
+     * @param eventTitle event title
+     * @param date date
+     * @param time time
+     * @param description description
+     * @param milestone milestone
+     * @param location location
+     * @param checkInQRCode checkin
+     * @param eventQRCode eventqr
+     * @param capacity capacity
+     * @param organizer organizer
+     */
 
     public Event(String  imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity, String organizer){
 
@@ -96,6 +110,18 @@ public class Event implements Serializable {
 
     }
 
+    /**
+     *
+     * @param imageUri imageuri
+     * @param eventTitle event title
+     * @param date date
+     * @param time time
+     * @param description description
+     * @param milestone milestone
+     * @param location location
+     * @param capacity capacity
+     * @param organizer organizer
+     */
     public Event(String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Integer capacity, String organizer){
 
         this.imageUri=imageUri;
@@ -111,6 +137,19 @@ public class Event implements Serializable {
 
     }
 
+    /**
+     * This is a construction class for events
+     * @param imageUri imageuri
+     * @param eventTitle event title
+     * @param date date
+     * @param time time
+     * @param description description
+     * @param milestone milestone
+     * @param location location
+     * @param checkInQRCode checkin
+     * @param eventQRCode eventqr
+     * @param capacity capacity
+     */
     public Event(String  imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity){
 
         this.imageUri=imageUri;
@@ -128,6 +167,18 @@ public class Event implements Serializable {
 
     }
 
+    /**
+     * This is a construction class for events
+     * @param imageUri imageuri
+     * @param eventTitle event title
+     * @param date date
+     * @param time time
+     * @param description description
+     * @param location location
+     * @param checkInQRCode checkin
+     * @param eventQRCode eventqr
+     * @param capacity capacity
+     */
     public Event(String imageUri, String eventTitle, Date date, String time, String description, String location, String checkInQRCode, String eventQRCode, Integer capacity){
 
         this.imageUri=imageUri;
@@ -142,6 +193,17 @@ public class Event implements Serializable {
 
     } //without milestones. Feel free to suggest more stuff
 
+    /**
+     * This is a construction class for events
+     * @param imageUri imageuri
+     * @param eventTitle event title
+     * @param date date
+     * @param time time
+     * @param description description
+     * @param milestone milestone
+     * @param location location
+     * @param capacity capacity
+     */
     public Event(String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Integer capacity){
 
         this.imageUri=imageUri;
@@ -186,7 +248,7 @@ public class Event implements Serializable {
     }
 
     /**
-     *
+     * get id
      * @return id
      */
     public String getId(){
@@ -195,7 +257,7 @@ public class Event implements Serializable {
 
     /**
      *
-     * @param id
+     * @param id id of the event
      */
     public void setId(String id){
         this.id=id;
@@ -214,7 +276,10 @@ public class Event implements Serializable {
     public void setCheckInID(String checkInID){this.checkInID=checkInID;}
 
 
-
+    /**
+     * set the image uri
+     * @param imageUri imageuri
+     */
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
     }

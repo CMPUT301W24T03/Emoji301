@@ -136,6 +136,7 @@ public class PushNotificationService extends FirebaseMessagingService {
 
     /**
      * This method retrieves the FCM token for the user
+     * @param callback The callback method to be called when the token is received
      */
     public void getToken(TokenCallback callback) {
         FirebaseMessaging.getInstance().getToken()
@@ -252,6 +253,7 @@ public class PushNotificationService extends FirebaseMessagingService {
 
     /**
      * This function is used to send a notification to a specific device
+     * @param eventId The id of the event to send the notification to.
      * @param notifBody The message to be sent to the attendee.
      * @param deviceToken The token of the device to send the notification to.
      */
@@ -273,6 +275,7 @@ public class PushNotificationService extends FirebaseMessagingService {
      * This function is used to subscribe the user to the event via the event ID.
      * Uses the Firebase Cloud Messaging (FCM) token to subscribe the user to the event.
      * @param eventId The event ID to subscribe to
+     * @param callback The callback method to be called when the subscription is successful or not
      */
     public void subscribeToEvent(String eventId, SubscribeCallback callback) {
         FirebaseMessaging.getInstance().subscribeToTopic(eventId)
@@ -290,6 +293,7 @@ public class PushNotificationService extends FirebaseMessagingService {
      * This function is used to unsubscribe the user from the event via the event ID.
      * Uses the Firebase Cloud Messaging (FCM) token to unsubscribe the user from the event.
      * @param eventId The event ID to unsubscribe from
+     * @param callback The callback method to be called when the unsubscription is successful or not
      */
     public void unsubscribeFromEvent(String eventId, SubscribeCallback callback) {
         FirebaseMessaging.getInstance().unsubscribeFromTopic(eventId)

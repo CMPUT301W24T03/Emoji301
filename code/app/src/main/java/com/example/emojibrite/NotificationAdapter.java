@@ -19,10 +19,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+/**
+ * This class is responsible for displaying the notifications in the list view.
+ */
 public class NotificationAdapter extends ArrayAdapter<EventNotifications> {
 
     private ArrayList<EventNotifications> notifications;
 
+    /**
+     * Constructor for the NotificationAdapter
+     * @param context The current context. Used to inflate the layout file.
+     * @param notifications A List of EventNotifications objects to display in a list
+     */
     public NotificationAdapter(Context context, ArrayList<EventNotifications> notifications){
         super(context, 0, notifications);
         this.notifications = new ArrayList<>(notifications); // Initialize the list

@@ -28,10 +28,10 @@ public class AttendeesArrayAdapter extends ArrayAdapter<Users> {
     ArrayList<Integer> checkInCounts; // This will store the check-in counts
     /**
      * Constructor for the AttendeesArrayAdapter
-     * @param context
-     * @param users
-     * @param privilege
-     * @param checkInCounts
+     * @param context The context of the activity
+     * @param users The list of users
+     * @param privilege The privilege of the user
+     * @param checkInCounts The check-in counts of the users
      */
     public AttendeesArrayAdapter(Context context, ArrayList<Users> users, String privilege, ArrayList<Integer> checkInCounts) {
         super(context, 0, users);

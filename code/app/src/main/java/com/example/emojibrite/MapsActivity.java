@@ -21,11 +21,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.example.emojibrite.databinding.ActivityMapsBinding;
+//import com.example.emojibrite.databinding.ActivityMapsBinding;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 
+/**
+ * This class is responsible for displaying the map with the locations of the attendees who have checked-in.
+
+ */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
 //    private ActivityMapsBinding binding;
@@ -109,6 +113,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    /**
+     * This method is used to get the GoogleMap object
+     * @return GoogleMap object
+     */
     public GoogleMap getMap() {
         return mMap;
     }
