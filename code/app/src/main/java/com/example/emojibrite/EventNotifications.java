@@ -2,6 +2,9 @@ package com.example.emojibrite;
 
 import android.net.Uri;
 
+/**
+ * event notification
+ */
 public class EventNotifications {
 
     String eventTitle;

@@ -3,6 +3,9 @@ package com.example.emojibrite;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * event repository
+ */
 public class EventRepository {
     private static EventRepository instance;
     private final Map<String, Event> eventMap;

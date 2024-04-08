@@ -114,7 +114,6 @@ public class CheckedInFragment extends Fragment {
      *Keeps track of how many times they repeat
      * @param listAttendees the array
      * @param userId the checker for the uid
-     * @return
      */
     public Integer countOfElements(ArrayList<String> listAttendees, String userId) {
         Integer counter = 0;

@@ -54,6 +54,8 @@ public class Event implements Serializable {
      * @param eventQRCode This is the QR Code for event details
      * @param capacity This is the event capacity
      * @param organizer This is the organizer id
+     * @param checkInID  this is chekced in id
+     * @param currentAttendance currentattendance
      */
 
     public Event(String id, String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity, String organizer, String checkInID, Integer currentAttendance){
@@ -155,11 +157,23 @@ public class Event implements Serializable {
 
     }
 
+    /**
+     * event consutrco
+     */
     public Event(){}
+
+    /**
+     *
+     * @param imageUri imageuri
+     */
     public Event(String imageUri) {
         this.imageUri = imageUri;
     }
 
+    /**
+     *
+     * @return randomId
+     */
     private String generateRandomId(){
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder sb = new StringBuilder();
@@ -171,16 +185,32 @@ public class Event implements Serializable {
         return sb.toString();
     }
 
+    /**
+     *
+     * @return id
+     */
     public String getId(){
         return id;
     }
 
+    /**
+     *
+     * @param id
+     */
     public void setId(String id){
         this.id=id;
     }
 
+    /**
+     *
+     * @param capacity capacity
+     */
     public void setCapacity(Integer capacity){this.capacity=capacity;}
 
+    /**
+     *
+     * @param checkInID check in
+     */
     public void setCheckInID(String checkInID){this.checkInID=checkInID;}
 
 
@@ -188,112 +218,223 @@ public class Event implements Serializable {
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
     }
+
+    /**
+     *
+     * @param eventTitle event tite
+     */
     public void setEventTitle(String eventTitle)
     {
         this.eventTitle=eventTitle;
     }
 
+    /**
+     *
+     * @param date date
+     */
     public void setDate(Date date)
     {
         this.date=date;
     }
+
+    /**
+     *
+     * @param time time
+     */
     public void setTime(String time)
     {
         this.time=time;
     }
+
+    /**
+     *
+     * @param description description
+     */
     public void setDescription(String description)
     {
         this.description=description;
     }
 
+    /**
+     *
+     * @param milestone milestone
+     */
     public void setMilestone(Integer milestone)
     {
         this.milestone=milestone;
     }
 
-
+    /**
+     *
+     * @param location location
+     */
     public void setLocation(String location)
     {
         this.location=location;
     }
 
+    /**
+     *
+     * @param checkInQRCode checkin
+     */
     public void setCheckInQRCode(String checkInQRCode)
     {
         this.checkInQRCode = checkInQRCode;
     }
 
+    /**
+     *
+     * @param eventQRCode eventqr
+     */
     public void setEventQRCode(String eventQRCode)
     {
         this.eventQRCode = eventQRCode;
     }
 
+    /**
+     *
+     * @param organizer organizer
+     */
     public void setOrganizer(String organizer){this.organizer=organizer;}
 
+    /**
+     *
+     * @return imageuri
+     */
     public Uri getImageUri()
     {
         return imageUri != null ? Uri.parse(imageUri) : null; //reconverting the string to an Image
     }
 
+    /**
+     *
+     * @return event title
+     */
     public String getEventTitle()
     {
         return eventTitle;
     }
 
+    /**
+     *
+     * @return date
+     */
     public Date getDate()
     {
         return date;
     }
 
+    /**
+     *
+     * @return time
+     */
     public String getTime()
     {
         return time;
     }
+
+    /**
+     *
+     * @return description
+     */
     public String getDescription()
     {
         return description;
     }
 
+    /**
+     *
+     * @return location
+     */
     public String getLocation() {
         return location;
     }
 
+    /**
+     *
+     * @return milestone
+     */
     public Integer getMilestone() {
         return milestone;
     }
 
+    /**
+     *
+     * @return checkin
+     */
     public Uri getCheckInQRCode() {
 
         return checkInQRCode != null ? Uri.parse(checkInQRCode): null;
     }
 
+    /**
+     *
+     * @return eventqr
+     */
     public Uri getEventQRCode() {
         return eventQRCode != null ? Uri.parse(eventQRCode): null;
     }
 
+    /**
+     *
+     * @return capacity
+     */
     public Integer getCapacity(){return capacity;}
 
+    /**
+     *
+     * @return organizer
+     */
     public String getOrganizer(){return organizer;}
 
+    /**
+     *
+     * @return getcheckin
+     */
     public String getCheckInID(){return checkInID;}
 
+    /**
+     *
+     * @return attendee
+     */
     public ArrayList<String> getAttendeesList() {
         return attendeesList;
     }
 
+    /**
+     *
+     * @param attendesList list
+     */
     public void setAttendeesList(ArrayList<String> attendesList) {
         this.attendeesList = attendesList;
     }
 
+    /**
+     *
+     * @return geoloication
+     */
     public ArrayList<String> getGeolocationList() {
         return geolocationList;
     }
 
+    /**
+     *
+     * @param geolocationList list
+     */
     public void setGeolocationList(ArrayList<String> geolocationList) {
         this.geolocationList = geolocationList;
     }
 
+    /**
+     *
+     * @return current attendance
+     */
     public Integer getcurrentAttendance(){return this.currentAttendance;}
 
+    /**
+     *
+     * @param currentAttendance attendance
+     */
     public void setCurrentAttendance(Integer currentAttendance){this.currentAttendance=currentAttendance;}
 
 }
