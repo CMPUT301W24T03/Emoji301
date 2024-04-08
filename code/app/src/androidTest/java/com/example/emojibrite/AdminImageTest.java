@@ -53,14 +53,14 @@ public class AdminImageTest {
         mockUser.setEmail("johndoe@example.com");
         mockUser.setNumber("1234567890");
         mockUser.setRole("3");
-        mockUser.setProfileUid("uniqueProfileUid");
+        mockUser.setProfileUid("SroGuirZdhfbwcectKhBJkpJpdl2");
         mockUser.setEnableNotification(true);
         mockUser.setEnableGeolocation(true);
-        mockUser.setEnableAdmin(true);
-        mockUser.setAutoGenImageUri("autoGenImageUri");
-        mockUser.setUploadedImageUri("uploadedImageUri");
-        mockUser.setHomePage("homePage");
-        mockUser.setFcmToken("fcmToken");
+        mockUser.setAutoGenImageUri("https://ui-avatars.com/api/?name=John+Doe/");
+        mockUser.setUploadedImageUri(null);
+        mockUser.setHomePage("homepage");
+        mockUser.setFcmToken("cXEdjvR2RRGFnwzJRgW0nj:APA91bGr5XYv7AhDGX6MqFKBwUxnKTwQUbIEg0u9IE1pitS2N9oi_jFPpPmz1VkYLpAF_HbS4W2YYlsOADlGc32fRVvCRgoMgiBxvQxCl4EoYVlqoI5yUn3qnDk_ZTLaOCG2mKaV_GqF");
+
 
 
         // Mock the intent used to start the activity
