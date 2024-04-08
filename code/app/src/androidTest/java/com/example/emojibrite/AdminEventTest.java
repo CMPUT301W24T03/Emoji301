@@ -1,10 +1,10 @@
 package com.example.emojibrite;
 
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.view.View;
@@ -15,8 +15,6 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import com.google.firebase.firestore.auth.User;
 
 import org.hamcrest.Matcher;
 import org.junit.Before;
@@ -47,30 +45,23 @@ public class AdminEventTest {
         // Mock user data
         mockUser = new Users();
         mockUser.setUploadedImageUri("mockUri");
+        mockUser.setProfileUid("mockProfileUid"); // Add this line
+
 
         // Mock the intent used to start the activity
         AdminEventActivity.user = mockUser;
     }
 
     /**
-     * Test the event button
+     * Test the event and Back buttons
      */
     @Test
-    public void testEventButton() {
+    public void testBackandEventButton() {
 
-        onView(withId(R.id.backButton)).perform(click());
+        Espresso.onView(withId(R.id.backButton)).perform(click());
         Espresso.onView(withId(R.id.eventAdminButton)).check(matches(isDisplayed()));
     }
 
-    /**
-     * Test the back button
-     */
-    @Test
-    public void testBackButton() {
-        onView(withId(R.id.backButton)).perform(click());
-        onView(withId(R.id.eventAdminButton)).perform(click());
-        Espresso.onView(withId(R.id.backButton)).check(matches(isDisplayed()));
-    }
 
     /**
      * Test the list of events displayed
@@ -98,8 +89,7 @@ public class AdminEventTest {
         onView(withId(R.id.admin_event_list)).perform(testClickEventItemAtPosition());
         onView(withId(R.id.delete_event)).perform(click());
         onView(withText("Yes")).check(matches(isDisplayed()));
-//        onView(withText("Yes")).perform(click());
-//        onView(withId(R.id.backButton)).check(matches(isDisplayed()));
+        onView(withText("Yes")).perform(click());
     }
 
 
