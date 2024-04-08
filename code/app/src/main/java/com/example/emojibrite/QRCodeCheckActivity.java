@@ -154,6 +154,7 @@ public class QRCodeCheckActivity extends AppCompatActivity {
 
     /**
      * Function that generates a check in QR code from a 12 digit ID.
+     * @param checkInID The 12 digit ID used to generate the QR code.
      */
     public void generateQR(String checkInID){
 

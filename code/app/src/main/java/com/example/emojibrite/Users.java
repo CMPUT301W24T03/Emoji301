@@ -3,7 +3,6 @@ package com.example.emojibrite;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -33,6 +32,9 @@ public class Users implements Parcelable{
     // notification token
     private String fcmToken;
 
+    /**
+     * Users constructor
+     */
     public Users() {}
 
     /**
@@ -54,12 +56,26 @@ public class Users implements Parcelable{
 
     }
 
+    /**
+     * Users constructor with all attributes
+     * @param enableAdmin enable admin
+     */
     public void setEnableAdmin(boolean enableAdmin) {
         this.enableAdmin = enableAdmin;
     }
+
+    /**
+     * Users constructor with all attributes
+     * @return enableAdmin enable admin
+     */
     public boolean getEnableAdmin() {
         return enableAdmin;
     }
+
+    /**
+     * Users constructor with all attributes
+     * @param profileUid unique id of the user
+     */
     public void setProfileUid(String profileUid) {
         this.profileUid = profileUid;
     }
@@ -81,9 +97,18 @@ public class Users implements Parcelable{
 
     }
 
+    /**
+     * gets the home page
+     * @return homePage : the home page of the user
+     */
     public String getHomePage() {
         return homePage;
     }
+
+    /**
+     * sets the home page
+     * @param homePage : the home page of the user
+     */
     public void setHomePage(String homePage) {
         this.homePage = homePage;
     }
@@ -245,7 +270,7 @@ public class Users implements Parcelable{
 
     /**
      * Parcelable constructor for the Users class
-     * @param in
+     * @param in the parcel object
      */
     protected Users(Parcel in) {
         //deserialization of the object

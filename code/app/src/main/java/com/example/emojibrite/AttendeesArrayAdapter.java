@@ -19,7 +19,6 @@ import androidx.appcompat.widget.SwitchCompat;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 /**
  * Adapter for the attendees list
  */
@@ -28,10 +27,10 @@ public class AttendeesArrayAdapter extends ArrayAdapter<Users> {
     ArrayList<Integer> checkInCounts; // This will store the check-in counts
     /**
      * Constructor for the AttendeesArrayAdapter
-     * @param context
-     * @param users
-     * @param privilege
-     * @param checkInCounts
+     * @param context context
+     * @param users list of users
+     * @param privilege privilege
+     * @param checkInCounts check-in counts
      */
     public AttendeesArrayAdapter(Context context, ArrayList<Users> users, String privilege, ArrayList<Integer> checkInCounts) {
         super(context, 0, users);

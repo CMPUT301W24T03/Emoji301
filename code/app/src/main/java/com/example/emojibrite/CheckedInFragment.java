@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 /**
  * Fragment for the checked in view
@@ -114,6 +113,7 @@ public class CheckedInFragment extends Fragment {
      *Keeps track of how many times they repeat
      * @param listAttendees the array
      * @param userId the checker for the uid
+     * @return the count of the elements
      */
     public Integer countOfElements(ArrayList<String> listAttendees, String userId) {
         Integer counter = 0;

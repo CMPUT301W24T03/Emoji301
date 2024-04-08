@@ -5,17 +5,13 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -32,10 +28,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
-
-import java.io.IOException;
-
-import javax.annotation.Nonnull;
 
 /**
  * ProfileEditFragment is a DialogFragment that allows users to edit their profile information.
@@ -60,6 +52,9 @@ public class ProfileEditFragment extends DialogFragment {
 
     Uri imageUri;
 
+    /**
+     * Interface for sending the updated user object back to the ProfileActivity.
+     */
     public OnInputSelected mOnInputSelected;
     ImageUploader imageUploader = new ImageUploader("images");
 
@@ -326,6 +321,11 @@ public class ProfileEditFragment extends DialogFragment {
      * Interface for sending the updated user object back to the ProfileActivity.
      */
     public interface OnInputSelected {
+
+        /**
+         * Method to send the updated user object back to the ProfileActivity.
+         * @param users The updated user object.
+         */
         void sendInput(Users users);
     }
 }

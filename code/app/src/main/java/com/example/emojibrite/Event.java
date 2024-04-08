@@ -195,7 +195,7 @@ public class Event implements Serializable {
 
     /**
      *
-     * @param id
+     * @param id id
      */
     public void setId(String id){
         this.id=id;
