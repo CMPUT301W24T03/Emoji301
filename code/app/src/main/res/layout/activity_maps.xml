@@ -16,7 +16,7 @@
         app:srcCompat="?attr/actionModeCloseDrawable"
         app:tint="@color/white"
         android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
+        android:layout_marginTop="70dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp" />
 
