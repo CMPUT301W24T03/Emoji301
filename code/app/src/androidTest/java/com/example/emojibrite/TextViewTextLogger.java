@@ -7,6 +7,9 @@ import android.widget.TextView;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAssertion;
 
+/**
+ * A CLASS TO SEE THE TAG MESSAGES FOR THE VIEWS
+ */
 public class TextViewTextLogger implements ViewAssertion {
     private static final String TAG = "TextViewTextLogger";
 
