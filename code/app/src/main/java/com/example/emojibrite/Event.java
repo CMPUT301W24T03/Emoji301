@@ -12,31 +12,81 @@ import java.util.Random;
  */
 public class Event implements Serializable {
 
+    /**
+     * This is the event poster
+     */
     private String imageUri;
+    /**
+     * This is the event title
+     */
     private String eventTitle;
+
+    /**
+     * This is the date of the event
+     */
     private Date date;
+    /**
+     * This is the time of the event
+     */
     private String time;
+
+    /**
+     * This is the event description
+     */
     private String description;
+    /**
+     * This is the milestone of the event
+     */
     private Integer milestone;
+    /**
+     * This is the location of the event
+     */
     private String location;
+    /**
+     * This is the QR Code for checking in
+     */
     private String checkInQRCode;
+    /**
+     * This is the QR Code for event details
+     */
     private String eventQRCode;
 
 //    private Uri checkInQRCode; // Store as String
 //    private Uri eventQRCode;   // Store as String
 
+    /**
+     * This is the event capacity
+     */
     private Integer capacity;
 
+    /**
+     * This is the event ID
+     */
     private String id;
 
+    /**
+     * This is the organizer ID
+     */
     private String organizer;
 
+    /**
+     * This is the check in ID
+     */
     private String checkInID;
 
+    /**
+     * This is a list of attendees
+     */
     private ArrayList<String> attendeesList = new ArrayList<>();
 
+    /**
+     * This is a list of geolocations
+     */
     private ArrayList<String> geolocationList = new ArrayList<>();
 
+    /**
+     * This is the current attendance
+     */
     private Integer currentAttendance;
 
 
@@ -78,7 +128,20 @@ public class Event implements Serializable {
     }
 
 
-
+    /**
+     * event constructor
+     * @param imageUri imageuri
+     * @param eventTitle event title
+     * @param date date
+     * @param time time
+     * @param description description
+     * @param milestone milestone
+     * @param location location
+     * @param checkInQRCode checkin
+     * @param eventQRCode eventqr
+     * @param capacity capacity
+     * @param organizer organizer
+     */
     public Event(String  imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity, String organizer){
 
         this.imageUri=imageUri;
@@ -96,6 +159,18 @@ public class Event implements Serializable {
 
     }
 
+    /**
+     * event constructor
+     * @param imageUri imageuri
+     * @param eventTitle event title
+     * @param date date
+     * @param time time
+     * @param description description
+     * @param milestone milestone
+     * @param location location
+     * @param capacity capacity
+     * @param organizer organizer
+     */
     public Event(String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Integer capacity, String organizer){
 
         this.imageUri=imageUri;
@@ -111,6 +186,19 @@ public class Event implements Serializable {
 
     }
 
+    /**
+     * event constructor
+     * @param imageUri imageuri
+     * @param eventTitle event title
+     * @param date date
+     * @param time time
+     * @param description description
+     * @param location location
+     * @param milestone milestone
+     * @param checkInQRCode checkin
+     * @param eventQRCode eventqr
+     * @param capacity capacity
+     */
     public Event(String  imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, String checkInQRCode, String eventQRCode, Integer capacity){
 
         this.imageUri=imageUri;
@@ -128,6 +216,18 @@ public class Event implements Serializable {
 
     }
 
+    /**
+     * event constructor
+     * @param imageUri imageuri
+     * @param eventTitle event title
+     * @param date date
+     * @param time time
+     * @param description description
+     * @param location location
+     * @param checkInQRCode checkin
+     * @param eventQRCode eventqr
+     * @param capacity capacity
+     */
     public Event(String imageUri, String eventTitle, Date date, String time, String description, String location, String checkInQRCode, String eventQRCode, Integer capacity){
 
         this.imageUri=imageUri;
@@ -142,6 +242,17 @@ public class Event implements Serializable {
 
     } //without milestones. Feel free to suggest more stuff
 
+    /**
+     * event constructor
+     * @param imageUri imageuri
+     * @param eventTitle event title
+     * @param date date
+     * @param time time
+     * @param description description
+     * @param milestone milestone
+     * @param location location
+     * @param capacity capacity
+     */
     public Event(String imageUri, String eventTitle, Date date, String time, String description, Integer milestone, String location, Integer capacity){
 
         this.imageUri=imageUri;
@@ -214,7 +325,10 @@ public class Event implements Serializable {
     public void setCheckInID(String checkInID){this.checkInID=checkInID;}
 
 
-
+    /**
+     *
+     * @param imageUri imageuri
+     */
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
     }

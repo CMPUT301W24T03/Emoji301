@@ -1,7 +1,5 @@
 package com.example.emojibrite;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,14 +13,20 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 
+/**
+ * Adapter for the notifications list view.
+ */
 public class NotificationAdapter extends ArrayAdapter<EventNotifications> {
 
     private ArrayList<EventNotifications> notifications;
 
+    /**
+     * Constructor for the NotificationAdapter
+     * @param context The current context. Used to inflate the layout file.
+     * @param notifications A list of event notifications to display in the list.
+     */
     public NotificationAdapter(Context context, ArrayList<EventNotifications> notifications){
         super(context, 0, notifications);
         this.notifications = new ArrayList<>(notifications); // Initialize the list
