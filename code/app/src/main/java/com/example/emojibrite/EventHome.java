@@ -45,7 +45,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
 //    Button otherEvent = findViewById(R.id.other_events_button);
 
-    ImageView notifButton;
+    ImageView notifButton, logoButton;
 
     ImageView profileButton;
 
@@ -222,14 +222,16 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
             }
         });
 
-
-
-
+        logoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EventHome.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
     }
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -246,6 +248,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         notifButton = findViewById(R.id.notif_bell);
 
+        logoButton = findViewById(R.id.imageView);
+
         Intent intent = getIntent();
 //        user = intent.getParcelableExtra("userObject");
 //        //this allows the user to not be stuck on admin activity all the time
@@ -261,6 +265,8 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         }
         else {
             Log.e(TAG, "No userObject passed in intent");
+
+
 
         }
 

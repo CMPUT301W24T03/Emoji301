@@ -88,8 +88,8 @@ public class PreviewScreenFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-
                 navigateToEventHomeNoReturn(view);
+
             }
         });
         // when the back button is clicked, go back to the previous fragment - UploadImageScreenFragment
