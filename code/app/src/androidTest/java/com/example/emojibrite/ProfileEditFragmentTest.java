@@ -23,18 +23,12 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 
 
-/**
- * Test class for the ProfileEditFragment
- */
 @RunWith(AndroidJUnit4.class)
 public class ProfileEditFragmentTest {
 
     public static Users mockUser;
 
 
-    /**
-     * Setup the mock user data
-     */
     @Before
     public void setup() throws IOException {
 
@@ -66,9 +60,6 @@ public class ProfileEditFragmentTest {
         ActivityScenario.launch(intent);
     }
 
-    /**
-     * Test the ProfileEditFragment is in view
-     */
     @Test
     public void testEditTextFields() {
         onView(withId(R.id.editButton)).perform(click());
@@ -84,9 +75,7 @@ public class ProfileEditFragmentTest {
         onView(withId(R.id.editHomePage)).check(matches(withText(mockUser.getHomePage())));
     }
 
-    /**
-     * Test the save button
-     */
+
     @Test
     public void testSaveButton() {
         onView(withId(R.id.editButton)).perform(click());
@@ -95,9 +84,7 @@ public class ProfileEditFragmentTest {
         onView(withId(R.id.saveButton)).check(matches(isClickable()));
     }
 
-    /**
-     * Test the remove image button
-     */
+
     @Test
     public void testRemoveImageButton() {
         onView(withId(R.id.editButton)).perform(click());
@@ -106,9 +93,7 @@ public class ProfileEditFragmentTest {
         onView(withId(R.id.removeImageButton)).check(matches(isClickable()));
     }
 
-    /**
-     * Test the upload image button
-     */
+  
     @Test
     public void testUploadImageButton() {
         onView(withId(R.id.editButton)).perform(click());

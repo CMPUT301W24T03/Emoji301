@@ -8,17 +8,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import android.content.Intent;
 import android.os.SystemClock;
-import android.view.View;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,19 +23,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-/**
- * Test class for the AdminAccountActivity
- */
 @RunWith(AndroidJUnit4.class)
 public class AdminAccountTest {
     public static Users mockUser;
 
     
     
-    
-    /**
-     * Setup the mock user data
-     */
+
     @Before
     public void setup() throws IOException {
 
@@ -83,9 +73,6 @@ public class AdminAccountTest {
     }
 
 
-    /**
-     * Test the back and account buttons
-     */
     @Test
     public void testDeleteButton() {
 
@@ -93,18 +80,12 @@ public class AdminAccountTest {
 
     }
 
-    /**
-     * Test the list of accounts displayed
-     */
     @Test
     public void testAccountListDisplayed() {
 
         onView(withId(R.id.profile_list)).check(matches(isDisplayed()));
     }
 
-    /**
-     * Test the admin toggle
-     */
     @Test
     public void testAdminToggle() {
         SystemClock.sleep(3000);
@@ -114,25 +95,5 @@ public class AdminAccountTest {
     }
 
 
-    // Helper method to create a ViewAction that clicks on a child view with a given id
-    private static ViewAction clickChildViewWithId(final int id) {
-        return new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return null;
-            }
-
-            @Override
-            public String getDescription() {
-                return "Click on a child view with specified id.";
-            }
-
-            @Override
-            public void perform(UiController uiController, View view) {
-                View v = view.findViewById(id);
-                v.performClick();
-            }
-        };
-    }
 }
 
