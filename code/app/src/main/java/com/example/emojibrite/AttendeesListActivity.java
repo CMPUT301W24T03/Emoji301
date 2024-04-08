@@ -63,6 +63,7 @@ public class AttendeesListActivity extends AppCompatActivity {
 
         checkInBtn.setOnClickListener(view -> {openCheckedUpFragment();});
         signedUpBtn.setOnClickListener(view -> {openSignedUpFragment();});
+        numberOfTotalAttendees = findViewById(R.id.text_of_attendees);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,9 +76,16 @@ public class AttendeesListActivity extends AppCompatActivity {
 
         database.getEventById(eventId, event -> {
             checkInBtn.setText("CheckIn:"+event.getcurrentAttendance()+"users");
+            numberOfTotalAttendees.setText("Total In-Person Attendees:"+event.getcurrentAttendance());
         });
-    }
 
+
+
+
+    }
+    /**
+     * This opens up the fragment for checked in and it deals with passing the information in a bundle
+     */
     private void openCheckedUpFragment(){
         CheckedInFragment checkedInFragment = new CheckedInFragment();
 
@@ -108,7 +116,11 @@ public class AttendeesListActivity extends AppCompatActivity {
         updateButtonStyle(signedUpBtn); //styles the button
 
     }
-
+    /**
+     * This replaces the fragment with the new fragment
+     * @param fragment the fragment to be replaced
+     * @param bundle the bundle to be passed
+     */
     private void replaceFragment(Fragment fragment, Bundle bundle) {
         fragment.setArguments(bundle);
         getSupportFragmentManager()

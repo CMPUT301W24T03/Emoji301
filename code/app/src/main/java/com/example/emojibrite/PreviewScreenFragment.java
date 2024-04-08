@@ -72,6 +72,10 @@ public class PreviewScreenFragment extends Fragment {
 
         return previewScreenLayout;
     }
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * from a previous saved state as given here.
+     */
     private void deletingStorageUpImage(){
         if (user.getUploadedImageUri() != null) {
             FirebaseStorage storage = FirebaseStorage.getInstance();

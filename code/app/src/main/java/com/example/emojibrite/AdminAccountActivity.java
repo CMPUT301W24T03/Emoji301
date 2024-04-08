@@ -16,6 +16,9 @@ import java.util.Iterator;
 import java.util.List;
 
 
+/**
+ * Activity for the admin account view
+ */
 public class AdminAccountActivity extends AppCompatActivity {
     ListView profileList;
     ArrayList<Users> dataList;
@@ -24,7 +27,10 @@ public class AdminAccountActivity extends AppCompatActivity {
     AttendeesArrayAdapter profileAdapter;
 
 
-
+    /**
+     * onCreate method to handle the creation of the admin account activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,13 +64,17 @@ public class AdminAccountActivity extends AppCompatActivity {
         });
 
     }
-
+    /**
+     * onResume method to handle the resuming of the activity
+     */
     @Override
     protected void onResume() {
         super.onResume();
         fetchUsers();
     }
-
+    /**
+     * fetchUsers method to handle the fetching of users
+     */
     private void fetchUsers(){
         List<Users> users = new ArrayList<>();
         database.getAllUsers(new Database.OnUsersRetrievedListener() {
@@ -80,7 +90,9 @@ public class AdminAccountActivity extends AppCompatActivity {
         });
 
     }
-
+    /**
+     * removeAdminFromDataList method to handle the removal of the admin from the data list
+     */
     private void removeAdminFromDataList(){
         Iterator<Users> iterator = dataList.iterator();
         while (iterator.hasNext()) {

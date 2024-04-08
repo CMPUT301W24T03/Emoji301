@@ -17,7 +17,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
+/**
+ * ImageUpload class is responsible for handling the image upload functionality
+ */
 public class ImageUpload {
     //most likely useless
     private Bitmap selectedImageBitmap = null;

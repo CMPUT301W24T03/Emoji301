@@ -44,7 +44,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
     ArrayList<String> signedAttendees;
 
-    Button signingup, attendeesButton, notificationButton,  deleteBtn, qrBtn, qrCodeEventDetails, qrCodeCheckInDetails;
+    Button signingup, attendeesButton, notificationButton,  deleteBtn,  qrCodeEventDetails, qrCodeCheckInDetails;
     TextView showMap;
 
     Database database;
@@ -81,7 +81,7 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         notificationButton = findViewById(R.id.Notification_button);
         deleteBtn = findViewById(R.id.delete_event);
         showMap = findViewById(R.id.show_map);
-        qrBtn = findViewById(R.id.check_in_qr); // Double check!!!!!!!!! Put one for the event qr as well!!!!!
+        // Double check!!!!!!!!! Put one for the event qr as well!!!!!
 
         qrCodeEventDetails = findViewById(R.id.event_qr); // Double check!!!!!!!!!
         qrCodeCheckInDetails = findViewById(R.id.check_in_qr);
@@ -105,7 +105,8 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 
             signingup.setVisibility(View.GONE);
             showMap.setVisibility(View.GONE);
-            qrBtn.setVisibility(View.GONE);
+            qrCodeCheckInDetails.setVisibility(View.GONE);
+            qrCodeEventDetails.setVisibility(View.GONE);
             deleteBtn.setVisibility(View.VISIBLE);
 
         }
@@ -267,7 +268,12 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             }
         });
     }
-
+    /**
+     * This function is to check if the event has started or not
+     * @param eventDate this is the date of the event
+     * @param eventTime this is the time of the event
+     * @return boolean
+     */
     private boolean isEventStarted(Date eventDate, String eventTime) {
         if (eventDate == null || eventTime == null) {
             return false; // Event date or time is not set
@@ -336,7 +342,8 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         });
         database.addSignin(eventId, currentUser);
         signingup.setText("You have signed up"); // Set the text to indicate the user has signed up
-        signingup.setBackgroundColor(Color.GREEN); // Change the background color to green
+        signingup.setBackgroundResource(R.drawable.signup_green_outline); // Change the background color to green
+        signingup.setTextColor(Color.parseColor("#376141"));
         signingup.setEnabled(false);
     }
 
@@ -385,6 +392,9 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             signingup.setVisibility(View.GONE);
             if (!privilege.equals("2")) {
                 notificationButton.setVisibility(View.VISIBLE);
+                qrCodeEventDetails.setVisibility(View.VISIBLE);
+                qrCodeCheckInDetails.setVisibility(View.VISIBLE);
+                showMap.setVisibility(View.VISIBLE);
             }
             Log.d(TAG,"SIGNINGUP BUTTON IS GOOONE");
 
@@ -397,6 +407,9 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             Log.d(TAG,"Current User"+currentUser);
             attendeesButton.setVisibility(View.GONE);
             notificationButton.setVisibility(View.GONE);
+//            qrCodeEventDetails.setVisibility(View.GONE);
+//            qrCodeCheckInDetails.setVisibility(View.GONE);
+            showMap.setVisibility(View.GONE);
 
         }
         // Formatting and displaying the event date and time.
@@ -469,7 +482,9 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         database.storeNotification(message, eventId);
     }
 
-
+    /**
+     * method to handle the negative click of the dialog
+     */
     private void deleteAlertBuilder(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

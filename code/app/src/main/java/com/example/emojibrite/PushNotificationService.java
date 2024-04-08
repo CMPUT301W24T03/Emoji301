@@ -222,7 +222,7 @@ public class PushNotificationService extends FirebaseMessagingService {
 
         // Since android Oreo, notification channel is needed.
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId, "Events", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel = new NotificationChannel(channelId, "Events", NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(channel);
             Log.d(TAG, "Notification channel created: " + channel.toString());
         }
