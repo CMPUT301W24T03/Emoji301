@@ -12,7 +12,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-
+/**
+ * Activity for the admin home page
+ */
 public class AdminActivity extends AppCompatActivity {
     private Users user;
 
@@ -24,7 +26,10 @@ public class AdminActivity extends AppCompatActivity {
     private ImageView profileButton;
 
     private Database database = new Database();
-
+    /**
+     * onCreate method to handle the creation of the admin home page
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -46,7 +51,9 @@ public class AdminActivity extends AppCompatActivity {
 
 
     }
-
+    /**
+     * Method to handle the button listeners for the admin home page
+     */
     private void buttonListeners(){
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,7 +97,10 @@ public class AdminActivity extends AppCompatActivity {
         });
 
     }
-
+    /**
+     * Method to check the user document
+     * @param userUid
+     */
     private void checkUserDoc(String userUid){
         database.getUserDocument(userUid, documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -116,7 +126,9 @@ public class AdminActivity extends AppCompatActivity {
 
 
     }
-
+    /**
+     * Method to display the profile icon
+     */
     private void displayProfileIcon() {
         if (user.getUploadedImageUri() != null) {
             // User uploaded a picture, use that as the ImageView

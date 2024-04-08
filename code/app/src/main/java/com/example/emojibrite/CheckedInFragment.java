@@ -15,7 +15,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
+/**
+ * Fragment for the checked in view
+ */
 public class CheckedInFragment extends Fragment {
     // put your uninitialized attributes here
     ListView attendeesListView;
@@ -66,7 +68,7 @@ public class CheckedInFragment extends Fragment {
         }
 
     /**
-     *
+     * Load attendees from the database
      * @param eventId
      */
 

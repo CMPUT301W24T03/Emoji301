@@ -94,7 +94,9 @@ public class Database {
     public Database(FirebaseFirestore database) {
         this.db = database;
     }
-
+    /**
+     * A constructor that is used to create a new instance of the database class
+     */
     public Database(){
     }
     /**
@@ -196,7 +198,11 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     }
                 });
     }
-
+    /**
+     * A method to get the user object from the database
+     * @param userUid the user id
+     * @param listener the listener
+     */
     public void getAllUsers(OnUsersRetrievedListener listener) {
         // Get all the users from the database
         profileRef.get().addOnCompleteListener(task -> {
@@ -212,11 +218,17 @@ once created, u can call getuseruid to get the user id and use it to get user da
             }
         });
     }
-
+    /**
+     * An interface that serves as a callback for user retrieval operations
+     */
     public interface OnUsersRetrievedListener {
         void onUsersRetrieved(List<Users> users);
     }
-
+    /**
+     * A method to get the user object from the database
+     * @param userUid the user id
+     * @param listener the listener
+     */
     public void deleteUser(String userId, String imageUri){
         profileRef.document(userId).delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -236,8 +248,15 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     }
                 });
     }
-
+    /**
+     * A method to get the user object from the database
+     * @param userUid the user id
+     * @param listener the listener
+     */
     public void deleteUserUploadedImageFromStorage(String imageUri){
+        if (imageUri == null) {
+            return;
+        }
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference imageRef = storage.getReferenceFromUrl(imageUri);
         imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -253,7 +272,11 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     }
                 });
     }
-
+    /**
+     * A method to get the user object from the database
+     * @param userUid the user id
+     * @param listener the listener
+     */
     public void deleteEventIfOrganizerDeleted(String userId){
         eventRef.whereEqualTo("organizer", userId).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -268,7 +291,11 @@ once created, u can call getuseruid to get the user id and use it to get user da
         });
 
     }
-
+    /**
+     * A method to get the user object from the database
+     * @param userUid the user id
+     * @param listener the listener
+     */
     public void deleteUserFromSignedUp(String userId){
 
         signedUpRef.get().addOnCompleteListener(task -> {
@@ -286,6 +313,11 @@ once created, u can call getuseruid to get the user id and use it to get user da
         });
 
     }
+    /**
+     * A method to get the user object from the database
+     * @param userUid the user id
+     * @param listener the listener
+     */
     public void deleteUserFromAttendeeList(String userId){
         eventRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -302,7 +334,11 @@ once created, u can call getuseruid to get the user id and use it to get user da
         });
 
     }
-
+    /**
+     * A method to get the user object from the database
+     * @param userUid the user id
+     * @param listener the listener
+     */
     public void deleteEventNotification(String eventId){
         notificationRef.document(eventId).delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -445,7 +481,13 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 .addOnFailureListener(e -> Log.w(TAG, "Error writing event", e))
                 .addOnCompleteListener(onCompleteListener);
     }
-
+    /**
+     * Adds an event to the Firebase Firestore database.
+     * This method creates a map of event details and stores it under a document identified by the event's ID.
+     *
+     * @param event The event object containing the details of the event.
+     * @param onCompleteListener A listener that is called upon the completion of the event addition process.
+     */
     public void deleteEvent(String eventId, OnCompleteListener<Void> onCompleteListener){
         eventRef.document(eventId).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -467,7 +509,13 @@ once created, u can call getuseruid to get the user id and use it to get user da
             }
         }).addOnFailureListener(e -> Log.e(TAG, "Error fetching event", e));
     }
-
+    /**
+     * Adds an event to the Firebase Firestore database.
+     * This method creates a map of event details and stores it under a document identified by the event's ID.
+     *
+     * @param event The event object containing the details of the event.
+     * @param onCompleteListener A listener that is called upon the completion of the event addition process.
+     */
     public void deleteQrEventPoster(String checkInUri, String eventUri, String eventPoster){
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -489,7 +537,13 @@ once created, u can call getuseruid to get the user id and use it to get user da
         }
 
     }
-
+    /**
+     * Adds an event to the Firebase Firestore database.
+     * This method creates a map of event details and stores it under a document identified by the event's ID.
+     *
+     * @param event The event object containing the details of the event.
+     * @param onCompleteListener A listener that is called upon the completion of the event addition process.
+     */
     public void deleteImageFromStorage(Image image, OnImageDeletedListener listener){
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference imageRef = storage.getReferenceFromUrl(image.getImageURL().toString());
@@ -525,6 +579,13 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
 
     }
+    /**
+     * Adds an event to the Firebase Firestore database.
+     * This method creates a map of event details and stores it under a document identified by the event's ID.
+     *
+     * @param event The event object containing the details of the event.
+     * @param onCompleteListener A listener that is called upon the completion of the event addition process.
+     */
     public interface OnImageDeletedListener {
         void onImageDeleted();
     }
@@ -666,7 +727,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
                     listener.onEventsRetrieved(events);
                 }).addOnFailureListener(e-> Log.e(TAG,"error fetching all the events", e));
     }
-
+    /**
+     * This method retreives all the events available on the database
+     * @param listener
+     */
     public void fetchImages( @Nullable String pageToken,OnImageRetrievedListener listener) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference imageRef = storage.getReference().child("images/");
@@ -719,7 +783,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
 
 
-
+    /**
+     * An interface for listeners that handle the retrieval of a list of images.
+     * Implement this interface to receive a callback when a list of images is successfully retrieved.
+     */
     public interface OnImageRetrievedListener {
         void onImageRetrieved(List<Image> images);
     }
@@ -785,7 +852,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
             }
         }).addOnFailureListener(e -> Log.e(TAG, "Error fetching signed attendees", e));
     }
-
+    /**
+     * An interface for listeners that handle the retrieval of a list of signed attendees.
+     * Implement this interface to receive a callback when a list of signed attendees is successfully retrieved.
+     */
     public interface OnSignedAttendeesRetrievedListener {
         void onSignedAttendeesRetrieved(List<String> attendees);
     }
@@ -819,7 +889,15 @@ once created, u can call getuseruid to get the user id and use it to get user da
             Log.e(TAG, "Error fetching event", e);
         });
     }
-
+    /**
+     * Fetches a single event from the Firestore database using the check-in QR ID.
+     * If the event is found, the provided {@link EventCallBack} is invoked with the retrieved event.
+     *
+     * @param QRCheckinID
+     * The ID of the check-in QR code.
+     * @param callBack
+     * The callback that will handle the event once it is fetched.
+     */
     public void getSignedUpEvents(String userId, OnEventsRetrievedListener listener){
         fetchAllEventsDatabase(events -> {
             List<Event> signedUpEvents = new ArrayList<>();
@@ -838,7 +916,15 @@ once created, u can call getuseruid to get the user id and use it to get user da
             }
         });
     }
-
+    /**
+     * Fetches a single event from the Firestore database using the check-in QR ID.
+     * If the event is found, the provided {@link EventCallBack} is invoked with the retrieved event.
+     *
+     * @param QRCheckinID
+     * The ID of the check-in QR code.
+     * @param callBack
+     * The callback that will handle the event once it is fetched.
+     */
     public void getCheckedInEvents(String userId, OnEventsRetrievedListener listener){
         eventRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -872,7 +958,12 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
     });
     }
-
+ /**
+     * THIS CHECKS IF
+     * @param userUid
+     * @param eventId
+     * @param callback
+     */
     public interface CheckUserInEventCallback {
             void onResult(boolean isSignedUp);
         }
@@ -892,7 +983,13 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Event attendee list successfully updated!"))
                 .addOnFailureListener(e -> Log.e(TAG, "Error updating event attendee list", e));
     }
-
+    /**
+     * Method to update an event's attendee's list.
+     * @param eventID
+     * The event that's meant to be updated.
+     * @param attendees
+     * A 2D ArrayList containing the attendees and the number of times they have checked in.
+     */
     public void updatecurrentAttendance(String eventId, Integer currentAttendance){
         eventRef.document(eventId).update("currentAttendance",currentAttendance)
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Current Attendance successfully updated!"))
@@ -917,7 +1014,13 @@ once created, u can call getuseruid to get the user id and use it to get user da
             Log.e(TAG, "Error updating event geolocation check-ins", e);
         });
     }
-
+    /**
+     * Method to update an event's list of where attendees are checking in from.
+     * @param eventID
+     * The event that's meant to be updated.
+     * @param checkInLocations
+     * A 2D ArrayList containing the locations that attendees checked in from.
+     */
     // Notification Database Section //
     public void storeNotification(String message, String eventId) {
         // Get a reference to the 'Notifications' collection
