@@ -120,6 +120,9 @@ public class MapsTesting {
         latch.await(10, TimeUnit.SECONDS);
     }
 
+    /**
+     * Verifies that given a location it will correctly show the location on the map with a marker
+     */
     @Test
     public void testShowMaps() {
         // Create a string representation of latitude and longitude
