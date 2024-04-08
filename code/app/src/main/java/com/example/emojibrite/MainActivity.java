@@ -128,6 +128,10 @@ public class MainActivity extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
     }
+    /**
+     * This method automatically signs in the user if they have already signed in before.
+     * If the user has not signed in before, they will be prompted to sign in.
+     */
 
     private void automaticSignIn(){
         database.anonymousSignIn(new Database.SignInCallBack() {

@@ -77,7 +77,9 @@ public class AttendeesListActivity extends AppCompatActivity {
             checkInBtn.setText("CheckIn:"+event.getcurrentAttendance()+"users");
         });
     }
-
+    /**
+     * This opens up the fragment for checked in and it deals with passing the information in a bundle
+     */
     private void openCheckedUpFragment(){
         CheckedInFragment checkedInFragment = new CheckedInFragment();
 
@@ -108,7 +110,11 @@ public class AttendeesListActivity extends AppCompatActivity {
         updateButtonStyle(signedUpBtn); //styles the button
 
     }
-
+    /**
+     * This replaces the fragment with the new fragment
+     * @param fragment the fragment to be replaced
+     * @param bundle the bundle to be passed
+     */
     private void replaceFragment(Fragment fragment, Bundle bundle) {
         fragment.setArguments(bundle);
         getSupportFragmentManager()

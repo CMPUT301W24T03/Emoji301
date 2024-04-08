@@ -20,7 +20,9 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+/**
+ * Adapter for the attendees list
+ */
 public class AttendeesArrayAdapter extends ArrayAdapter<Users> {
     String privilege;
     ArrayList<Integer> checkInCounts; // This will store the check-in counts

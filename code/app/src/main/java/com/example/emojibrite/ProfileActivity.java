@@ -258,6 +258,9 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
         });
         settingPfp();
     }
+    /**
+     * Check if the user is an admin or moderator.
+     */
 
     private void checkRole() {
 
@@ -350,6 +353,9 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
             }
         }
     }
+    /**
+     * Check if the user has the location permission when the activity is resumed.
+     */
     private void onResumeLocation() {
         // Check if location permission is granted
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -445,7 +451,9 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
     // End of Notification area //
 
     // Geolocation Tracking area //
-
+    /**
+     * Request location permission from the user.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -463,7 +471,9 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
             }
         }
     }
-
+    /**
+     * Display a message to the user that they need to enable the location permission.
+     */
     private void displayLocationPermissionMessage() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Permission needed")
@@ -472,7 +482,10 @@ public class ProfileActivity extends AppCompatActivity implements ProfileEditFra
                 .show();
         geoToggle.setChecked(false);
     }
-
+    /**
+     * Update the user's geolocation permission in the Firestore database.
+     * @param permissionGranted : true if the permission is granted, false otherwise
+     */
     private void updateUserGeolocationPermission(boolean permissionGranted) {
         // Update the enableGeolocation field in the Firestore database
         FirebaseFirestore db = FirebaseFirestore.getInstance();
