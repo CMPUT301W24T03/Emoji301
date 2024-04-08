@@ -582,9 +582,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
     /**
      * Adds an event to the Firebase Firestore database.
      * This method creates a map of event details and stores it under a document identified by the event's ID.
-     *
-     * @param event The event object containing the details of the event.
-     * @param onCompleteListener A listener that is called upon the completion of the event addition process.
+
      */
     public interface OnImageDeletedListener {
         void onImageDeleted();
@@ -958,11 +956,9 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
     });
     }
- /**
-     * THIS CHECKS IF
-     * @param userUid
-     * @param eventId
-     * @param callback
+
+    /**
+     * An interface for listeners that handle the retrieval of a list of signed attendees.
      */
     public interface CheckUserInEventCallback {
             void onResult(boolean isSignedUp);
