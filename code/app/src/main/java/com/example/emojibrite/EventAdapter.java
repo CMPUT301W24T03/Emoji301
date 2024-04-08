@@ -38,6 +38,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
      * Constructor for the EventAdapter.
      * @param context The current context.
      * @param events An ArrayList of Event objects to be displayed.
+     * @param eventMap keeps track on if you are the organizer, signee or no one
      */
 
     public EventAdapter(Context context, ArrayList<Event> events, Map<Event, Boolean> eventMap){

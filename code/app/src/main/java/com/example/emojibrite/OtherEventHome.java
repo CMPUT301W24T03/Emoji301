@@ -65,6 +65,12 @@ public class OtherEventHome extends AppCompatActivity {
         startActivity(intent);
     }
 
+
+    /**
+     * Checks if the user's document exists in the database and updates the UI accordingly.
+     *
+     * @param userUid The unique identifier of the user.
+     */
     private void checkUserDoc(String userUid){
         database.getUserDocument(userUid, documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -85,6 +91,11 @@ public class OtherEventHome extends AppCompatActivity {
 
 
     }
+
+    /**
+     * Sets up listeners for various buttons in the activity including the event list, QR code scanner,
+     * and profile button.
+     */
     private void buttonListeners(){
         eventList.setOnItemClickListener(((parent, view, position, id) -> {
             Event selectedEvent = dataList1.get(position);
@@ -116,6 +127,11 @@ public class OtherEventHome extends AppCompatActivity {
 
     }
 
+    /**
+     * Starts the NotificationsActivity to display user notifications.
+     *
+     * @param user The current user object.
+     */
     private void showNotifications(Users user){
         Intent intent = new Intent(this, NotificationsActivity.class);
         if (user!=null){
@@ -124,6 +140,10 @@ public class OtherEventHome extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * Sets up the user's profile picture in the activity.
+     * It uses Glide to load the image asynchronously.
+     */
     private void settingUpPfp(){
         if (user.getUploadedImageUri() != null) {
             // User uploaded a picture, use that as the ImageView
@@ -201,6 +221,9 @@ public class OtherEventHome extends AppCompatActivity {
 
     }
 
+    /**
+     * Fetches all events from the database and updates the ListView adapter with these events.
+     */
     private void fetchAllEvents(){
 
         database.fetchAllEventsDatabase(events -> {

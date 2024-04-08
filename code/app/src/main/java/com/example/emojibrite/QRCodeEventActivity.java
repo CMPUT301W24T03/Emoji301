@@ -107,6 +107,10 @@ public class QRCodeEventActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * It generates a random 12 digit string for the event id
+     * @return generated event id
+     */
     private String generateRandomId(){
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder sb = new StringBuilder();
@@ -148,6 +152,10 @@ public class QRCodeEventActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Takes care of returning the result when ending the activity as addEventFragment retreives the eventId and the qr code
+     */
+
     private void returnResult() {
         Intent resultIntent = new Intent();
         // Assume 'selectedImageUri' is the URI of your generated or selected QR code
@@ -157,6 +165,21 @@ public class QRCodeEventActivity extends AppCompatActivity {
         finish();
     }
 
+
+
+    /**
+     * Saves a bitmap image to the internal cache directory and returns its URI.
+     * The method creates a file in the cache directory with the specified file name, writes the bitmap to this file,
+     * and then returns the URI for the file using a FileProvider.
+     *
+     * @param bitmap The bitmap image to be saved. This is typically the QR code bitmap generated in the activity.
+     * @param fileName The name of the file in which the bitmap will be saved. Should be unique to avoid overwriting existing files.
+     * @return The Uri of the saved bitmap image. This URI can be used to share or process the image further.
+     * @throws IOException if an error occurs during file writing.
+     *
+     * Note: The method assumes that a FileProvider is defined in the AndroidManifest.xml with an authority of
+     * "com.example.emojibrite" and a path pointing to the cache directory.
+     */
     private Uri saveImage(Bitmap bitmap, String fileName) throws IOException {
         // Get the cache directory
         File cachePath = new File(getCacheDir(), "images");
