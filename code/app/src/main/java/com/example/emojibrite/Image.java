@@ -2,6 +2,10 @@ package com.example.emojibrite;
 
 import android.net.Uri;
 
+/**
+ * Class for the Image object
+ * This class is used to store the image URL, user ID, and event ID
+ */
 public class Image {
     private String  userId, eventId;
 
@@ -24,7 +28,7 @@ public class Image {
     }
     /**
      * Method to get the image URL
-     * @param imageURL
+     * @param imageURL image URL
      */
     public void setImageURL(Uri imageURL) {
 
@@ -32,7 +36,7 @@ public class Image {
     }
     /**
      * Method to set the user ID
-     * @param userId
+     * @param userId user ID
      */
     public void setUserId(String userId) {
         this.userId = userId;
@@ -46,7 +50,7 @@ public class Image {
     }
     /**
      * Method to set the event ID
-     * @param eventId
+     * @param eventId event ID
      */
     public void setEventId(String eventId) {
         this.eventId = eventId;

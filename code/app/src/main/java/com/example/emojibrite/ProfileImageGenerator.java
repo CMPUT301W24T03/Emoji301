@@ -1,8 +1,5 @@
 package com.example.emojibrite;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 
@@ -33,6 +30,11 @@ public class ProfileImageGenerator {
      * @param <T> The type of the result
      */
     public interface OnCompleteListener <T> {
+        /**
+         * This method is called when the profile image is generated
+         * and stored in the database.
+         * @param result The result of the operation
+         */
         void onComplete(T result);
     }
     /**

@@ -7,6 +7,10 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.UUID;
 
+/**
+ * Class for the ImageUploader object
+ * This class is used to upload images to Firebase Storage
+ */
 public class ImageUploader {
 
     private final FirebaseStorage storage;
@@ -25,14 +29,24 @@ public class ImageUploader {
      * Interface for success and no success
      */
     public interface UploadCallback{
+
+        /**
+         * Method to get the download URI
+         * @param downloadUri the download URI
+         */
         void onUploadSuccess(Uri downloadUri); //interface for when the stuff works
+
+        /**
+         * Method to handle the exception
+         * @param exception the exception
+         */
         void onUploadFailure(Exception exception); // error handler
     }
 
     /**
      * Uploading the image
      * @param imageUri the image which is passed to upload into firebase
-     * @param callback
+     * @param callback the callback for the upload
      */
     public void uploadImage(Uri imageUri, UploadCallback callback){
         StorageReference storageRef = storage.getReference(); //refers the storage
