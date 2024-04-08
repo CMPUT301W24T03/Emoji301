@@ -93,7 +93,7 @@ public class ProfileEditFragmentTest {
         onView(withId(R.id.removeImageButton)).check(matches(isClickable()));
     }
 
-  
+
     @Test
     public void testUploadImageButton() {
         onView(withId(R.id.editButton)).perform(click());
