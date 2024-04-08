@@ -342,7 +342,8 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
         });
         database.addSignin(eventId, currentUser);
         signingup.setText("You have signed up"); // Set the text to indicate the user has signed up
-        signingup.setBackgroundColor(Color.GREEN); // Change the background color to green
+        signingup.setBackgroundResource(R.drawable.signup_green_outline); // Change the background color to green
+        signingup.setTextColor(Color.parseColor("#376141"));
         signingup.setEnabled(false);
     }
 
@@ -406,8 +407,8 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
             Log.d(TAG,"Current User"+currentUser);
             attendeesButton.setVisibility(View.GONE);
             notificationButton.setVisibility(View.GONE);
-            qrCodeEventDetails.setVisibility(View.GONE);
-            qrCodeCheckInDetails.setVisibility(View.GONE);
+//            qrCodeEventDetails.setVisibility(View.GONE);
+//            qrCodeCheckInDetails.setVisibility(View.GONE);
             showMap.setVisibility(View.GONE);
 
         }
