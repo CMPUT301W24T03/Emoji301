@@ -181,7 +181,7 @@ public class Event implements Serializable {
 
     public void setCapacity(Integer capacity){this.capacity=capacity;}
 
-    public void setCheckInID(){this.checkInID=checkInID;}
+    public void setCheckInID(String checkInID){this.checkInID=checkInID;}
 
 
 

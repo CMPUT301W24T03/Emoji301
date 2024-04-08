@@ -907,7 +907,11 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
 
 
-
+    /**
+     * This method retreives checked in eventsa when a uid is passed onto it
+     * @param userId the user ID which basically checks events it is in
+     * @param listener returns the array
+     */
     public void getCheckedInEvents(String userId, OnEventsRetrievedListener listener){
         eventRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -928,10 +932,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
 
     /**
-     * THIS CHECKS IF
-     * @param userUid
-     * @param eventId
-     * @param callback
+     * THIS CHECKS IF user id is in event
+     * @param userUid user id we are checking
+     * @param eventId event id we are searching
+     * @param callback returns boolean
      */
     public void checkUserInEvent(String userUid, String eventId, CheckUserInEventCallback callback) {
 

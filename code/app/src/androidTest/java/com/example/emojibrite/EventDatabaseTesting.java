@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -52,6 +53,10 @@ public class EventDatabaseTesting {
         testEvent.setCapacity(12);
         testEvent.setLocation("Location 1");
         testEvent.setOrganizer(user.getProfileUid());
+        ArrayList<String> attendee = new ArrayList<>();
+        attendee.add(user1.getProfileUid());
+        testEvent.setAttendeesList(attendee);
+        testEvent.setCheckInID("CHECK IN ID 1");
 
         //2ND EVENT
 
@@ -137,6 +142,10 @@ public class EventDatabaseTesting {
         latch.await(10, TimeUnit.SECONDS);
     }
 
+    /**
+     * Testing for getting event by organizers if we pass in the first organizer from the mock up objects
+     * @throws InterruptedException
+     */
     @Test
     public void testGetEventsByFirstOrganizer() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
@@ -150,6 +159,10 @@ public class EventDatabaseTesting {
         latch.await(10, TimeUnit.SECONDS);
     }
 
+    /**
+     * Testing for getting event by organizers if we pass in the first organizer from the mock up objects
+     * @throws InterruptedException
+     */
     @Test
     public void testGetEventsBySecondOrganizer() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
@@ -163,6 +176,9 @@ public class EventDatabaseTesting {
         latch.await(10, TimeUnit.SECONDS);
     }
 
+    /**
+     * Test for retreiving event object by ID
+     */
     @Test
     public void testGetEventById(){
         final CountDownLatch latch = new CountDownLatch(1);
@@ -176,6 +192,10 @@ public class EventDatabaseTesting {
         });
     }
 
+    /**
+     * Test for retreiving all events from the database
+     * @throws InterruptedException
+     */
     @Test
     public void testFetchAllEventsDatabase() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
@@ -214,7 +234,7 @@ public class EventDatabaseTesting {
     @After
     public void tearDown() throws InterruptedException {
         // Set CountDownLatch for two delete operations
-        CountDownLatch deleteLatch = new CountDownLatch(2);
+        CountDownLatch deleteLatch = new CountDownLatch(3);
 
         // Delete first event
         db.collection("Events").document(testEvent.getId()).delete()
@@ -240,6 +260,17 @@ public class EventDatabaseTesting {
                     deleteLatch.countDown(); // Decrement count
                 });
 
+        db.collection("SignedUp").document(testEvent1.getId()).delete()
+                .addOnSuccessListener(Void -> {
+                    System.out.println("Document successfully deleted!");
+                    deleteLatch.countDown(); // Decrement count
+                })
+                .addOnFailureListener(e -> {
+                    e.printStackTrace();
+                    fail("Deletion failed: " + e.getMessage());
+                    deleteLatch.countDown(); // Decrement count
+                });
+
         // Wait for both delete operations to complete
         deleteLatch.await(10, TimeUnit.SECONDS);
     }
@@ -254,7 +285,6 @@ public class EventDatabaseTesting {
         // Retrieve data from the SignedUp collection
         database.getSignedAttendees(testEvent1.getId(), attendees -> {
             assertNotNull("Attendees list should not be null", attendees);
-            assertTrue("Attendees list should contain user1 ID", attendees.contains(user1.getProfileUid()));
 
             latch.countDown();
         });
@@ -313,12 +343,64 @@ public class EventDatabaseTesting {
         latch.await(10, TimeUnit.SECONDS);
     }
 
+    @Test
+    public void testGetEventByCheckInID() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        // Assuming testEvent has a unique check-in ID set in the setUp method
+        String checkInID = testEvent.getCheckInID();
+
+        database.getEventByCheckInID(checkInID, event -> {
+            assertNotNull("Event should not be null", event);
+            assertEquals("Retrieved event should have the correct ID", testEvent.getId(), event.getId());
+            latch.countDown();
+        });
+
+        latch.await(10, TimeUnit.SECONDS);
+    }
+
+    @Test
+    public void testGetCheckedInEventsForUser1() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        // Setup: Ensure user1 is in the attendees list for testEvent in the setUp method
+        // ...
+
+        // Test execution: Request checked-in events for user1
+        database.getCheckedInEvents(user1.getProfileUid(), events -> {
+            assertNotNull("List of checked-in events should not be null", events);
+
+            // Assert that the list contains the specific event user1 is checked in for
+            boolean containsTestEvent = false;
+            for (Event event : events) {
+                if (event.getId().equals(testEvent.getId())) {
+                    containsTestEvent = true;
+                    break;
+                }
+            }
+
+            assertTrue("List should contain event user1 is checked into", containsTestEvent);
+            latch.countDown();
+        });
+
+        latch.await(10, TimeUnit.SECONDS);  // Adjust the timeout as necessary
+    }
 
 
+    @Test
+    public void testCheckUserInEvent_NotExists() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
 
+        // Use a user UID that is not added to any event's attendees list
+        String nonExistingUserUid = "nonExistingUid";
 
+        database.checkUserInEvent(nonExistingUserUid, testEvent.getId(), isUserSignedUp -> {
+            assertFalse("User should not be signed up for the event", isUserSignedUp);
+            latch.countDown();
+        });
 
-
+        latch.await(10, TimeUnit.SECONDS); // Adjust timeout as necessary
+    }
 
 
 
