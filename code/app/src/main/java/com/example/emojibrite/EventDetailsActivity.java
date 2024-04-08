@@ -246,7 +246,8 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
                             // Event has started - Show "Event already started" message and hide the sign-up button
 //                            signingup.setVisibility(View.GONE);
                             signingup.setText("Event Started");
-                            signingup.setBackgroundColor(Color.YELLOW);
+                            signingup.setBackgroundResource(R.drawable.signup_yellow_outline); // Change the background color to green
+                            signingup.setTextColor(Color.parseColor("#baa416"));
                             signingup.setEnabled(false);
                         } else {
                             // Event hasn't started yet - keep the sign-up button
@@ -309,13 +310,16 @@ public class EventDetailsActivity extends AppCompatActivity implements PushNotif
 //        boolean NotPastDate = isEventStarted(, String eventTime);
 
         if (isCapacityFull){
+            signingup.setText("Event has reached capacity"); // Set the text to indicate the user has signed up
+            signingup.setBackgroundResource(R.drawable.signup_red_outline); // Change the background color to green
+            signingup.setTextColor(Color.RED);
             signingup.setText("Event is full"); // Set the text to indicate the user has signed up
-            signingup.setBackgroundColor(Color.RED); // Change the background color to green
             signingup.setEnabled(false);
         }
         else if (isUserSignedUp){
             signingup.setText("You have signed up"); // Set the text to indicate the user has signed up
-            signingup.setBackgroundColor(Color.GREEN); // Change the background color to green
+            signingup.setBackgroundResource(R.drawable.signup_green_outline); // Change the background color to green
+            signingup.setTextColor(Color.parseColor("#376141"));
             signingup.setEnabled(false);
         }
         else{
