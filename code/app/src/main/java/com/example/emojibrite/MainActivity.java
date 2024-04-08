@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 else {
-
                     if (userDocExist) {
                         if (user.getName() != null) {
                             Log.d(TAG, "Enter button clicked"); // for debugging
@@ -97,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
                         intent.putExtra("Uid", database.getUserUid());
                         startActivity(intent);
                         Log.d(TAG, "IT worked!!!!"); // for debugging
-
                     }
                 }
 
