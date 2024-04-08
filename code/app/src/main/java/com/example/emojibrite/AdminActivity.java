@@ -26,10 +26,7 @@ public class AdminActivity extends AppCompatActivity {
     private ImageView profileButton;
 
     private Database database = new Database();
-    /**
-     * onCreate method to handle the creation of the admin home page
-     * @param savedInstanceState
-     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 

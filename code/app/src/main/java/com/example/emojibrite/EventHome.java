@@ -56,6 +56,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     /**
      * Opens the EventDetailsActivity to show the details of the selected event.
      * @param event The event to show details for.
+     * @param user The user object to pass to the EventDetailsActivity.
      */
 
     private void showEventDetails(Event event, Users user) {
@@ -67,6 +68,10 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
         intent.putExtra("privilege", "1");//You send the current user profile id into the details section
         startActivity(intent);
     }
+    /**
+     * Opens the NotificationsActivity to show the notifications of the selected event.
+     * @param user The user object to pass to the NotificationsActivity.
+     */
 
     private void showNotifications(Users user){
         Intent intent = new Intent(this, NotificationsActivity.class);
@@ -139,7 +144,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
     }
 
     /**
-     *
+     * Method to check the user document
      * @param userUid
      */
 
@@ -226,11 +231,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
 
 
-    /**
-     * Called when the activity is created.
-     *
-     * @param savedInstanceState The saved instance state.
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

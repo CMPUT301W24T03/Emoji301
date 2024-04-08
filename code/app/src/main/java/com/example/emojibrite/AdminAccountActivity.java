@@ -27,10 +27,7 @@ public class AdminAccountActivity extends AppCompatActivity {
     AttendeesArrayAdapter profileAdapter;
 
 
-    /**
-     * onCreate method to handle the creation of the admin account activity
-     * @param savedInstanceState
-     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,9 +61,7 @@ public class AdminAccountActivity extends AppCompatActivity {
         });
 
     }
-    /**
-     * onResume method to handle the resuming of the activity
-     */
+
     @Override
     protected void onResume() {
         super.onResume();

@@ -28,7 +28,7 @@ public class ProfileImageGenerator {
     String Uid;
 
     /**
-     * This interface is used to provide a callback for when the
+     * This interface is used to create a callback for when the
      * profile image is generated and stored in the database.
      * @param <T> The type of the result
      */

@@ -100,13 +100,7 @@ public class ProfileEditFragment extends DialogFragment {
 
 
 
-    /**
-     * Called to have the fragment instantiate its user interface view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
-     *
-     * @return The View for the fragment's UI, or null.
-     */
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle bundle = getArguments();

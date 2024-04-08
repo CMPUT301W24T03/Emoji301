@@ -27,10 +27,7 @@ public class AdminEventActivity extends AppCompatActivity {
 
     EventAdapter eventAdapter;
     FloatingActionButton backBtn;
-    /**
-     * onCreate method to handle the creation of the admin event activity
-     * @param savedInstanceState
-     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

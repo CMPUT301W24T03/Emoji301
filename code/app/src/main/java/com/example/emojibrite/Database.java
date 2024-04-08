@@ -200,7 +200,6 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
     /**
      * A method to get the user object from the database
-     * @param userUid the user id
      * @param listener the listener
      */
     public void getAllUsers(OnUsersRetrievedListener listener) {
@@ -227,7 +226,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
     /**
      * A method to get the user object from the database
      * @param userUid the user id
-     * @param listener the listener
+     * @param imageUri the image uri
      */
     public void deleteUser(String userId, String imageUri){
         profileRef.document(userId).delete()
@@ -251,7 +250,6 @@ once created, u can call getuseruid to get the user id and use it to get user da
     /**
      * A method to get the user object from the database
      * @param userUid the user id
-     * @param listener the listener
      */
     public void deleteUserUploadedImageFromStorage(String imageUri){
         if (imageUri == null) {
@@ -293,7 +291,6 @@ once created, u can call getuseruid to get the user id and use it to get user da
     /**
      * A method to get the user object from the database
      * @param userUid the user id
-     * @param listener the listener
      */
     public void deleteUserFromSignedUp(String userId){
 
@@ -315,7 +312,6 @@ once created, u can call getuseruid to get the user id and use it to get user da
     /**
      * A method to get the user object from the database
      * @param userUid the user id
-     * @param listener the listener
      */
     public void deleteUserFromAttendeeList(String userId){
         eventRef.get().addOnCompleteListener(task -> {
@@ -326,6 +322,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
                         attendeeList.remove(userId);
                         document.getReference().update("attendeesList", attendeeList);
                     }
+                    Long currentAttendance = document.getLong("currentAttendance");
+                    if (currentAttendance != null && currentAttendance > 0) {
+                        document.getReference().update("currentAttendance", currentAttendance - 1);
+                    }
                 }
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
@@ -335,8 +335,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
     /**
      * A method to get the user object from the database
-     * @param userUid the user id
-     * @param listener the listener
+     * @param eventId the eventId
      */
     public void deleteEventNotification(String eventId){
         notificationRef.document(eventId).delete()
@@ -512,8 +511,9 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * Adds an event to the Firebase Firestore database.
      * This method creates a map of event details and stores it under a document identified by the event's ID.
      *
-     * @param event The event object containing the details of the event.
-     * @param onCompleteListener A listener that is called upon the completion of the event addition process.
+     * @param checkInUri The event object containing the details of the event.
+     * @param eventUri The URI of the event poster image.
+     * @param eventPoster The URI of the event poster image.
      */
     public void deleteQrEventPoster(String checkInUri, String eventUri, String eventPoster){
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -540,7 +540,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * Adds an event to the Firebase Firestore database.
      * This method creates a map of event details and stores it under a document identified by the event's ID.
      *
-     * @param event The event object containing the details of the event.
+     * @param image The event object containing the details of the event.
      * @param onCompleteListener A listener that is called upon the completion of the event addition process.
      */
     public void deleteImageFromStorage(Image image, OnImageDeletedListener listener){
@@ -674,8 +674,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
     /**
      * Fetches a single event from the Firestore database using the event ID.
-     * If the event is found, the provided {@link EventCallBack} is invoked with the retrieved event.
-     *
+    *
      * @param eventId The unique ID of the event to fetch.
      * @param callBack The callback that will handle the event once it is fetched.
      */
@@ -726,6 +725,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
     /**
      * This method retreives all the events available on the database
+     * @param pageToken
      * @param listener
      */
     public void fetchImages( @Nullable String pageToken,OnImageRetrievedListener listener) {
@@ -887,6 +887,15 @@ once created, u can call getuseruid to get the user id and use it to get user da
         });
     }
 
+    /**
+     * Fetches a single event from the Firestore database using the check-in QR ID.
+     * If the event is found, the provided {@link EventCallBack} is invoked with the retrieved event.
+     *
+     * @param userId
+     * The ID of the check-in QR code.
+     * @param listener
+     * The callback that will handle the event once it is fetched.
+     */
     public void getSignedUpEvents(String userId, OnEventsRetrievedListener listener){
         fetchAllEventsDatabase(events -> {
             List<Event> signedUpEvents = new ArrayList<>();
@@ -968,7 +977,13 @@ once created, u can call getuseruid to get the user id and use it to get user da
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Event attendee list successfully updated!"))
                 .addOnFailureListener(e -> Log.e(TAG, "Error updating event attendee list", e));
     }
-
+    /**
+     * Method to update an event's attendee's list.
+     * @param eventID
+     * The event that's meant to be updated.
+     * @param attendees
+     * A 2D ArrayList containing the attendees and the number of times they have checked in.
+     */
     public void updatecurrentAttendance(String eventId, Integer currentAttendance){
         eventRef.document(eventId).update("currentAttendance",currentAttendance)
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Current Attendance successfully updated!"))
@@ -993,7 +1008,13 @@ once created, u can call getuseruid to get the user id and use it to get user da
             Log.e(TAG, "Error updating event geolocation check-ins", e);
         });
     }
-
+    /**
+     * Method to update an event's list of where attendees are checking in from.
+     * @param message
+     * The event that's meant to be updated.
+     * @param eventId
+     * A 2D ArrayList containing the locations that attendees checked in from.
+     */
     // Notification Database Section //
     public void storeNotification(String message, String eventId) {
         // Get a reference to the 'Notifications' collection
