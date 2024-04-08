@@ -26,7 +26,13 @@ import java.util.HashMap;
 public class AttendeesArrayAdapter extends ArrayAdapter<Users> {
     String privilege;
     ArrayList<Integer> checkInCounts; // This will store the check-in counts
-
+    /**
+     * Constructor for the AttendeesArrayAdapter
+     * @param context
+     * @param users
+     * @param privilege
+     * @param checkInCounts
+     */
     public AttendeesArrayAdapter(Context context, ArrayList<Users> users, String privilege, ArrayList<Integer> checkInCounts) {
         super(context, 0, users);
         this.privilege = privilege;

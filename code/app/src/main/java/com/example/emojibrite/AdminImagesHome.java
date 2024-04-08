@@ -17,6 +17,9 @@ import java.util.List;
  * Activity for the admin images view
  */
 public class AdminImagesHome extends AppCompatActivity {
+    /**
+     * user object
+     */
     public static Users user;
 
     ListView imageList;

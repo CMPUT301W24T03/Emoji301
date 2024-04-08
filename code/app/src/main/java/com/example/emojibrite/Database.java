@@ -86,11 +86,11 @@ public class Database {
         void onSignInComplete();
     }
 
+
     /**
      * A constructor that is used to create a new instance of the database class
+     * @param database is the database
      */
-
-
     public Database(FirebaseFirestore database) {
         this.db = database;
     }
@@ -221,11 +221,15 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * An interface that serves as a callback for user retrieval operations
      */
     public interface OnUsersRetrievedListener {
+        /**
+         *
+         * @param users users
+         */
         void onUsersRetrieved(List<Users> users);
     }
     /**
      * A method to get the user object from the database
-     * @param userUid the user id
+     * @param userId the user id
      * @param imageUri the image uri
      */
     public void deleteUser(String userId, String imageUri){
@@ -249,7 +253,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
     /**
      * A method to get the user object from the database
-     * @param userUid the user id
+     * @param imageUri the user id
      */
     public void deleteUserUploadedImageFromStorage(String imageUri){
         if (imageUri == null) {
@@ -290,7 +294,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
     /**
      * A method to get the user object from the database
-     * @param userUid the user id
+     * @param userId the user id
      */
     public void deleteUserFromSignedUp(String userId){
 
@@ -311,7 +315,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
     /**
      * A method to get the user object from the database
-     * @param userUid the user id
+     * @param userId the user id
      */
     public void deleteUserFromAttendeeList(String userId){
         eventRef.get().addOnCompleteListener(task -> {
@@ -393,6 +397,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * An interface that serves as a callback for user document retrieval operations
      */
     public interface OnUserDocumentRetrievedListener {
+        /**
+         *
+         * @param documentSnapshot document snapshot
+         */
         void onUserDocumentRetrieved(DocumentSnapshot documentSnapshot);
     }
     /**
@@ -483,7 +491,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * Adds an event to the Firebase Firestore database.
      * This method creates a map of event details and stores it under a document identified by the event's ID.
      *
-     * @param event The event object containing the details of the event.
+     * @param eventId The event object containing the details of the event.
      * @param onCompleteListener A listener that is called upon the completion of the event addition process.
      */
     public void deleteEvent(String eventId, OnCompleteListener<Void> onCompleteListener){
@@ -541,7 +549,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * This method creates a map of event details and stores it under a document identified by the event's ID.
      *
      * @param image The event object containing the details of the event.
-     * @param onCompleteListener A listener that is called upon the completion of the event addition process.
+     * @param listener A listener that is called upon the completion of the event addition process.
      */
     public void deleteImageFromStorage(Image image, OnImageDeletedListener listener){
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -581,9 +589,11 @@ once created, u can call getuseruid to get the user id and use it to get user da
     /**
      * Adds an event to the Firebase Firestore database.
      * This method creates a map of event details and stores it under a document identified by the event's ID.
-
      */
     public interface OnImageDeletedListener {
+        /**
+         * image deleted
+         */
         void onImageDeleted();
     }
 
@@ -702,7 +712,7 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
     /**
      * This method retreives all the events available on the database
-     * @param listener
+     * @param listener listening
      */
 
 
@@ -725,8 +735,8 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
     /**
      * This method retreives all the events available on the database
-     * @param pageToken
-     * @param listener
+     * @param pageToken pagetoken
+     * @param listener listener
      */
     public void fetchImages( @Nullable String pageToken,OnImageRetrievedListener listener) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -785,6 +795,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * Implement this interface to receive a callback when a list of images is successfully retrieved.
      */
     public interface OnImageRetrievedListener {
+        /**
+         *
+         * @param images images
+         */
         void onImageRetrieved(List<Image> images);
     }
 
@@ -835,8 +849,8 @@ once created, u can call getuseruid to get the user id and use it to get user da
 
     /**
      * This method is to retrieve the array list once we pass the event id
-     * @param eventId
-     * @param listener
+     * @param eventId event id
+     * @param listener listener
      */
 
     public void getSignedAttendees(String eventId, OnSignedAttendeesRetrievedListener listener) {
@@ -854,6 +868,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * Implement this interface to receive a callback when a list of signed attendees is successfully retrieved.
      */
     public interface OnSignedAttendeesRetrievedListener {
+        /**
+         *
+         * @param attendees attendee
+         */
         void onSignedAttendeesRetrieved(List<String> attendees);
     }
 
@@ -959,6 +977,10 @@ once created, u can call getuseruid to get the user id and use it to get user da
      * An interface for listeners that handle the retrieval of a list of signed attendees.
      */
     public interface CheckUserInEventCallback {
+        /**
+         *
+         * @param isSignedUp boolean
+         */
             void onResult(boolean isSignedUp);
         }
 
@@ -979,9 +1001,9 @@ once created, u can call getuseruid to get the user id and use it to get user da
     }
     /**
      * Method to update an event's attendee's list.
-     * @param eventID
+     * @param eventId
      * The event that's meant to be updated.
-     * @param attendees
+     * @param currentAttendance
      * A 2D ArrayList containing the attendees and the number of times they have checked in.
      */
     public void updatecurrentAttendance(String eventId, Integer currentAttendance){
