@@ -22,7 +22,9 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Activity for the admin images view
+ */
 public class AdminImagesHome extends AppCompatActivity {
     private Users user;
 
@@ -30,7 +32,10 @@ public class AdminImagesHome extends AppCompatActivity {
     ImageAdapter imageAdapter;
     ArrayList<Image> dataList;
 
-
+    /**
+     * onCreate method to handle the creation of the admin images activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +81,9 @@ public class AdminImagesHome extends AppCompatActivity {
         });
 
     }
-
+    /**
+     * fetchImages method to handle the fetching of images
+     */
     private void fetchImages() {
         Database database = new Database();
         database.fetchImages(null, new Database.OnImageRetrievedListener() {
@@ -88,7 +95,10 @@ public class AdminImagesHome extends AppCompatActivity {
             }
         });
     }
-
+    /**
+     * deleteAlertBuilder method to handle the alert dialog for deleting an image
+     * @param image
+     */
     private void deleteAlertBuilder(Image image){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

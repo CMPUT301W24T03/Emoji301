@@ -69,7 +69,9 @@ public class ProfileEditFragment extends DialogFragment {
 
 
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
-
+    /**
+     * Called when the fragment is no longer in use.
+     */
     private void deletingStorageUpImage(){
         if (user.getUploadedImageUri() != null) {
             FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -78,7 +80,9 @@ public class ProfileEditFragment extends DialogFragment {
             imageRef.delete();
         }
     }
-
+    /**
+     * Called when the fragment is no longer in use.
+     */
     private void addingMetaData(){
         if (selectedImageUri != null) {
             FirebaseStorage storage = FirebaseStorage.getInstance();

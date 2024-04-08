@@ -15,7 +15,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Activity for the admin event view
+ */
 public class AdminEventActivity extends AppCompatActivity {
 
     ListView eventList;
@@ -25,7 +27,10 @@ public class AdminEventActivity extends AppCompatActivity {
 
     EventAdapter eventAdapter;
     FloatingActionButton backBtn;
-
+    /**
+     * onCreate method to handle the creation of the admin event activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +77,9 @@ public class AdminEventActivity extends AppCompatActivity {
         fetchEvents();
     }
 
-
+    /**
+     * onResume method to handle the resuming of the activity
+     */
     private void fetchEvents(){
         Database database = new Database();
         database.fetchAllEventsDatabase(new Database.OnEventsRetrievedListener() {

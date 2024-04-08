@@ -177,10 +177,6 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
         }));
 
-
-
-
-
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -203,6 +199,13 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
                 intent2.putExtra("userObject", user);
                 startActivity(intent2);  // Use intent2 to start the activity
+            }
+        });
+        notifButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showNotifications(user);
+
             }
         });
 
@@ -260,13 +263,7 @@ public class EventHome extends AppCompatActivity implements AddEventFragment.Add
 
 //        notifButton.setOnClickListener();
 
-        notifButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showNotifications(user);
 
-            }
-        });
 
 
 

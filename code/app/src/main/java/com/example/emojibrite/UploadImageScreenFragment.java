@@ -80,7 +80,9 @@ public class UploadImageScreenFragment extends Fragment {
 
         return uploadImageScreenLayout;
     }
-
+    /**
+     * Initializes the user object from the arguments bundle
+     */
     private void addingMetaData(){
         if (selectedImageUri != null) {
             FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -94,6 +96,9 @@ public class UploadImageScreenFragment extends Fragment {
             imageRef.updateMetadata(metadata);
         }
     }
+    /**
+     * Initializes the user object from the arguments bundle
+     */
     private void deletingStorageUpImage(){
         if (user.getUploadedImageUri() != null) {
             FirebaseStorage storage = FirebaseStorage.getInstance();
